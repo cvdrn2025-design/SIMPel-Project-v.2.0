@@ -461,18 +461,18 @@ td {
     </div>
 
     <!-- PROGRES -->
-    <div id="tab-progress" class="hide">
-        <div class="card">
-            <h2>Catat Progres Harian</h2>
-            <form class="form-grid" onsubmit="return addProgress(event)">
-                <div><label>Tanggal</label><input type="date" id="pTanggal" required></div>
-                <div style="grid-column:span 2;"><label>Deskripsi Pekerjaan</label><input type="text" id="pDeskripsi" list="uraianList" required></div>
-                <div><label>Progres (%)</label><input type="number" id="pPersen" min="0" max="100" required></div>
-                <div>
-                    <label>Foto</label>
-                    <input type="file" id="pFoto" accept="image/*" capture="environment">
-                </div>
-                <div>
+<div id="tab-progress" class="hide">
+    <div class="card">
+        <h2>Catat Progres Harian</h2>
+        <form class="form-grid" onsubmit="return addProgress(event)">
+            <div><label>Tanggal</label><input type="date" id="pTanggal" required></div>
+            <div style="grid-column:span 2;"><label>Deskripsi Pekerjaan</label><input type="text" id="pDeskripsi" list="uraianList" required></div>
+            <div><label>Progres (%)</label><input type="number" id="pPersen" min="0" max="100" required></div>
+            <div><label>Foto</label><input type="file" id="pFoto" accept="image/*" capture="environment"></div>
+            <div><button class="btn">Simpan</button></div>
+        </form>
+        <datalist id="uraianList"></datalist>
+    </div>
                     <label>Foto</label>
                     <input type="file" id="pFoto" accept="image/*" capture="environment" onchange="previewFoto(this)">
                     <img id="pFotoPreview" style="display:none; width:100px; height:100px; object-fit:cover; border-radius:6px; margin-top:6px;">
