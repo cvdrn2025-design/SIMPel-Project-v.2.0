@@ -872,14 +872,116 @@ function switchTab(name){
 }
 
 // ===== PROJECT =====
+let pendingRabItems = [];
+
 function openProjectModal(){
     if(currentRole() !== 'management'){ alert('Khusus Management.'); return; }
     document.getElementById('projectModal').style.display = 'flex';
+    // Reset form
+    document.getElementById('npNama').value = '';
+    document.getElementById('npLokasi').value = '';
+    document.getElementById('npKontrak').value = '';
+    document.getElementById('npNilai').value = '';
+    document.getElementById('npMulai').value = '';
+    document.getElementById('npSelesai').value = '';
+    document.getElementById('npRabFile').value = '';
+    document.getElementById('npRabPreview').textContent = 'File harus punya kolom: "Uraian", "Volume", "Satuan", "Harga Satuan"';
+    pendingRabItems = [];
 }
 
+// Fungsi untuk membaca file Excel
+function handleRabFile(e){
+    const file = e.target.files && e.target.files[0];
+    const preview = document.getElementById('npRabPreview');
+    if(!file){
+        pendingRabItems = [];
+        preview.textContent = 'File harus punya kolom: "Uraian", "Volume", "Satuan", "Harga Satuan"';
+        return;
+    }
+    
+    preview.textContent = 'Membaca file...';
+    
+    const reader = new FileReader();
+    reader.onload = function(e){
+        try{
+            const data = new Uint8Array(e.target.result);
+            const workbook = XLSX.read(data, { type: 'array' });
+            const sheet = workbook.Sheets[workbook.SheetNames[0]];
+            const rows = XLSX.utils.sheet_to_json(sheet, { header:1, raw:true, defval:'' });
+            
+            // Deteksi header
+            let headerIdx = -1;
+            let colUraian = -1, colVolume = -1, colSatuan = -1, colHarga = -1;
+            
+            for(let i=0; i<Math.min(rows.length, 10); i++){
+                const row = rows[i] || [];
+                row.forEach((cell, idx) => {
+                    const h = String(cell||'').toLowerCase().trim();
+                    if(h.includes('uraian') && colUraian===-1) colUraian = idx;
+                    if((h.includes('volume') || h==='vol') && colVolume===-1) colVolume = idx;
+                    if(h.includes('satuan') && !h.includes('harga') && colSatuan===-1) colSatuan = idx;
+                    if(h.includes('harga') && h.includes('satuan') && colHarga===-1) colHarga = idx;
+                });
+                if(colUraian !== -1 && colVolume !== -1 && colHarga !== -1){
+                    headerIdx = i;
+                    break;
+                }
+            }
+            
+            if(headerIdx === -1){
+                preview.textContent = '❌ Kolom tidak ditemukan. Pastikan ada "Uraian", "Volume", "Satuan", "Harga Satuan"';
+                pendingRabItems = [];
+                return;
+            }
+            
+            // Baca data
+            const items = [];
+            for(let i=headerIdx+1; i<rows.length; i++){
+                const row = rows[i] || [];
+                const uraian = String(row[colUraian]||'').trim();
+                if(!uraian) continue;
+                
+                const volume = parseFloat(String(row[colVolume]||'0').replace(/[^0-9.\-]/g,'')) || 0;
+                const satuan = String(row[colSatuan]||'').trim();
+                const harga = parseFloat(String(row[colHarga]||'0').replace(/[^0-9.\-]/g,'')) || 0;
+                const jumlah = volume * harga;
+                
+                // Pastikan uraian unik
+                const existing = items.map(x=>x.uraian);
+                let uniqueUraian = uraian;
+                let counter = 2;
+                while(existing.includes(uniqueUraian)){
+                    uniqueUraian = `${uraian} (${counter})`;
+                    counter++;
+                }
+                
+                items.push({ uraian: uniqueUraian, volume, satuan, hargaSatuan: harga, jumlahHarga: jumlah });
+            }
+            
+            pendingRabItems = items;
+            const total = items.reduce((s,it)=>s+it.jumlahHarga,0);
+            
+            // Otomatis isi nilai kontrak
+            document.getElementById('npNilai').value = total;
+            
+            preview.textContent = `✅ ${items.length} item RAB terbaca. Total: ${formatRp(total)}`;
+        }catch(err){
+            preview.textContent = '❌ Gagal membaca file: ' + err.message;
+            pendingRabItems = [];
+        }
+    };
+    reader.readAsArrayBuffer(file);
+}
+
+// Fungsi simpan proyek (dimodifikasi)
 async function saveProject(e){
     e.preventDefault();
     if(currentRole() !== 'management'){ alert('Khusus Management.'); return false; }
+    
+    const btn = document.getElementById('btnSimpanProyek');
+    btn.disabled = true;
+    btn.textContent = 'Menyimpan...';
+    
     const payload = {
         nama: document.getElementById('npNama').value,
         lokasi: document.getElementById('npLokasi').value || null,
@@ -888,18 +990,61 @@ async function saveProject(e){
         tanggal_mulai: document.getElementById('npMulai').value || null,
         tanggal_selesai: document.getElementById('npSelesai').value || null
     };
+    
     try{
+        // Simpan proyek
         const { data, error } = await sb.from('projects').insert(payload).select().single();
         if(error) throw error;
-        projects.push(mapProject(data));
+        
+        const newProject = mapProject(data);
+        projects.push(newProject);
         currentProjectId = data.id;
         localStorage.setItem(KEYS.current, data.id);
+        
+        // Simpan RAB jika ada
+        if(pendingRabItems.length > 0){
+            const rabPayload = pendingRabItems.map((item, idx) => ({
+                project_id: data.id,
+                no_urut: idx + 1,
+                uraian: item.uraian,
+                volume: item.volume,
+                satuan: item.satuan,
+                harga_satuan: item.hargaSatuan,
+                jumlah_harga: item.jumlahHarga
+            }));
+            
+            const { error: rabError } = await sb.from('rab_items').insert(rabPayload);
+            if(rabError) throw rabError;
+            
+            // Load ulang data RAB
+            const { data: rabData } = await sb.from('rab_items').select('*').eq('project_id', data.id);
+            if(rabData){
+                rabData.forEach(r => rabList.push(mapRab(r)));
+            }
+        }
+        
+        // Tutup modal
         document.getElementById('projectModal').style.display = 'none';
-        document.getElementById('formNewProject').reset();
+        pendingRabItems = [];
+        
+        // Render ulang
         renderAll();
-    }catch(err){ alert('Gagal: '+err.message); }
+        renderProjectSelect();
+        
+        // LANGSUNG BUKA MENU RAB
+        switchTab('rab');
+        
+        alert('✅ Proyek "' + payload.nama + '" berhasil dibuat!' + (pendingRabItems.length ? ' RAB/BoQ berhasil diimport.' : ''));
+        
+    }catch(err){
+        alert('❌ Gagal menyimpan: ' + err.message);
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Simpan Proyek';
+    }
+    
     return false;
-}
+                    }
 
 async function deleteProject(){
     if(currentRole() !== 'management'){ alert('Khusus Management.'); return; }
