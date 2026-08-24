@@ -1366,7 +1366,11 @@ function renderRab(){
     rows.forEach(r=>{
         total += Number(r.jumlahHarga||0);
         const tr = document.createElement('tr');
-        tr.innerHTML = `<td>${r.noUrut}</td><td>${esc(r.uraian)}</td><td>${r.volume}</td><td>${esc(r.satuan)}</td><td>${formatRp(r.hargaSatuan)}</td><td>${formatRp(r.jumlahHarga)}</td><td><button class="btn small danger" onclick="deleteEntry('rab','${r.id}')">Hapus</button></td>`;
+        
+        // PERBAIKAN: Format volume maksimal 3 digit di belakang koma
+        const volumeDisplay = Number(r.volume || 0).toFixed(3).replace(/\.?0+$/, '');
+        
+        tr.innerHTML = `<td>${r.noUrut}</td><td>${esc(r.uraian)}</td><td>${volumeDisplay}</td><td>${esc(r.satuan)}</td><td>${formatRp(r.hargaSatuan)}</td><td>${formatRp(r.jumlahHarga)}</td><td><button class="btn small danger" onclick="deleteEntry('rab','${r.id}')">Hapus</button></td>`;
         tbody.appendChild(tr);
     });
     document.getElementById('rabTotal').textContent = formatRp(total);
