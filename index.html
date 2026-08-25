@@ -1876,7 +1876,37 @@ function printSCurve(){
     // Ambil proyek aktif
     const p = projects.find(x => x.id === currentProjectId);
     
-    // Buat area cetak dengan Kurva S
+    // Ambil data rencana dari tabel
+    const planRows = [...planLog].filter(x => x.projectId === currentProjectId).sort((a,b) => (a.tanggal || '') > (b.tanggal || '') ? 1 : -1);
+    
+    // Buat tabel rencana
+    let tableHtml = '';
+    if(planRows.length > 0){
+        tableHtml = '<table border="1" cellpadding="6" style="width:100%;border-collapse:collapse;margin-top:20px;">' +
+            '<tr style="background:#eee;">' +
+            '<th style="text-align:center;">Tanggal</th>' +
+            '<th style="text-align:center;">Rencana (%)</th>' +
+            '<th style="text-align:center;">Realisasi (%)</th>' +
+            '<th style="text-align:center;">Deviasi (%)</th>' +
+            '</tr>';
+        
+        planRows.forEach(r => {
+            const realisasi = computeProgress(r.tanggal);
+            const deviasi = realisasi - r.persen;
+            const deviasiColor = deviasi < 0 ? '#B23A2E' : '#2F7D5A';
+            
+            tableHtml += '<tr>' +
+                '<td style="text-align:center;">' + formatTgl(r.tanggal) + '</td>' +
+                '<td style="text-align:center;">' + r.persen + '</td>' +
+                '<td style="text-align:center;">' + realisasi.toFixed(1) + '</td>' +
+                '<td style="text-align:center; color:' + deviasiColor + '; font-weight:600;">' + (deviasi >= 0 ? '+' : '') + deviasi.toFixed(1) + '</td>' +
+                '</tr>';
+        });
+        
+        tableHtml += '</table>';
+    }
+    
+    // Buat area cetak dengan Kurva S + Tabel
     const area = document.getElementById('printArea');
     area.innerHTML = '<div style="padding:20px;font-family:Arial;">' +
         '<h2 style="text-align:center;">KURVA S</h2>' +
@@ -1885,6 +1915,7 @@ function printSCurve(){
         '<p><b>Proyek:</b> ' + esc(p ? p.nama : '-') + '</p>' +
         '<p><b>No. Kontrak:</b> ' + esc(p && p.nomorKontrak ? p.nomorKontrak : '-') + '</p>' +
         '<div style="max-width:600px; margin:0 auto;">' + svg.outerHTML + '</div>' +
+        tableHtml +
         '<div style="margin-top:20px; text-align:left; font-size:11px; color:#555; font-style:italic;">' +
         'Laporan ini dicetak otomatis menggunakan Aplikasi <b>SIMPeL</b> - Sistem Pemantauan Lapangan, ' + 
         new Date().getDate() + ' ' + ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][new Date().getMonth()] + ' ' + new Date().getFullYear() +
