@@ -1384,7 +1384,6 @@ function computeRekap(jamMasuk, jamKeluar){
     const [hm, mm] = jamMasuk.split(':').map(Number);
     const [hk, mk] = jamKeluar.split(':').map(Number);
     
-    // Konversi ke menit
     let start = hm * 60 + (mm || 0);
     let end = hk * 60 + (mk || 0);
     
@@ -1399,28 +1398,31 @@ function computeRekap(jamMasuk, jamKeluar){
     const JAM_24 = 24 * 60;    // 1440 menit
     const JAM_NORMAL = 9 * 60; // 540 menit (1 hari kerja = 9 jam)
     
-    let H = 0;
+    let H = 1;
     let L = 0;
     
-    // HITUNG HARI KERJA (H)
-    if(totalMenit <= JAM_NORMAL){
-        H = 1;
-    } else if(totalMenit <= JAM_22 - start){
-        H = 2;
-    } else if(totalMenit <= JAM_24 - start){
-        H = 3;
-    } else {
-        H = 4;
-    }
-    
-    // HITUNG LEMBUR (L) - JAM KERJA SETELAH 17.00
+    // Hitung lembur jam kerja setelah 17.00
     const menitSetelah17 = Math.max(0, end - JAM_17);
     
-    if(menitSetelah17 > 0){
-        // Kurangi dengan jam kerja normal tambahan jika H > 1
-        const jamKerjaTambahan = (H - 1) * JAM_NORMAL;
-        const menitLembur = Math.max(0, menitSetelah17 - jamKerjaTambahan);
-        L = menitLembur / 60; // Konversi ke jam
+    // Jika kerja sampai 19.00 (1 jam setelah 17.00) = 1 Hari + 1 Jam Lembur
+    if(totalMenit > JAM_NORMAL && totalMenit <= JAM_22 - start){
+        H = 1;
+        L = menitSetelah17 / 60;
+    }
+    // Jika kerja sampai 22.00 = 2 Hari
+    else if(totalMenit > JAM_22 - start && totalMenit <= JAM_24 - start){
+        H = 2;
+        L = 0;
+    }
+    // Jika kerja sampai 24.00 = 3 Hari
+    else if(totalMenit > JAM_24 - start && totalMenit <= (JAM_24 + JAM_NORMAL) - start){
+        H = 3;
+        L = 0;
+    }
+    // Jika kerja melewati tengah malam dan masih lanjut = 4 Hari
+    else {
+        H = 4;
+        L = 0;
     }
     
     return { H: H, L: L };
