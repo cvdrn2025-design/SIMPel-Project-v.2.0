@@ -1185,11 +1185,18 @@ function renderRab(){
     let total = 0;
     rows.forEach(r => {
         total += Number(r.jumlahHarga || 0);
+    });
+    
+    rows.forEach(r => {
+        // Hitung bobot: (Jumlah item / Total RAB) * 100
+        const bobot = total > 0 ? (Number(r.jumlahHarga || 0) / total) * 100 : 0;
         const volumeDisplay = Number(r.volume || 0).toFixed(3).replace(/\.?0+$/, '');
+        
         const tr = document.createElement('tr');
-        tr.innerHTML = '<td>' + r.noUrut + '</td><td>' + esc(r.uraian) + '</td><td>' + volumeDisplay + '</td><td>' + esc(r.satuan) + '</td><td>' + formatRp(r.hargaSatuan) + '</td><td>' + formatRp(r.jumlahHarga) + '</td><td><button class="btn small danger" onclick="deleteEntry(\'rab\',\'' + r.id + '\')">Hapus</button></td>';
+        tr.innerHTML = '<td>' + r.noUrut + '</td><td>' + esc(r.uraian) + '</td><td>' + volumeDisplay + '</td><td>' + esc(r.satuan) + '</td><td>' + formatRp(r.hargaSatuan) + '</td><td>' + formatRp(r.jumlahHarga) + '</td><td>' + bobot.toFixed(2) + '%</td><td><button class="btn small danger" onclick="deleteEntry(\'rab\',\'' + r.id + '\')">Hapus</button></td>';
         tbody.appendChild(tr);
     });
+    
     document.getElementById('rabTotal').textContent = formatRp(total);
     document.getElementById('rabPpn').textContent = formatRp(total * 0.11);
     document.getElementById('rabKontrak').textContent = formatRp(total * 1.11);
