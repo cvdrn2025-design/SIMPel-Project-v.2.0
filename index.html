@@ -2175,15 +2175,91 @@ function printSCurve(){
     setTimeout(() => window.print(), 200);
 }
     
+// ===== CETAK REKAP UPAH =====
 function printWage(e){
     e.preventDefault();
     if(!currentProjectId) return false;
+    
     const awal = document.getElementById('wageAwal').value;
     const akhir = document.getElementById('wageAkhir').value;
+    
+    // Ambil data pekerja yang hadir pada periode tersebut
     const rows = currentData('timesheet').filter(r => r.tanggal >= awal && r.tanggal <= akhir && r.status === 'hadir');
-    if(!rows.length){ alert('Tidak ada data.'); return false; }
+    
+    if(rows.length === 0){
+        alert('Tidak ada data pekerja hadir pada periode tersebut.');
+        return false;
+    }
+    
+    // Rekap per pekerja
+    let rekap = {};
+    rows.forEach(r => {
+        if(!rekap[r.nama]){
+            rekap[r.nama] = { nama: r.nama, kategori: r.kategori, totalH: 0, totalL: 0 };
+        }
+        rekap[r.nama].totalH += 1; // 1 hari kerja
+        // Hitung lembur jika jam keluar lebih dari jam masuk
+        if(r.jamMasuk && r.jamKeluar){
+            const [hm, mm] = r.jamMasuk.split(':').map(Number);
+            const [hk, mk] = r.jamKeluar.split(':').map(Number);
+            let start = hm * 60 + (mm || 0);
+            let end = hk * 60 + (mk || 0);
+            if(end <= start) end += 24 * 60;
+            const totalMenit = end - start;
+            const jamLembur = Math.max(0, (totalMenit - 480) / 60); // 480 menit = 8 jam kerja
+            rekap[r.nama].totalL += jamLembur;
+        }
+    });
+    
+    // Hitung total gaji
+    let totalGaji = 0;
+    const daftarPekerja = Object.values(rekap).sort((a,b) => a.nama.localeCompare(b.nama));
+    
+    const rowsHtml = daftarPekerja.map((pk, idx) => {
+        const w = wageRates.find(x => x.projectId === currentProjectId && x.kategori === pk.kategori);
+        const upahHarian = w ? Number(w.upahHarian) : 0;
+        const upahLembur = w ? Number(w.upahLembur) : 0;
+        const total = Math.round((pk.totalH * upahHarian) + (pk.totalL * upahLembur));
+        totalGaji += total;
+        
+        return '<tr>' +
+            '<td style="text-align:center;">' + (idx + 1) + '</td>' +
+            '<td>' + esc(pk.nama) + '</td>' +
+            '<td style="text-align:center;">' + esc(pk.kategori) + '</td>' +
+            '<td style="text-align:center;">' + pk.totalH + '</td>' +
+            '<td style="text-align:center;">' + pk.totalL.toFixed(1) + '</td>' +
+            '<td style="text-align:right;">' + formatRp(upahHarian) + '</td>' +
+            '<td style="text-align:right;">' + formatRp(upahLembur) + '</td>' +
+            '<td style="text-align:right;">' + formatRp(total) + '</td>' +
+            '</tr>';
+    }).join('');
+    
+    // Buat area cetak
     const area = document.getElementById('printArea');
-    area.innerHTML = '<div style="padding:20px;font-family:Arial;"><h2 style="text-align:center;">REKAP UPAH</h2><p style="text-align:center;">Periode: ' + formatTgl(awal) + ' - ' + formatTgl(akhir) + '</p><hr></div>';
+    area.innerHTML = '<div style="padding:20px;font-family:Arial;">' +
+        '<h2 style="text-align:center;">REKAP UPAH</h2>' +
+        '<p style="text-align:center;">CV. DINAMIKA REKONSTRUKSI NUSANTARA</p>' +
+        '<p style="text-align:center;">Periode: ' + formatTgl(awal) + ' - ' + formatTgl(akhir) + '</p>' +
+        '<hr>' +
+        '<table border="1" cellpadding="6" style="width:100%;border-collapse:collapse;margin-top:10px;">' +
+        '<tr style="background:#eee;">' +
+        '<th style="text-align:center;">No</th>' +
+        '<th style="text-align:center;">Nama</th>' +
+        '<th style="text-align:center;">Kategori</th>' +
+        '<th style="text-align:center;">Hari (H)</th>' +
+        '<th style="text-align:center;">Lembur (L)</th>' +
+        '<th style="text-align:right;">Upah Harian</th>' +
+        '<th style="text-align:right;">Upah Lembur/Jam</th>' +
+        '<th style="text-align:right;">Total Gaji</th>' +
+        '</tr>' +
+        rowsHtml +
+        '<tr style="font-weight:bold;background:#eee;">' +
+        '<td colspan="7" style="text-align:right;">TOTAL PEMBAYARAN</td>' +
+        '<td style="text-align:right;">' + formatRp(totalGaji) + '</td>' +
+        '</tr>' +
+        '</table>' +
+        '</div>';
+    
     setTimeout(() => window.print(), 200);
     return false;
 }
