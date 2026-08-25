@@ -1866,6 +1866,34 @@ function buildSignatureBlock(){
         '</div>' +
         '<div style="margin-top:40px; text-align:center;">' + blocks + '</div>';
 }
+
+    // ===== PRINT KURVA S =====
+function printSCurve(){
+    // Ambil elemen SVG Kurva S
+    const svg = document.getElementById('sCurve');
+    if(!svg) return;
+    
+    // Ambil proyek aktif
+    const p = projects.find(x => x.id === currentProjectId);
+    
+    // Buat area cetak dengan Kurva S
+    const area = document.getElementById('printArea');
+    area.innerHTML = '<div style="padding:20px;font-family:Arial;">' +
+        '<h2 style="text-align:center;">KURVA S</h2>' +
+        '<p style="text-align:center;">CV. DINAMIKA REKONSTRUKSI NUSANTARA</p>' +
+        '<hr>' +
+        '<p><b>Proyek:</b> ' + esc(p ? p.nama : '-') + '</p>' +
+        '<p><b>No. Kontrak:</b> ' + esc(p && p.nomorKontrak ? p.nomorKontrak : '-') + '</p>' +
+        '<div style="max-width:600px; margin:0 auto;">' + svg.outerHTML + '</div>' +
+        '<div style="margin-top:20px; text-align:left; font-size:11px; color:#555; font-style:italic;">' +
+        'Laporan ini dicetak otomatis menggunakan Aplikasi <b>SIMPeL</b> - Sistem Pemantauan Lapangan, ' + 
+        new Date().getDate() + ' ' + ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][new Date().getMonth()] + ' ' + new Date().getFullYear() +
+        '</div>' +
+        '</div>';
+    
+    // Panggil print
+    setTimeout(() => window.print(), 200);
+}
     
 function printWage(e){
     e.preventDefault();
