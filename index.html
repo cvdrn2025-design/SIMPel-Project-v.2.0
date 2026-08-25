@@ -1830,15 +1830,20 @@ function printRabBoQ(){
     
     // Buat tabel RAB
     const rowsHtml = rabRows.map((r, i) => {
-        const volumeDisplay = Number(r.volume || 0).toFixed(3).replace(/\.?0+$/, '');
+        // Format volume: 2 angka di belakang koma
+        const volumeDisplay = Number(r.volume || 0).toFixed(2);
+        
+        // Format harga tanpa "Rp."
+        const hargaSatuan = Number(r.hargaSatuan || 0).toLocaleString('id-ID');
+        const jumlahHarga = Number(r.jumlahHarga || 0).toLocaleString('id-ID');
         
         return '<tr>' +
             '<td style="text-align:center;">' + (i+1) + '</td>' +
             '<td>' + esc(r.uraian) + '</td>' +
             '<td style="text-align:center;">' + volumeDisplay + '</td>' +
             '<td style="text-align:center;">' + esc(r.satuan) + '</td>' +
-            '<td style="text-align:right;">' + formatRp(r.hargaSatuan) + '</td>' +
-            '<td style="text-align:right;">' + formatRp(r.jumlahHarga) + '</td>' +
+            '<td style="text-align:right;">' + hargaSatuan + '</td>' +
+            '<td style="text-align:right;">' + jumlahHarga + '</td>' +
             '</tr>';
     }).join('');
     
@@ -1849,7 +1854,7 @@ function printRabBoQ(){
     const jamCetak = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ':' + String(now.getSeconds()).padStart(2, '0');
     
     area.innerHTML = '<div style="padding:20px;font-family:Arial;">' +
-        '<h2 style="text-align:center;">DAFTAR RENCANA ANGGARAN BIAYA (RAB/BoQ)</h2>' +
+        '<h2 style="text-align:center;">RENCANA ANGGARAN BIAYA (RAB/BoQ)</h2>' +
         '<p style="text-align:center;">CV. DINAMIKA REKONSTRUKSI NUSANTARA</p>' +
         '<hr>' +
         '<p><b>Proyek:</b> ' + esc(p ? p.nama : '-') + '</p>' +
@@ -1861,34 +1866,34 @@ function printRabBoQ(){
         '<th style="text-align:center;">Uraian Pekerjaan</th>' +
         '<th style="text-align:center;">Volume</th>' +
         '<th style="text-align:center;">Satuan</th>' +
-        '<th style="text-align:right;">Harga Satuan</th>' +
-        '<th style="text-align:right;">Jumlah Harga</th>' +
+        '<th style="text-align:right;">Harga Satuan (Rp.)</th>' +
+        '<th style="text-align:right;">Jumlah Harga (Rp.)</th>' +
         '</tr>' +
         '</thead>' +
         '<tbody>' +
         rowsHtml +
         '<tr style="font-weight:bold;background:#eee;">' +
         '<td colspan="5" style="text-align:right;">TOTAL RAB</td>' +
-        '<td style="text-align:right;">' + formatRp(totalRAB) + '</td>' +
+        '<td style="text-align:right;">' + totalRAB.toLocaleString('id-ID') + '</td>' +
         '</tr>' +
         '<tr>' +
         '<td colspan="5" style="text-align:right;">PPN 11%</td>' +
-        '<td style="text-align:right;">' + formatRp(ppn) + '</td>' +
+        '<td style="text-align:right;">' + ppn.toLocaleString('id-ID') + '</td>' +
         '</tr>' +
         '<tr style="font-weight:bold;background:#eee;">' +
         '<td colspan="5" style="text-align:right;">NILAI KONTRAK (RAB + PPN)</td>' +
-        '<td style="text-align:right;">' + formatRp(nilaiKontrak) + '</td>' +
+        '<td style="text-align:right;">' + nilaiKontrak.toLocaleString('id-ID') + '</td>' +
         '</tr>' +
         '</tbody>' +
         '</table>' +
         buildSignatureBlock() +
         '<div style="margin-top:20px; text-align:left; font-size:11px; color:#555; font-style:italic;">' +
-        'Laporan ini dicetak otomatis menggunakan Aplikasi <b>SIMPeL</b> - Sistem Pemantauan Lapangan, ' + tanggalCetak + ' ' + jamCetak +
+        'Dokumen dicetak otomatis menggunakan Aplikasi <b>SIMPeL</b> - Sistem Pemantauan Lapangan, ' + tanggalCetak + ' ' + jamCetak +
         '</div>' +
         '</div>';
     
     setTimeout(() => window.print(), 200);
-    }
+}
     
 // ===== CETAK FOTO TERPILIH =====
 function printProgressPhotos(){
@@ -1940,7 +1945,7 @@ function printProgressPhotos(){
     area.innerHTML = '<div style="font-family:Arial;">' +
         photosHtml +
         '<div style="margin-top:20px; text-align:left; font-size:11px; color:#555; font-style:italic;">' +
-        'Laporan ini dicetak otomatis menggunakan Aplikasi <b>SIMPeL</b> - Sistem Pemantauan Lapangan, ' + tanggalCetak + ' ' + jamCetak +
+        'Dokumen dicetak otomatis menggunakan Aplikasi <b>SIMPeL</b> - Sistem Pemantauan Lapangan, ' + tanggalCetak + ' ' + jamCetak +
         '</div>' +
         '</div>';
     
@@ -2081,7 +2086,7 @@ function printProgressReport(){
     '</table>' +
     buildSignatureBlock() +
     '<div style="margin-top:20px; text-align:left; font-size:11px; color:#555; font-style:italic;">' +
-    'Laporan ini dicetak otomatis menggunakan Aplikasi <b>SIMPeL</b> - Sistem Pemantauan Lapangan, ' + tanggalCetak + ' ' + jamCetak +
+    'Dokumen dicetak otomatis menggunakan Aplikasi <b>SIMPeL</b> - Sistem Pemantauan Lapangan, ' + tanggalCetak + ' ' + jamCetak +
     '</div>' +
     '</div>';
 
@@ -2158,7 +2163,7 @@ function printSCurve(){
         '<div style="max-width:600px; margin:0 auto;">' + svg.outerHTML + '</div>' +
         tableHtml +
         '<div style="margin-top:20px; text-align:left; font-size:11px; color:#555; font-style:italic;">' +
-        'Laporan ini dicetak otomatis menggunakan Aplikasi <b>SIMPeL</b> - Sistem Pemantauan Lapangan, ' + tanggalCetak + ' ' + jamCetak +
+        'Dokumen dicetak otomatis menggunakan Aplikasi <b>SIMPeL</b> - Sistem Pemantauan Lapangan, ' + tanggalCetak + ' ' + jamCetak +
         '</div>' +
         '</div>';
     
@@ -2263,7 +2268,7 @@ function printWage(e){
         '</tbody>' +
         '</table>' +
         '<div style="margin-top:20px; text-align:left; font-size:11px; color:#555; font-style:italic;">' +
-        'Laporan ini dicetak otomatis menggunakan Aplikasi <b>SIMPeL</b> - Sistem Pemantauan Lapangan, ' + tanggalCetak + ' ' + jamCetak +
+        'Dokumen dicetak otomatis menggunakan Aplikasi <b>SIMPeL</b> - Sistem Pemantauan Lapangan, ' + tanggalCetak + ' ' + jamCetak +
         '</div>' +
         '</div>';
     
