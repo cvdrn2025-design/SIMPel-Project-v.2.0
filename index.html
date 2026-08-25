@@ -1365,28 +1365,42 @@ function renderRab(){
     document.getElementById('rabKontrak').textContent = formatRp(total * 1.11);
 }
 
+// ===== TAMBAH ITEM RAB (ADDENDUM) =====
 async function addRabItem(e){
     e.preventDefault();
     if(!currentProjectId) return false;
-    const vol = Number(document.getElementById('rabVolume').value);
-    const harga = Number(document.getElementById('rabHarga').value);
+    
+    const kategoriAddendum = document.getElementById('rabKategoriAddendum').value;
+    const volumeInput = Math.abs(Number(document.getElementById('rabVolume').value));
+    const volume = kategoriAddendum === 'kurang' ? -volumeInput : volumeInput;
+    const hargaSatuan = Number(document.getElementById('rabHarga').value);
+    const uraianDasar = document.getElementById('rabUraian').value.trim();
+    const keteranganAddendum = kategoriAddendum === 'kurang' ? ' (Addendum Kurang)' : ' (Addendum Tambah)';
+    const uraian = uraianDasar + keteranganAddendum;
+    
     try{
         const { data, error } = await sb.from('rab_items').insert({
             project_id: currentProjectId,
             no_urut: currentData('rab').length + 1,
-            uraian: document.getElementById('rabUraian').value,
-            volume: vol,
+            uraian: uraian,
+            volume: volume,
             satuan: document.getElementById('rabSatuan').value,
-            harga_satuan: harga,
-            jumlah_harga: vol * harga
+            harga_satuan: hargaSatuan,
+            jumlah_harga: volume * hargaSatuan
         }).select().single();
         if(error) throw error;
         rabList.push(data);
+        
+        // Reset form
         document.getElementById('rabUraian').value = '';
         document.getElementById('rabVolume').value = '';
         document.getElementById('rabSatuan').value = '';
         document.getElementById('rabHarga').value = '';
+        
+        // Refresh
         renderAll();
+        
+        alert('✅ Item addendum berhasil ditambahkan!');
     }catch(err){ alert('Gagal: ' + err.message); }
     return false;
 }
