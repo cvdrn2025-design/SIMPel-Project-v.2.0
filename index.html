@@ -940,7 +940,7 @@ function renderSCurve(){
     const realisasiDots = realisasi.map(r => '<circle cx="' + xPos(r.tanggal) + '" cy="' + yPos(r.persen) + '" r="3" fill="#E8801C"/>').join('');
     
     svg.innerHTML = grid + planLine + realisasiLine + planDots + realisasiDots;
-}
+    }
 
 // ===== RENDER TABEL RENCANA =====
 function renderPlanTable(){
