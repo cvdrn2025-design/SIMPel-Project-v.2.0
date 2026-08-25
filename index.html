@@ -1650,7 +1650,8 @@ async function addPlan(e){
         // Refresh tampilan
         renderAll();
         renderPlanTable(); // TAMBAHAN BARU
-        renderSCurve();
+        renderSCurve();    // TAMBAHAN BARU: Refresh kurva
+        renderUraianOptions();
         
         alert('✅ Titik rencana berhasil ditambahkan!');
     }catch(err){ alert('Gagal: ' + err.message); }
