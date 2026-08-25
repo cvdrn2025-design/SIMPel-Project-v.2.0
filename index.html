@@ -1246,7 +1246,32 @@ function compressImage(file, maxWidth = 800, quality = 0.7){
 }
 
 // ===== MATERIAL =====
+// ===== RENDER MATERIAL =====
 function renderMaterial(){
+    // Kebutuhan material
+    const allocRows = currentData('alloc');
+    const tbodyAlloc = document.querySelector('#tblAlloc tbody');
+    if(tbodyAlloc){
+        tbodyAlloc.innerHTML = '';
+        allocRows.forEach(r => {
+            const masuk = currentData('material').filter(m => m.tipe === 'masuk' && m.nama === r.nama).reduce((s,m) => s + m.jumlah, 0);
+            const selisih = masuk - r.jatah;
+            let status = 'Pas';
+            let cls = 'ok';
+            if(selisih < 0){
+                status = 'Kurang ' + Math.abs(selisih) + ' ' + r.satuan;
+                cls = 'warn';
+            } else if(selisih > 0){
+                status = 'Lebih ' + selisih + ' ' + r.satuan;
+                cls = 'info';
+            }
+            const tr = document.createElement('tr');
+            tr.innerHTML = '<td>' + esc(r.nama) + '</td><td>' + r.jatah + ' ' + esc(r.satuan) + '</td><td>' + masuk + ' ' + esc(r.satuan) + '</td><td><span class="tag ' + cls + '">' + status + '</span></td><td><button class="btn small danger" onclick="deleteEntry(\'alloc\',\'' + r.id + '\')">Hapus</button></td>';
+            tbodyAlloc.appendChild(tr);
+        });
+    }
+    
+    // Riwayat material masuk/keluar
     const matRows = currentData('material');
     const tbodyMat = document.querySelector('#tblMaterial tbody');
     if(tbodyMat){
