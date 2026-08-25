@@ -1384,9 +1384,11 @@ function renderTimesheet(){
     });
 }
 
+// ===== SIMPAN DATA PEKERJA =====
 async function addTimesheet(e){
     e.preventDefault();
     if(!currentProjectId) return false;
+    
     try{
         const { data, error } = await sb.from('timesheet_log').insert({
             project_id: currentProjectId,
@@ -1397,12 +1399,37 @@ async function addTimesheet(e){
             jam_masuk: document.getElementById('tJamMasuk').value || null,
             jam_keluar: document.getElementById('tJamKeluar').value || null
         }).select().single();
+        
         if(error) throw error;
-        timesheetLog.push(data);
+        
+        // PENTING: Masukkan data ke memori dengan format yang benar
+        timesheetLog.push({
+            id: data.id,
+            projectId: data.project_id,
+            tanggal: data.tanggal,
+            nama: data.nama,
+            kategori: data.kategori,
+            status: data.status,
+            jamMasuk: data.jam_masuk,
+            jamKeluar: data.jam_keluar
+        });
+        
+        // Reset form
         document.getElementById('tNama').value = '';
         document.getElementById('tTanggal').value = todayStr();
+        document.getElementById('tJamMasuk').value = '';
+        document.getElementById('tJamKeluar').value = '';
+        
+        // PENTING: Refresh tampilan LANGSUNG (tanpa reload)
         renderAll();
-    }catch(err){ alert('Gagal: ' + err.message); }
+        renderTimesheet();
+        
+        alert('✅ Data pekerja berhasil disimpan!');
+        
+    }catch(err){
+        alert('❌ Gagal menyimpan: ' + err.message);
+    }
+    
     return false;
 }
 
