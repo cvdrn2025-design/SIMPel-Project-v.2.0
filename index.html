@@ -1067,6 +1067,7 @@ function renderPlanTable(){
 }
 
 // ===== PROGRES =====
+// ===== RENDER PROGRES =====
 function renderProgress(){
     const rows = currentData('progress');
     const tbody = document.querySelector('#tblProgress tbody');
@@ -1091,7 +1092,10 @@ function renderProgress(){
         
         const sisaText = sisaProgres === 0 ? '<span class="tag ok">Selesai</span>' : sisaProgres.toFixed(1) + '%';
         
-        tr.innerHTML = '<td>' + formatTgl(r.tanggal) + '</td><td>' + esc(r.deskripsi) + '</td><td>' + r.persen + '%</td><td>' + sisaText + '</td><td>' + prestasi.toFixed(2) + '%</td><td>' + foto + '</td><td><button class="btn small danger" onclick="deleteEntry(\'progress\',\'' + r.id + '\')">Hapus</button></td>';
+        // TAMBAHAN: Kotak ceklis untuk memilih foto
+        const checkCell = r.foto ? '<input type="checkbox" class="print-photo-check" value="' + r.id + '">' : '-';
+        
+        tr.innerHTML = '<td>' + formatTgl(r.tanggal) + '</td><td>' + esc(r.deskripsi) + '</td><td>' + r.persen + '%</td><td>' + sisaText + '</td><td>' + prestasi.toFixed(2) + '%</td><td>' + foto + '</td><td style="text-align:center;">' + checkCell + '</td><td><button class="btn small danger" onclick="deleteEntry(\'progress\',\'' + r.id + '\')">Hapus</button></td>';
         tbody.appendChild(tr);
     });
 }
