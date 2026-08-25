@@ -919,6 +919,31 @@ function renderSCurve(){
         (realisasi.length > 1 ? '<polyline points="' + points(realisasi) + '" fill="none" stroke="#E8801C" stroke-width="2.5"/>' : '');
 }
 
+// ===== RENDER TABEL RENCANA =====
+function renderPlanTable(){
+    const rows = [...planLog].filter(x => x.projectId === currentProjectId).sort((a,b) => (a.tanggal || '') > (b.tanggal || '') ? 1 : -1);
+    const tbody = document.querySelector('#tblPlan tbody');
+    if(!tbody) return;
+    tbody.innerHTML = '';
+    
+    rows.forEach(r => {
+        const realisasi = computeProgress(r.tanggal);
+        const deviasi = realisasi - r.persen;
+        const deviasiColor = deviasi < 0 ? '#B23A2E' : '#2F7D5A';
+        
+        const tr = document.createElement('tr');
+        tr.innerHTML = '<td>' + formatTgl(r.tanggal) + '</td><td>' + r.persen + '%</td><td>' + realisasi.toFixed(1) + '%</td><td style="color:' + deviasiColor + ';font-weight:600;">' + (deviasi >= 0 ? '+' : '') + deviasi.toFixed(1) + '%</td><td><button class="btn small danger" onclick="deleteEntry(\'plan\',\'' + r.id + '\')">Hapus</button></td>';
+        tbody.appendChild(tr);
+    });
+    
+    // Jika tidak ada data, tampilkan pesan kosong
+    if(rows.length === 0){
+        const tr = document.createElement('tr');
+        tr.innerHTML = '<td colspan="5" style="text-align:center;color:#5B6675;">Belum ada titik rencana. Tambahkan di atas.</td>';
+        tbody.appendChild(tr);
+    }
+}
+
 // ===== PROGRES =====
 function renderProgress(){
     const rows = currentData('progress');
