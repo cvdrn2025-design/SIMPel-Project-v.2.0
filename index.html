@@ -737,21 +737,115 @@ async function loadAll(){
         const tables = ['projects','progress_log','material_log','material_alloc','timesheet_log','cashflow_log','plan_progress','rab_items','wage_rates','pic_proyek'];
         const results = await Promise.all(tables.map(t => sb.from(t).select('*')));
         
-        projects = (results[0].data || []).map(r => ({ id:r.id, nama:r.nama, lokasi:r.lokasi, nomorKontrak:r.nomor_kontrak, nilaiKontrak:r.nilai_kontrak, tanggalMulai:r.tanggal_mulai, tanggalSelesai:r.tanggal_selesai }));
-        progressLog = (results[1].data || []).map(r => ({ id:r.id, projectId:r.project_id, tanggal:r.tanggal, deskripsi:r.deskripsi, persen:r.persen, foto:r.foto_url }));
-        materialLog = (results[2].data || []).map(r => ({ id:r.id, projectId:r.project_id, tanggal:r.tanggal, tipe:r.tipe, nama:r.nama, jumlah:r.jumlah, satuan:r.satuan }));
-        allocations = (results[3].data || []).map(r => ({ id:r.id, projectId:r.project_id, nama:r.nama, jatah:r.jatah, satuan:r.satuan }));
-        timesheetLog = (results[4].data || []).map(r => ({ id:r.id, projectId:r.project_id, tanggal:r.tanggal, nama:r.nama, kategori:r.kategori, status:r.status, jamMasuk:r.jam_masuk, jamKeluar:r.jam_keluar }));
-        cashflowLog = (results[5].data || []).map(r => ({ id:r.id, projectId:r.project_id, tanggal:r.tanggal, jenis:r.jenis, keterangan:r.keterangan, jumlah:r.jumlah }));
-        planLog = (results[6].data || []).map(r => ({ id:r.id, projectId:r.project_id, tanggal:r.tanggal, persen:r.persen }));
-        rabList = (results[7].data || []).map(r => ({ id:r.id, projectId:r.project_id, noUrut:r.no_urut, uraian:r.uraian, volume:r.volume, satuan:r.satuan, hargaSatuan:r.harga_satuan, jumlahHarga:r.jumlah_harga }));
-        wageRates = (results[8].data || []).map(r => ({ id:r.id, projectId:r.project_id, kategori:r.kategori, upahHarian:r.upah_harian, upahLembur:r.upah_lembur_per_jam }));
-        picList = (results[9].data || []).map(r => ({ id:r.id, projectId:r.project_id, kategori:r.kategori, jabatan:r.jabatan, nama:r.nama, wewenang:r.wewenang, ceklis:r.ceklis }));
+        // Format projects
+        projects = (results[0].data || []).map(r => ({
+            id: r.id,
+            nama: r.nama,
+            lokasi: r.lokasi,
+            nomorKontrak: r.nomor_kontrak,
+            nilaiKontrak: r.nilai_kontrak,
+            tanggalMulai: r.tanggal_mulai,
+            tanggalSelesai: r.tanggal_selesai
+        }));
         
+        // Format progress_log
+        progressLog = (results[1].data || []).map(r => ({
+            id: r.id,
+            projectId: r.project_id,
+            tanggal: r.tanggal,
+            deskripsi: r.deskripsi,
+            persen: r.persen,
+            foto: r.foto_url
+        }));
+        
+        // Format material_log
+        materialLog = (results[2].data || []).map(r => ({
+            id: r.id,
+            projectId: r.project_id,
+            tanggal: r.tanggal,
+            tipe: r.tipe,
+            nama: r.nama,
+            jumlah: r.jumlah,
+            satuan: r.satuan
+        }));
+        
+        // Format material_alloc
+        allocations = (results[3].data || []).map(r => ({
+            id: r.id,
+            projectId: r.project_id,
+            nama: r.nama,
+            jatah: r.jatah,
+            satuan: r.satuan
+        }));
+        
+        // Format timesheet_log
+        timesheetLog = (results[4].data || []).map(r => ({
+            id: r.id,
+            projectId: r.project_id,
+            tanggal: r.tanggal,
+            nama: r.nama,
+            kategori: r.kategori,
+            status: r.status,
+            jamMasuk: r.jam_masuk,
+            jamKeluar: r.jam_keluar
+        }));
+        
+        // Format cashflow_log
+        cashflowLog = (results[5].data || []).map(r => ({
+            id: r.id,
+            projectId: r.project_id,
+            tanggal: r.tanggal,
+            jenis: r.jenis,
+            keterangan: r.keterangan,
+            jumlah: r.jumlah
+        }));
+        
+        // Format plan_progress (PENTING: format ini harus sama dengan addPlan)
+        planLog = (results[6].data || []).map(r => ({
+            id: r.id,
+            projectId: r.project_id,
+            tanggal: r.tanggal,
+            persen: r.persen
+        }));
+        
+        // Format rab_items
+        rabList = (results[7].data || []).map(r => ({
+            id: r.id,
+            projectId: r.project_id,
+            noUrut: r.no_urut,
+            uraian: r.uraian,
+            volume: r.volume,
+            satuan: r.satuan,
+            hargaSatuan: r.harga_satuan,
+            jumlahHarga: r.jumlah_harga
+        }));
+        
+        // Format wage_rates
+        wageRates = (results[8].data || []).map(r => ({
+            id: r.id,
+            projectId: r.project_id,
+            kategori: r.kategori,
+            upahHarian: r.upah_harian,
+            upahLembur: r.upah_lembur_per_jam
+        }));
+        
+        // Format pic_proyek
+        picList = (results[9].data || []).map(r => ({
+            id: r.id,
+            projectId: r.project_id,
+            kategori: r.kategori,
+            jabatan: r.jabatan,
+            nama: r.nama,
+            wewenang: r.wewenang,
+            ceklis: r.ceklis
+        }));
+        
+        // Set proyek aktif
         const saved = localStorage.getItem(KEYS.current);
         if(saved && projects.find(p => p.id === saved)) currentProjectId = saved;
         else if(projects.length){ currentProjectId = projects[0].id; localStorage.setItem(KEYS.current, projects[0].id); }
         else currentProjectId = null;
+        
     }catch(err){
         alert('Gagal memuat data: ' + err.message);
     }
