@@ -1805,10 +1805,21 @@ function printProgressPhotos(){
     // Buat area cetak dengan semua foto terpilih
     const area = document.getElementById('printArea');
     
-    // Bangun HTML untuk setiap foto
+    // Header yang akan muncul di setiap halaman
+    const headerHtml = '<div style="text-align:center; margin-bottom:20px;">' +
+        '<h2 style="margin:0;">DOKUMENTASI FOTO PROGRES</h2>' +
+        '<p style="margin:0;">CV. DINAMIKA REKONSTRUKSI NUSANTARA</p>' +
+        '<p style="margin:0;"><b>Proyek:</b> ' + esc(p ? p.nama : '-') + '</p>' +
+        '<p style="margin:0;"><b>No. Kontrak:</b> ' + esc(p && p.nomorKontrak ? p.nomorKontrak : '-') + '</p>' +
+        '<hr>' +
+        '</div>';
+    
+    // Bangun HTML untuk setiap foto (dengan header di setiap halaman)
     let photosHtml = '';
     rows.forEach(r => {
         photosHtml += '<div style="page-break-after:always; text-align:center; padding:20px;">' +
+            // Header di setiap halaman
+            headerHtml +
             '<div style="border:1px solid #333; padding:10px; display:inline-block;">' +
             '<img src="' + r.foto + '" style="width:100%; max-width:500px; height:auto; object-fit:cover;">' +
             '</div>' +
@@ -1820,10 +1831,6 @@ function printProgressPhotos(){
     });
     
     area.innerHTML = '<div style="font-family:Arial;">' +
-        '<h2 style="text-align:center;">DOKUMENTASI FOTO PROGRES</h2>' +
-        '<p style="text-align:center;">CV. DINAMIKA REKONSTRUKSI NUSANTARA</p>' +
-        '<p style="text-align:center;"><b>Proyek:</b> ' + esc(p ? p.nama : '-') + '</p>' +
-        '<hr>' +
         photosHtml +
         '<div style="margin-top:20px; text-align:left; font-size:11px; color:#555; font-style:italic;">' +
         'Laporan ini dicetak otomatis menggunakan Aplikasi <b>SIMPeL</b> - Sistem Pemantauan Lapangan, ' + 
