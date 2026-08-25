@@ -1754,7 +1754,7 @@ async function addPlan(e){
     return false;
 }
     
-// ===== PRINT =====
+// ===== PRINT ======
 // ===== PRINT LAPORAN PROGRES =====
 function printProgressReport(){
     if(!currentProjectId) return;
@@ -1770,15 +1770,15 @@ function printProgressReport(){
     const tglMingguLalu = progDates.length > 1 ? progDates[progDates.length - 2] : '';
     const tglMingguIni = progDates.length > 0 ? progDates[progDates.length - 1] : '';
 
-    // Fungsi helper untuk format tanggal: dd/mmm/yyyy
+    // Fungsi helper untuk format tanggal: dd bulan lengkap yyyy (tanpa /)
     const formatTanggalIndo = (dateStr) => {
         if(!dateStr) return '-';
-        const bulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+        const bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
         const parts = dateStr.split('-');
         const tahun = parts[0];
         const bulanAngka = parseInt(parts[1], 10);
         const tanggal = parseInt(parts[2], 10);
-        return tanggal + '/' + bulan[bulanAngka - 1] + '/' + tahun;
+        return tanggal + ' ' + bulan[bulanAngka - 1] + ' ' + tahun;
     };
 
     // Fungsi helper untuk format angka: 3 desimal dengan koma, kecuali 100
@@ -1817,7 +1817,7 @@ function printProgressReport(){
             '</tr>';
     }).join('');
 
-        area.innerHTML = '<div style="padding:20px;font-family:Arial;">' +
+    area.innerHTML = '<div style="padding:20px;font-family:Arial;">' +
     '<h2 style="text-align:center;">LAPORAN PROGRES PEKERJAAN</h2>' +
     '<p style="text-align:center;">CV. DINAMIKA REKONSTRUKSI NUSANTARA</p>' +
     '<hr>' +
@@ -1851,7 +1851,7 @@ function printProgressReport(){
     '<td style="text-align:center;">' + formatAngka(totalPrestasi) + '</td>' +
     '</tr>' +
     '</table>' +
-    // TAMBAHAN: BLOK TANDA TANGAN
+    // FOOTER (DI BAWAH TABEL, SEBELUM TANDA TANGAN)
     buildSignatureBlock() +
     '</div>';
 
@@ -1866,22 +1866,24 @@ function buildSignatureBlock(){
     const blocks = signers.map(r => {
         const label = r.kategori === 'Direksi' ? 'Mengetahui,' : 'Dibuat oleh,';
         return '<div style="text-align:center; width:200px; display:inline-block; margin:0 20px;">' +
-            '<div style="font-size:12px; margin-bottom:30px;">' + label + '</div>' +
+            '<div style="font-size:12px; margin-bottom:60px;">' + label + '</div>' +
             '<div style="font-weight:bold; font-size:13px; margin-bottom:0;">' + esc(r.nama) + '</div>' +
             '<div style="border-top:1px solid #333; padding-top:0; font-size:11px; color:#555;">' + esc(r.jabatan) + '</div>' +
             '</div>';
     }).join('');
     
-    // Footer otomatis dengan tanggal hari ini
+    // Footer otomatis dengan tanggal hari ini (alignment left)
     const today = new Date();
-    const bulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
-    const tanggal = today.getDate() + '/' + bulan[today.getMonth()] + '/' + today.getFullYear();
+    const bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+    const tanggal = today.getDate() + ' ' + bulan[today.getMonth()] + ' ' + today.getFullYear();
     
-    return '<div style="margin-top:40px; text-align:center;">' + blocks + '</div>' +
-        '<div style="margin-top:30px; text-align:center; font-size:11px; color:#555; font-style:italic;">' +
+    // Kembalikan blok tanda tangan DAN footer (footer di bawah tabel, sebelum tanda tangan)
+    return '<div style="margin-top:20px; text-align:left; font-size:11px; color:#555; font-style:italic;">' +
         'Laporan ini dicetak otomatis menggunakan Aplikasi <b>SIMPeL</b> - Sistem Pemantauan Lapangan, ' + tanggal +
-        '</div>';
+        '</div>' +
+        '<div style="margin-top:40px; text-align:center;">' + blocks + '</div>';
 }
+
 
 function printWage(e){
     e.preventDefault();
