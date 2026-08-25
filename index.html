@@ -1043,34 +1043,40 @@ async function addProgress(e){
     
     try{
         const { data, error } = await sb.from('progress_log').insert({
-            project_id: currentProjectId,
-            tanggal: document.getElementById('pTanggal').value,
-            deskripsi: deskripsiFinal,
-            persen: persen,
-            foto_url: fotoUrl
-        }).select().single();
-        
-        if(error) throw error;
-        
-        document.getElementById('pTanggal').value = todayStr();
-        deskripsiInput.value = '';
-        persenInput.value = '';
-        document.getElementById('pFotoKamera').value = '';
-        document.getElementById('pFotoGaleri').value = '';
-        document.getElementById('pFotoPreview').style.display = 'none';
-        fotoFile = null;
-        
-        progressLog.push(data);
-        renderAll();
-        renderUraianOptions();
-        
-        alert('✅ Progres berhasil disimpan!');
-        
-    }catch(err){
-        alert('❌ Gagal menyimpan: ' + err.message);
-    }
+        project_id: currentProjectId,
+        tanggal: document.getElementById('pTanggal').value,
+        deskripsi: deskripsiFinal,
+        persen: persen,
+        foto_url: fotoUrl
+    }).select().single();
     
-    return false;
+    if(error) throw error;
+    
+    document.getElementById('pTanggal').value = todayStr();
+    deskripsiInput.value = '';
+    persenInput.value = '';
+    document.getElementById('pFotoKamera').value = '';
+    document.getElementById('pFotoGaleri').value = '';
+    document.getElementById('pFotoPreview').style.display = 'none';
+    fotoFile = null;
+    
+    // PENTING: Masukkan data ke memori lokal dengan format camelCase yang benar
+    progressLog.push({
+        id: data.id,
+        projectId: data.project_id,
+        tanggal: data.tanggal,
+        deskripsi: data.deskripsi,
+        persen: data.persen,
+        foto: data.foto_url
+    });
+    
+    renderAll();
+    renderUraianOptions();
+    
+    alert('✅ Progres berhasil disimpan!');
+
+}catch(err){
+    alert('❌ Gagal menyimpan: ' + err.message);
 }
 
 // Fungsi preview foto
