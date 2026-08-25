@@ -1436,7 +1436,7 @@ function renderCashflow(){
     document.getElementById('costIn').textContent = formatRp(totalIn);
     document.getElementById('costOut').textContent = formatRp(totalOut);
     document.getElementById('costSaldo').textContent = formatRp(totalIn - totalOut);
-}
+    }
 
 // ===== SIMPAN CASH FLOW =====
 async function addCashflow(e){
@@ -1478,6 +1478,9 @@ async function addCashflow(e){
     }catch(err){
         alert('❌ Gagal menyimpan: ' + err.message);
     }
+    
+    return false;
+}
     
     return false;
 }
