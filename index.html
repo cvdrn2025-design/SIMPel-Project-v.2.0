@@ -1396,6 +1396,8 @@ async function addRabItem(e){
             jumlah_harga: volume * hargaSatuan
         }).select().single();
         if(error) throw error;
+        
+        // PENTING: Masukkan data ke memori
         rabList.push(data);
         
         // Reset form
@@ -1404,7 +1406,7 @@ async function addRabItem(e){
         document.getElementById('rabSatuan').value = '';
         document.getElementById('rabHarga').value = '';
         
-        // Refresh
+        // PENTING: Render ulang (tanpa refresh)
         renderAll();
         
         alert('✅ Item addendum berhasil ditambahkan!');
