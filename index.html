@@ -435,9 +435,14 @@ td {
         </div>
 
         <div class="card">
-            <h2>Riwayat Progres</h2>
-            <table id="tblProgress"><thead><tr><th>Tanggal</th><th>Deskripsi</th><th>Progres</th><th>Sisa Progres</th><th>Prestasi</th><th>Foto</th><th></th></tr></thead><tbody></tbody></table>
-            <div class="empty hide" id="emptyProgress">Belum ada data.</div>
+    <h2>Riwayat Progres</h2>
+    <div class="toolbar">
+        <div class="hint">Centang foto yang ingin dicetak</div>
+        <button class="btn gold small" onclick="printProgressPhotos()">🖼️ Cetak Foto</button>
+        <button class="btn small outline" onclick="toggleAllPhotoChecks(this)">Pilih Semua</button>
+    </div>
+    <table id="tblProgress"><thead><tr><th>Tanggal</th><th>Deskripsi</th><th>Progres</th><th>Sisa Progres</th><th>Prestasi</th><th>Foto</th><th>Cetak</th><th></th></tr></thead><tbody></tbody></table>
+    <div class="empty hide" id="emptyProgress">Belum ada data.</div>
         </div>
     </div>
 
