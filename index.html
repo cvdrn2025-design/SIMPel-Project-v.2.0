@@ -930,9 +930,21 @@ function renderProgress(){
     renderUraianOptions();
     
     rows.forEach(r => {
+        // Hitung sisa progres: 100 - progres
+        const sisaProgres = 100 - Number(r.persen || 0);
+        
+        // Hitung bobot dari RAB untuk uraian ini
+        const bobot = getBobot(r.deskripsi);
+        
+        // Hitung prestasi pekerjaan: (progres / 100) * bobot
+        const prestasi = (Number(r.persen || 0) / 100) * bobot;
+        
         const tr = document.createElement('tr');
         const foto = r.foto ? '<img src="' + r.foto + '" style="width:40px;height:40px;object-fit:cover;border-radius:4px;cursor:pointer;" onclick="showPhoto(\'' + r.foto.replace(/'/g, "\\'") + '\')">' : '-';
-        tr.innerHTML = '<td>' + formatTgl(r.tanggal) + '</td><td>' + esc(r.deskripsi) + '</td><td>' + r.persen + '%</td><td>' + foto + '</td><td><button class="btn small danger" onclick="deleteEntry(\'progress\',\'' + r.id + '\')">Hapus</button></td>';
+        
+        const sisaText = sisaProgres === 0 ? '<span class="tag ok">Selesai</span>' : sisaProgres.toFixed(1) + '%';
+        
+        tr.innerHTML = '<td>' + formatTgl(r.tanggal) + '</td><td>' + esc(r.deskripsi) + '</td><td>' + r.persen + '%</td><td>' + sisaText + '</td><td>' + prestasi.toFixed(2) + '%</td><td>' + foto + '</td><td><button class="btn small danger" onclick="deleteEntry(\'progress\',\'' + r.id + '\')">Hapus</button></td>';
         tbody.appendChild(tr);
     });
 }
