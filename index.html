@@ -885,27 +885,42 @@ function getBobot(uraian){
 }
 
 // ===== KURVA S =====
+// ===== KURVA S =====
 function renderSCurve(){
-    const plan = planLog.filter(x => x.projectId === currentProjectId).sort((a,b) => (a.tanggal || '') > (b.tanggal || '') ? 1 : -1);
+    // Urutkan rencana dari tanggal terkecil ke terbesar
+    const plan = [...planLog].filter(x => x.projectId === currentProjectId).sort((a,b) => (a.tanggal || '') < (b.tanggal || '') ? -1 : 1);
+    // Urutkan progres dari tanggal terkecil ke terbesar
     const progDates = [...new Set(progressLog.filter(x => x.projectId === currentProjectId).map(x => x.tanggal))].filter(Boolean).sort();
     const realisasi = progDates.map(d => ({ tanggal:d, persen:computeProgress(d) }));
+    
     const svg = document.getElementById('sCurve');
     if(!svg) return;
-    if(plan.length < 2 && realisasi.length < 2){ svg.innerHTML = ''; return; }
+    
+    // Jika data kosong, kosongkan SVG
+    if(plan.length === 0 && realisasi.length === 0){
+        svg.innerHTML = '';
+        return;
+    }
     
     const p = projects.find(x => x.id === currentProjectId);
     let allDates = [...plan.map(x => x.tanggal), ...realisasi.map(x => x.tanggal)];
     if(p && p.tanggalMulai) allDates.push(p.tanggalMulai);
     if(p && p.tanggalSelesai) allDates.push(p.tanggalSelesai);
     allDates = allDates.filter(Boolean);
+    
+    // Ambil tanggal minimum dan maksimum
     const minDate = allDates.reduce((a,b) => a < b ? a : b);
     const maxDate = allDates.reduce((a,b) => a > b ? a : b);
     const totalDays = Math.max(1, Math.round((new Date(maxDate) - new Date(minDate)) / 86400000));
     
     const W = 600, H = 200, padL = 30, padR = 10, padT = 10, padB = 10;
     const chartW = W - padL - padR, chartH = H - padT - padB;
+    
+    // Fungsi untuk posisi X dan Y
     const xPos = d => padL + (Math.round((new Date(d) - new Date(minDate)) / 86400000) / totalDays) * chartW;
     const yPos = pct => padT + chartH - (Math.min(100, Math.max(0, pct)) / 100) * chartH;
+    
+    // Fungsi untuk membuat titik-titik garis
     const points = rows => rows.map(r => xPos(r.tanggal).toFixed(1) + ',' + yPos(r.persen).toFixed(1)).join(' ');
     
     let grid = '';
@@ -915,9 +930,17 @@ function renderSCurve(){
         grid += '<text x="' + (padL - 5) + '" y="' + (y + 3) + '" font-size="9" fill="#5B6675" text-anchor="end">' + v + '</text>';
     });
     
-    svg.innerHTML = grid +
-        (plan.length > 1 ? '<polyline points="' + points(plan) + '" fill="none" stroke="#10263E" stroke-width="2" stroke-dasharray="5,4"/>' : '') +
-        (realisasi.length > 1 ? '<polyline points="' + points(realisasi) + '" fill="none" stroke="#E8801C" stroke-width="2.5"/>' : '');
+    // Garis rencana (putus-putus navy)
+    const planLine = plan.length > 1 ? '<polyline points="' + points(plan) + '" fill="none" stroke="#10263E" stroke-width="2" stroke-dasharray="5,4"/>' : '';
+    
+    // Garis realisasi (oranye solid)
+    const realisasiLine = realisasi.length > 1 ? '<polyline points="' + points(realisasi) + '" fill="none" stroke="#E8801C" stroke-width="2.5"/>' : '';
+    
+    // Titik-titik pada rencana dan realisasi
+    const planDots = plan.map(r => '<circle cx="' + xPos(r.tanggal) + '" cy="' + yPos(r.persen) + '" r="3" fill="#10263E"/>').join('');
+    const realisasiDots = realisasi.map(r => '<circle cx="' + xPos(r.tanggal) + '" cy="' + yPos(r.persen) + '" r="3" fill="#E8801C"/>').join('');
+    
+    svg.innerHTML = grid + planLine + realisasiLine + planDots + realisasiDots;
 }
 
 // ===== RENDER TABEL RENCANA =====
