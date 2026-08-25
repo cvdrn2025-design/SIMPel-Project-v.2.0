@@ -1536,16 +1536,27 @@ async function addPic(e){
             ceklis: false
         }).select().single();
         if(error) throw error;
-        picList.push(data);
+        
+        // PENTING: Masukkan data ke memori lokal dengan format yang benar
+        picList.push({
+            id: data.id,
+            projectId: data.project_id,
+            kategori: data.kategori,
+            jabatan: data.jabatan,
+            nama: data.nama,
+            wewenang: data.wewenang,
+            ceklis: data.ceklis
+        });
+        
+        // Reset form
         document.getElementById('picJabatan').value = '';
         document.getElementById('picNama').value = '';
+        
+        // Render ulang tabel tanpa refresh
         renderAll();
+        
     }catch(err){ alert('Gagal: ' + err.message); }
     return false;
-}
-
-async function togglePic(id, checked){
-    await sb.from('pic_proyek').update({ ceklis: checked }).eq('id', id);
 }
 
 // ===== DELETE =====
