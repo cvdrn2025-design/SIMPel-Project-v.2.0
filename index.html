@@ -1855,6 +1855,22 @@ function printProgressReport(){
 
     setTimeout(() => window.print(), 200);
     }
+// ===== BLOK TANDA TANGAN =====
+function buildSignatureBlock(){
+    const signers = picList.filter(x => x.projectId === currentProjectId && x.ceklis);
+    if(signers.length === 0) return '';
+    
+    const blocks = signers.map(r => {
+        const label = r.kategori === 'Direksi' ? 'Mengetahui,' : 'Dibuat oleh,';
+        return '<div style="text-align:center; width:200px; display:inline-block; margin:0 20px;">' +
+            '<div style="font-size:12px; margin-bottom:30px;">' + label + '</div>' +
+            '<div style="font-weight:bold; font-size:13px; margin-bottom:0;">' + esc(r.nama) + '</div>' +
+            '<div style="border-top:1px solid #333; padding-top:0; font-size:11px; color:#555;">' + esc(r.jabatan) + '</div>' +
+            '</div>';
+    }).join('');
+    
+    return '<div style="margin-top:40px; text-align:center;">' + blocks + '</div>';
+}
 
 function printSCurve(){
     const svg = document.getElementById('sCurve');
