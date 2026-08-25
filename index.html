@@ -2244,17 +2244,12 @@ function printWage(e){
         if(!rekap[r.nama]){
             rekap[r.nama] = { nama: r.nama, kategori: r.kategori, totalH: 0, totalL: 0 };
         }
-        rekap[r.nama].totalH += 1; // 1 hari kerja
-        // Hitung lembur jika jam keluar lebih dari jam masuk
-        if(r.jamMasuk && r.jamKeluar){
-            const [hm, mm] = r.jamMasuk.split(':').map(Number);
-            const [hk, mk] = r.jamKeluar.split(':').map(Number);
-            let start = hm * 60 + (mm || 0);
-            let end = hk * 60 + (mk || 0);
-            if(end <= start) end += 24 * 60;
-            const totalMenit = end - start;
-            const jamLembur = Math.max(0, (totalMenit - 480) / 60); // 480 menit = 8 jam kerja
-            rekap[r.nama].totalL += jamLembur;
+        
+        // Hitung rekap harian & lembur
+        const rekapHarian = computeRekap(r.jamMasuk, r.jamKeluar);
+        if(rekapHarian){
+            rekap[r.nama].totalH += rekapHarian.H;
+            rekap[r.nama].totalL += rekapHarian.L;
         }
     });
     
