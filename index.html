@@ -885,7 +885,6 @@ function getBobot(uraian){
 }
 
 // ===== KURVA S =====
-// ===== KURVA S =====
 function renderSCurve(){
     // Urutkan rencana dari tanggal terkecil ke terbesar
     const plan = [...planLog].filter(x => x.projectId === currentProjectId).sort((a,b) => (a.tanggal || '') < (b.tanggal || '') ? -1 : 1);
