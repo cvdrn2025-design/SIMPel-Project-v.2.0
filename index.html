@@ -792,6 +792,41 @@ function renderAll(){
     renderPic();
     renderWage();
     renderRoleBadge();
+    
+    // TAMBAHAN BARU: Refresh dropdown uraian RAB
+    renderUraianOptions();
+    // ===== FUNGSI BARU: Mengisi Dropdown Uraian dari RAB =====
+function renderUraianOptions(){
+    const datalist = document.getElementById('uraianList');
+    if(!datalist) return;
+    
+    // Ambil semua uraian dari RAB proyek aktif
+    const uraianList = [...new Set(currentData('rab').map(r => r.uraian))];
+    
+    // Kosongkan datalist dulu
+    datalist.innerHTML = '';
+    
+    // Tambahkan setiap uraian sebagai option
+    uraianList.forEach(function(u){
+        var opt = document.createElement('option');
+        opt.value = u;
+        datalist.appendChild(opt);
+    });
+    
+    const inputDeskripsi = document.getElementById('pDeskripsi');
+    if(!inputDeskripsi) return;
+    
+    if(uraianList.length === 0){
+        inputDeskripsi.placeholder = '⚠️ Belum ada RAB, tambahkan dulu di menu RAB';
+        inputDeskripsi.disabled = true;
+    } else {
+        inputDeskripsi.placeholder = 'Ketik atau pilih dari daftar RAB...';
+        inputDeskripsi.disabled = false;
+        // Isi otomatis dengan uraian pertama jika kosong
+        if(!inputDeskripsi.value){
+            inputDeskripsi.value = uraianList[0];
+        }
+    }
 }
 
 function renderRoleBadge(){
