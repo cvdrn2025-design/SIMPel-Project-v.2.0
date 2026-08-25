@@ -511,30 +511,37 @@ td {
     </div>
 
     <!-- RAB -->
-    <div id="tab-rab" class="hide">
-        <div class="card">
-            <div class="toolbar">
-                <h2>RAB/BoQ</h2>
-                <button class="btn gold small" onclick="document.getElementById('rabFileInput').click()">📥 Import Excel</button>
-                <input type="file" id="rabFileInput" accept=".xlsx,.xls" style="display:none;" onchange="handleExistingRabFile(event)">
-            </div>
-            
-            <div class="stats">
-                <div class="stat"><div class="num" id="rabTotal">Rp 0</div><div class="lbl">Total RAB</div></div>
-                <div class="stat"><div class="num" id="rabPpn">Rp 0</div><div class="lbl">PPN 11%</div></div>
-                <div class="stat"><div class="num" id="rabKontrak">Rp 0</div><div class="lbl">Nilai Kontrak</div></div>
-            </div>
-            
-            <form class="form-grid" onsubmit="return addRabItem(event)" style="margin-top:12px;">
-                <div style="grid-column:span 2;"><label>Uraian</label><input type="text" id="rabUraian" required></div>
-                <div><label>Volume</label><input type="number" id="rabVolume" step="0.01" required></div>
-                <div><label>Satuan</label><input type="text" id="rabSatuan" required></div>
-                <div><label>Harga</label><input type="number" id="rabHarga" step="100" required></div>
-                <div><button class="btn">Tambah</button></div>
-            </form>
-            <table id="tblRab"><thead><tr><th>No</th><th>Uraian</th><th>Vol</th><th>Sat</th><th>Harga</th><th>Jumlah</th><th>Bobot (%)</th><th></th></tr></thead><tbody></tbody></table>
+<div id="tab-rab" class="hide">
+    <div class="card">
+        <div class="toolbar">
+            <h2>RAB/BoQ</h2>
+            <button class="btn gold small" onclick="document.getElementById('rabFileInput').click()">📥 Import Excel</button>
+            <input type="file" id="rabFileInput" accept=".xlsx,.xls" style="display:none;" onchange="handleExistingRabFile(event)">
         </div>
+        
+        <div class="stats">
+            <div class="stat"><div class="num" id="rabTotal">Rp 0</div><div class="lbl">Total RAB</div></div>
+            <div class="stat"><div class="num" id="rabPpn">Rp 0</div><div class="lbl">PPN 11%</div></div>
+            <div class="stat"><div class="num" id="rabKontrak">Rp 0</div><div class="lbl">Nilai Kontrak</div></div>
+        </div>
+        
+        <!-- JUDUL ADDENDUM -->
+        <div style="border-top:2px solid var(--safety); margin-top:15px; padding-top:10px;">
+            <h3 style="font-family:Oswald,sans-serif; text-transform:uppercase; color:var(--navy); margin-bottom:10px; font-size:14px;">🔧 ADDENDUM TAMBAH/KURANG</h3>
+        </div>
+        
+        <form class="form-grid" onsubmit="return addRabItem(event)" style="margin-top:10px;">
+            <div><label>Kategori</label><select id="rabKategoriAddendum"><option value="tambah">Tambah</option><option value="kurang">Kurang</option></select></div>
+            <div style="grid-column:span 2;"><label>Uraian</label><input type="text" id="rabUraian" required></div>
+            <div><label>Volume</label><input type="number" id="rabVolume" step="0.01" required></div>
+            <div><label>Satuan</label><input type="text" id="rabSatuan" required></div>
+            <div><label>Harga</label><input type="number" id="rabHarga" step="100" required></div>
+            <div><button class="btn">Tambah</button></div>
+        </form>
+        
+        <table id="tblRab"><thead><tr><th>No</th><th>Uraian</th><th>Vol</th><th>Sat</th><th>Harga</th><th>Jumlah</th><th>Bobot (%)</th><th></th></tr></thead><tbody></tbody></table>
     </div>
+</div>
 
     <!-- COST CONTROL -->
     <div id="tab-cost" class="hide">
