@@ -1378,7 +1378,6 @@ async function addAlloc(e){
 
 // ===== PEKERJA =====
 // ===== HITUNG REKAP HARIAN & LEMBUR =====
-// ===== HITUNG REKAP HARIAN & LEMBUR =====
 function computeRekap(jamMasuk, jamKeluar){
     if(!jamMasuk || !jamKeluar) return null;
     
@@ -1395,15 +1394,15 @@ function computeRekap(jamMasuk, jamKeluar){
     const totalMenit = end - start;
     
     // Patokan waktu
-    const JAM_NORMAL = 9 * 60;    // 540 menit = 9 jam (08.00-17.00)
-    const JAM_17 = 17 * 60;       // 1020 menit
-    const JAM_22 = 22 * 60;       // 1320 menit
-    const JAM_24 = 24 * 60;       // 1440 menit
+    const JAM_17 = 17 * 60;    // 1020 menit
+    const JAM_22 = 22 * 60;    // 1320 menit
+    const JAM_24 = 24 * 60;    // 1440 menit
+    const JAM_NORMAL = 9 * 60; // 540 menit (1 hari kerja = 9 jam)
     
     let H = 0;
     let L = 0;
     
-    // Hitung hari kerja (H)
+    // HITUNG HARI KERJA (H)
     if(totalMenit <= JAM_NORMAL){
         H = 1;
     } else if(totalMenit <= JAM_22 - start){
@@ -1414,15 +1413,14 @@ function computeRekap(jamMasuk, jamKeluar){
         H = 4;
     }
     
-    // Hitung lembur (L) - jam kerja setelah 17.00
+    // HITUNG LEMBUR (L) - JAM KERJA SETELAH 17.00
     const menitSetelah17 = Math.max(0, end - JAM_17);
+    
     if(menitSetelah17 > 0){
-        L = menitSetelah17 / 60; // Konversi ke jam
-        // Jika H > 1, kurangi lembur dengan jam kerja normal tambahan
-        if(H > 1){
-            const jamKerjaTambahan = (H - 1) * JAM_NORMAL;
-            L = Math.max(0, (menitSetelah17 - jamKerjaTambahan) / 60);
-        }
+        // Kurangi dengan jam kerja normal tambahan jika H > 1
+        const jamKerjaTambahan = (H - 1) * JAM_NORMAL;
+        const menitLembur = Math.max(0, menitSetelah17 - jamKerjaTambahan);
+        L = menitLembur / 60; // Konversi ke jam
     }
     
     return { H: H, L: L };
