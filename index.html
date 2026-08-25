@@ -1286,6 +1286,7 @@ function renderMaterial(){
     }
 }
 
+// ===== SIMPAN MATERIAL =====
 async function addMaterial(e){
     e.preventDefault();
     if(!currentProjectId) return false;
@@ -1299,16 +1300,38 @@ async function addMaterial(e){
             satuan: document.getElementById('mSatuan').value
         }).select().single();
         if(error) throw error;
-        materialLog.push(data);
+        
+        // PENTING: Masukkan data ke memori dengan format yang benar
+        materialLog.push({
+            id: data.id,
+            projectId: data.project_id,
+            tanggal: data.tanggal,
+            tipe: data.tipe,
+            nama: data.nama,
+            jumlah: data.jumlah,
+            satuan: data.satuan
+        });
+        
+        // Reset form
         document.getElementById('mNama').value = '';
         document.getElementById('mJumlah').value = '';
         document.getElementById('mSatuan').value = '';
         document.getElementById('mTanggal').value = todayStr();
+        
+        // PENTING: Refresh tampilan LANGSUNG (tanpa reload)
         renderAll();
-    }catch(err){ alert('Gagal: ' + err.message); }
+        renderMaterial();
+        
+        alert('✅ Material berhasil disimpan!');
+        
+    }catch(err){
+        alert('❌ Gagal menyimpan: ' + err.message);
+    }
+    
     return false;
 }
 
+// ===== SIMPAN KEBUTUHAN MATERIAL =====
 async function addAlloc(e){
     e.preventDefault();
     if(!currentProjectId) return false;
@@ -1320,12 +1343,31 @@ async function addAlloc(e){
             satuan: document.getElementById('aSatuan').value
         }).select().single();
         if(error) throw error;
-        allocations.push(data);
+        
+        // PENTING: Masukkan data ke memori dengan format yang benar
+        allocations.push({
+            id: data.id,
+            projectId: data.project_id,
+            nama: data.nama,
+            jatah: data.jatah,
+            satuan: data.satuan
+        });
+        
+        // Reset form
         document.getElementById('aNama').value = '';
         document.getElementById('aJatah').value = '';
         document.getElementById('aSatuan').value = '';
+        
+        // PENTING: Refresh tampilan LANGSUNG (tanpa reload)
         renderAll();
-    }catch(err){ alert('Gagal: ' + err.message); }
+        renderMaterial();
+        
+        alert('✅ Kebutuhan material berhasil disimpan!');
+        
+    }catch(err){
+        alert('❌ Gagal menyimpan: ' + err.message);
+    }
+    
     return false;
 }
 
