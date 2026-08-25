@@ -1514,44 +1514,8 @@ async function addCashflow(e){
     }
     
     return false;
-    }
-
-async function addPic(e){
-    e.preventDefault();
-    if(!currentProjectId) return false;
-    try{
-        const { data, error } = await sb.from('pic_proyek').insert({
-            project_id: currentProjectId,
-            kategori: document.getElementById('picKategori').value,
-            jabatan: document.getElementById('picJabatan').value,
-            nama: document.getElementById('picNama').value,
-            wewenang: null,
-            ceklis: false
-        }).select().single();
-        if(error) throw error;
-        
-        // PENTING: Masukkan data ke memori lokal dengan format yang benar
-        picList.push({
-            id: data.id,
-            projectId: data.project_id,
-            kategori: data.kategori,
-            jabatan: data.jabatan,
-            nama: data.nama,
-            wewenang: data.wewenang,
-            ceklis: data.ceklis
-        });
-        
-        // Reset form
-        document.getElementById('picJabatan').value = '';
-        document.getElementById('picNama').value = '';
-        
-        // Render ulang tabel tanpa refresh
-        renderAll();
-        
-    }catch(err){ alert('Gagal: ' + err.message); }
-    return false;
 }
-
+    
 // ===== DELETE =====
 async function deleteEntry(kind, id){
     if(!confirm('Hapus data ini?')) return;
