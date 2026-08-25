@@ -1641,23 +1641,24 @@ async function addPlan(e){
             persen: Number(document.getElementById('rpPersen').value)
         }).select().single();
         if(error) throw error;
+        
+        // TAMBAHAN PENTING: Masukkan data baru ke memori
         planLog.push(data);
         
         // Reset form
         document.getElementById('rpTanggal').value = todayStr();
         document.getElementById('rpPersen').value = '';
         
-        // Refresh tampilan
+        // Refresh SEMUA tampilan LANGSUNG
         renderAll();
-        renderPlanTable(); // TAMBAHAN BARU
-        renderSCurve();    // TAMBAHAN BARU: Refresh kurva
-        renderUraianOptions();
+        renderSCurve();     // Refresh kurva S
+        renderPlanTable();  // Refresh tabel rencana
         
         alert('✅ Titik rencana berhasil ditambahkan!');
     }catch(err){ alert('Gagal: ' + err.message); }
     return false;
 }
-
+    
 // ===== PRINT =====
 function printProgressReport(){
     if(!currentProjectId) return;
@@ -1730,7 +1731,8 @@ async function initApp(){
             currentProjectId = sessionStorage.getItem('drn_project');
         }
         renderAll();
-        renderPlanTable(); // TAMBAHAN BARU
+        renderSCurve();
+        renderPlanTable();
         renderUraianOptions();
         if(role === 'staff'){
             document.querySelector('.proj-bar button[onclick="openProjectModal()"]').style.display = 'none';
