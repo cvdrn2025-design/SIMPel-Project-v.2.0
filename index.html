@@ -1648,10 +1648,10 @@ async function addPlan(e){
         document.getElementById('rpTanggal').value = todayStr();
         document.getElementById('rpPersen').value = '';
         
-        // Refresh SEMUA tampilan LANGSUNG
-        renderAll();
+        // Refresh HANYA kurva dan tabel, TANPA reload data dari database
         renderSCurve();     // Refresh kurva S
         renderPlanTable();  // Refresh tabel rencana
+        renderUraianOptions(); // Refresh dropdown
         
         alert('✅ Titik rencana berhasil ditambahkan!');
     }catch(err){ alert('Gagal: ' + err.message); }
