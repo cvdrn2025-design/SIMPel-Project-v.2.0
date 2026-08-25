@@ -2298,31 +2298,35 @@ function printWage(e){
             '</tr>';
     }).join('');
     
-    // Buat area cetak
+    // Buat area cetak dengan header berulang di setiap halaman
     const area = document.getElementById('printArea');
     area.innerHTML = '<div style="padding:20px;font-family:Arial;">' +
         '<h2 style="text-align:center;">REKAP UPAH</h2>' +
         '<p style="text-align:center;">CV. DINAMIKA REKONSTRUKSI NUSANTARA</p>' +
         '<p style="text-align:center;">Periode: ' + formatTgl(awal) + ' - ' + formatTgl(akhir) + '</p>' +
         '<hr>' +
-        '<table border="1" cellpadding="6" style="width:100%;border-collapse:collapse;margin-top:10px;">' +
+        '<table border="1" cellpadding="6" style="width:100%;border-collapse:collapse;margin-top:10px;table-layout:fixed;">' +
+        '<thead style="display:table-header-group;">' +
         '<tr style="background:#eee;">' +
-        '<th style="text-align:center;">No</th>' +
-        '<th style="text-align:center;">Nama</th>' +
-        '<th style="text-align:center;">Kategori</th>' +
-        '<th style="text-align:center;">Jam Masuk</th>' +
-        '<th style="text-align:center;">Jam Keluar</th>' +
-        '<th style="text-align:center;">Hari (H)</th>' +
-        '<th style="text-align:center;">Lembur (L)</th>' +
-        '<th style="text-align:right;">Jumlah Upah Harian</th>' +
-        '<th style="text-align:right;">Jumlah Upah Lemburan</th>' +
-        '<th style="text-align:right;">Total Gaji</th>' +
+        '<th style="text-align:center;width:4%;">No</th>' +
+        '<th style="text-align:center;width:12%;">Nama</th>' +
+        '<th style="text-align:center;width:10%;">Kategori</th>' +
+        '<th style="text-align:center;width:8%;">Jam Masuk</th>' +
+        '<th style="text-align:center;width:8%;">Jam Keluar</th>' +
+        '<th style="text-align:center;width:6%;">Hari (H)</th>' +
+        '<th style="text-align:center;width:8%;">Lembur (L)</th>' +
+        '<th style="text-align:right;width:12%;">Jumlah Upah Harian</th>' +
+        '<th style="text-align:right;width:12%;">Jumlah Upah Lemburan</th>' +
+        '<th style="text-align:right;width:12%;">Total Gaji</th>' +
         '</tr>' +
+        '</thead>' +
+        '<tbody>' +
         rowsHtml +
         '<tr style="font-weight:bold;background:#eee;">' +
         '<td colspan="9" style="text-align:right;">TOTAL PEMBAYARAN</td>' +
         '<td style="text-align:right;">' + formatRp(totalGaji) + '</td>' +
         '</tr>' +
+        '</tbody>' +
         '</table>' +
         '</div>';
     
