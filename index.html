@@ -1595,10 +1595,13 @@ function renderWage(){
     });
 }
 
+// ===== SIMPAN UPAH =====
 async function saveWage(e){
     e.preventDefault();
     if(!currentProjectId) return false;
+    
     const kat = document.getElementById('wageKategori').value;
+    
     try{
         const { data, error } = await sb.from('wage_rates').upsert({
             project_id: currentProjectId,
@@ -1606,12 +1609,29 @@ async function saveWage(e){
             upah_harian: Number(document.getElementById('wageHarian').value) || 0,
             upah_lembur_per_jam: Number(document.getElementById('wageLembur').value) || 0
         }, { onConflict: 'project_id,kategori' }).select().single();
+        
         if(error) throw error;
+        
+        // PENTING: Masukkan data ke memori dengan format yang benar
         wageRates = wageRates.filter(x => !(x.projectId === currentProjectId && x.kategori === kat));
-        wageRates.push(data);
+        wageRates.push({
+            id: data.id,
+            projectId: data.project_id,
+            kategori: data.kategori,
+            upahHarian: data.upah_harian,
+            upahLembur: data.upah_lembur_per_jam
+        });
+        
+        // PENTING: Refresh tampilan LANGSUNG (tanpa reload)
         renderAll();
-        alert('Upah tersimpan.');
-    }catch(err){ alert('Gagal: ' + err.message); }
+        renderWage();
+        
+        alert('✅ Upah untuk kategori "' + kat + '" berhasil disimpan!');
+        
+    }catch(err){
+        alert('❌ Gagal menyimpan: ' + err.message);
+    }
+    
     return false;
 }
 
