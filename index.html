@@ -1378,42 +1378,51 @@ async function addAlloc(e){
 
 // ===== PEKERJA =====
 // ===== HITUNG REKAP HARIAN & LEMBUR =====
+// ===== HITUNG REKAP HARIAN & LEMBUR =====
 function computeRekap(jamMasuk, jamKeluar){
     if(!jamMasuk || !jamKeluar) return null;
     
     const [hm, mm] = jamMasuk.split(':').map(Number);
     const [hk, mk] = jamKeluar.split(':').map(Number);
     
+    // Konversi ke menit
     let start = hm * 60 + (mm || 0);
     let end = hk * 60 + (mk || 0);
     
+    // Jika jam keluar lebih kecil dari jam masuk, berarti melewati tengah malam
     if(end <= start) end += 24 * 60;
     
     const totalMenit = end - start;
     
-    const JAM_17 = 17 * 60;    // 1020 menit
-    const JAM_22 = 22 * 60;    // 1320 menit
-    const JAM_24 = 24 * 60;    // 1440 menit
+    // Patokan waktu
+    const JAM_NORMAL = 9 * 60;    // 540 menit = 9 jam (08.00-17.00)
+    const JAM_17 = 17 * 60;       // 1020 menit
+    const JAM_22 = 22 * 60;       // 1320 menit
+    const JAM_24 = 24 * 60;       // 1440 menit
     
-    let H = 1;
+    let H = 0;
     let L = 0;
     
-    if(totalMenit <= 9 * 60){
-        // 08.00 - 17.00 = 1 hari
+    // Hitung hari kerja (H)
+    if(totalMenit <= JAM_NORMAL){
         H = 1;
-        L = 0;
     } else if(totalMenit <= JAM_22 - start){
-        // 08.00 - 22.00 = 2 hari
         H = 2;
-        L = 0;
     } else if(totalMenit <= JAM_24 - start){
-        // 08.00 - 24.00 = 3 hari
         H = 3;
-        L = 0;
     } else {
-        // Lebih dari 24.00 (melewati tengah malam)
         H = 4;
-        L = 0;
+    }
+    
+    // Hitung lembur (L) - jam kerja setelah 17.00
+    const menitSetelah17 = Math.max(0, end - JAM_17);
+    if(menitSetelah17 > 0){
+        L = menitSetelah17 / 60; // Konversi ke jam
+        // Jika H > 1, kurangi lembur dengan jam kerja normal tambahan
+        if(H > 1){
+            const jamKerjaTambahan = (H - 1) * JAM_NORMAL;
+            L = Math.max(0, (menitSetelah17 - jamKerjaTambahan) / 60);
+        }
     }
     
     return { H: H, L: L };
