@@ -747,110 +747,17 @@ async function loadAll(){
         const tables = ['projects','progress_log','material_log','material_alloc','timesheet_log','cashflow_log','plan_progress','rab_items','wage_rates','pic_proyek'];
         const results = await Promise.all(tables.map(t => sb.from(t).select('*')));
         
-        // Format projects
-        projects = (results[0].data || []).map(r => ({
-            id: r.id,
-            nama: r.nama,
-            lokasi: r.lokasi,
-            nomorKontrak: r.nomor_kontrak,
-            nilaiKontrak: r.nilai_kontrak,
-            tanggalMulai: r.tanggal_mulai,
-            tanggalSelesai: r.tanggal_selesai
-        }));
+        projects = (results[0].data || []).map(r => ({ id: r.id, nama: r.nama, lokasi: r.lokasi, nomorKontrak: r.nomor_kontrak, nilaiKontrak: r.nilai_kontrak, tanggalMulai: r.tanggal_mulai, tanggalSelesai: r.tanggal_selesai }));
+        progressLog = (results[1].data || []).map(r => ({ id: r.id, projectId: r.project_id, tanggal: r.tanggal, deskripsi: r.deskripsi, persen: r.persen, foto: r.foto_url }));
+        materialLog = (results[2].data || []).map(r => ({ id: r.id, projectId: r.project_id, tanggal: r.tanggal, tipe: r.tipe, nama: r.nama, jumlah: r.jumlah, satuan: r.satuan }));
+        allocations = (results[3].data || []).map(r => ({ id: r.id, projectId: r.project_id, nama: r.nama, jatah: r.jatah, satuan: r.satuan }));
+        timesheetLog = (results[4].data || []).map(r => ({ id: r.id, projectId: r.project_id, tanggal: r.tanggal, nama: r.nama, kategori: r.kategori, status: r.status, jamMasuk: r.jam_masuk, jamKeluar: r.jam_keluar }));
+        cashflowLog = (results[5].data || []).map(r => ({ id: r.id, projectId: r.project_id, tanggal: r.tanggal, jenis: r.jenis, keterangan: r.keterangan, jumlah: r.jumlah }));
+        planLog = (results[6].data || []).map(r => ({ id: r.id, projectId: r.project_id, tanggal: r.tanggal, persen: r.persen }));
+        rabList = (results[7].data || []).map(r => ({ id: r.id, projectId: r.project_id, noUrut: r.no_urut, uraian: r.uraian, volume: r.volume, satuan: r.satuan, hargaSatuan: r.harga_satuan, jumlahHarga: r.jumlah_harga }));
+        wageRates = (results[8].data || []).map(r => ({ id: r.id, projectId: r.project_id, kategori: r.kategori, upahHarian: r.upah_harian, upahLembur: r.upah_lembur_per_jam }));
+        picList = (results[9].data || []).map(r => ({ id: r.id, projectId: r.project_id, kategori: r.kategori, jabatan: r.jabatan, nama: r.nama, wewenang: r.wewenang, ceklis: r.ceklis }));
         
-        // Format progress_log
-        progressLog = (results[1].data || []).map(r => ({
-            id: r.id,
-            projectId: r.project_id,
-            tanggal: r.tanggal,
-            deskripsi: r.deskripsi,
-            persen: r.persen,
-            foto: r.foto_url
-        }));
-        
-        // Format material_log
-        materialLog = (results[2].data || []).map(r => ({
-            id: r.id,
-            projectId: r.project_id,
-            tanggal: r.tanggal,
-            tipe: r.tipe,
-            nama: r.nama,
-            jumlah: r.jumlah,
-            satuan: r.satuan
-        }));
-        
-        // Format material_alloc
-        allocations = (results[3].data || []).map(r => ({
-            id: r.id,
-            projectId: r.project_id,
-            nama: r.nama,
-            jatah: r.jatah,
-            satuan: r.satuan
-        }));
-        
-        // Format timesheet_log
-        timesheetLog = (results[4].data || []).map(r => ({
-            id: r.id,
-            projectId: r.project_id,
-            tanggal: r.tanggal,
-            nama: r.nama,
-            kategori: r.kategori,
-            status: r.status,
-            jamMasuk: r.jam_masuk,
-            jamKeluar: r.jam_keluar
-        }));
-        
-        // Format cashflow_log
-        cashflowLog = (results[5].data || []).map(r => ({
-            id: r.id,
-            projectId: r.project_id,
-            tanggal: r.tanggal,
-            jenis: r.jenis,
-            keterangan: r.keterangan,
-            jumlah: r.jumlah
-        }));
-        
-        // Format plan_progress (PENTING: format ini harus sama dengan addPlan)
-        planLog = (results[6].data || []).map(r => ({
-            id: r.id,
-            projectId: r.project_id,
-            tanggal: r.tanggal,
-            persen: r.persen
-        }));
-        
-        // Format rab_items
-        rabList = (results[7].data || []).map(r => ({
-            id: r.id,
-            projectId: r.project_id,
-            noUrut: r.no_urut,
-            uraian: r.uraian,
-            volume: r.volume,
-            satuan: r.satuan,
-            hargaSatuan: r.harga_satuan,
-            jumlahHarga: r.jumlah_harga
-        }));
-        
-        // Format wage_rates
-        wageRates = (results[8].data || []).map(r => ({
-            id: r.id,
-            projectId: r.project_id,
-            kategori: r.kategori,
-            upahHarian: r.upah_harian,
-            upahLembur: r.upah_lembur_per_jam
-        }));
-        
-        // Format pic_proyek
-        picList = (results[9].data || []).map(r => ({
-            id: r.id,
-            projectId: r.project_id,
-            kategori: r.kategori,
-            jabatan: r.jabatan,
-            nama: r.nama,
-            wewenang: r.wewenang,
-            ceklis: r.ceklis
-        }));
-        
-        // Set proyek aktif
         const saved = localStorage.getItem(KEYS.current);
         if(saved && projects.find(p => p.id === saved)) currentProjectId = saved;
         else if(projects.length){ currentProjectId = projects[0].id; localStorage.setItem(KEYS.current, projects[0].id); }
@@ -884,7 +791,7 @@ function renderAll(){
     renderProjectSelect();
     renderDashboard();
     renderSCurve();
-    renderPlanTable(); // TAMBAHAN BARU
+    renderPlanTable();
     renderProgress();
     renderMaterial();
     renderTimesheet();
@@ -894,7 +801,6 @@ function renderAll(){
     renderWage();
     renderRoleBadge();
     
-    // TAMBAHAN BARU: Refresh dropdown uraian RAB
     renderUraianOptions();
 }
 
@@ -903,13 +809,10 @@ function renderUraianOptions(){
     const datalist = document.getElementById('uraianList');
     if(!datalist) return;
     
-    // Ambil semua uraian dari RAB proyek aktif
     const uraianList = [...new Set(currentData('rab').map(r => r.uraian))];
     
-    // Kosongkan datalist dulu
     datalist.innerHTML = '';
     
-    // Tambahkan setiap uraian sebagai option
     uraianList.forEach(function(u){
         var opt = document.createElement('option');
         opt.value = u;
@@ -925,7 +828,6 @@ function renderUraianOptions(){
     } else {
         inputDeskripsi.placeholder = 'Ketik atau pilih dari daftar RAB...';
         inputDeskripsi.disabled = false;
-        // Isi otomatis dengan uraian pertama jika kosong
         if(!inputDeskripsi.value){
             inputDeskripsi.value = uraianList[0];
         }
@@ -990,16 +892,13 @@ function getBobot(uraian){
 
 // ===== KURVA S =====
 function renderSCurve(){
-    // Urutkan rencana dari tanggal terkecil ke terbesar
     const plan = [...planLog].filter(x => x.projectId === currentProjectId).sort((a,b) => (a.tanggal || '') < (b.tanggal || '') ? -1 : 1);
-    // Urutkan progres dari tanggal terkecil ke terbesar
     const progDates = [...new Set(progressLog.filter(x => x.projectId === currentProjectId).map(x => x.tanggal))].filter(Boolean).sort();
     const realisasi = progDates.map(d => ({ tanggal:d, persen:computeProgress(d) }));
     
     const svg = document.getElementById('sCurve');
     if(!svg) return;
     
-    // Jika data kosong, kosongkan SVG
     if(plan.length === 0 && realisasi.length === 0){
         svg.innerHTML = '';
         return;
@@ -1011,7 +910,6 @@ function renderSCurve(){
     if(p && p.tanggalSelesai) allDates.push(p.tanggalSelesai);
     allDates = allDates.filter(Boolean);
     
-    // Ambil tanggal minimum dan maksimum
     const minDate = allDates.reduce((a,b) => a < b ? a : b);
     const maxDate = allDates.reduce((a,b) => a > b ? a : b);
     const totalDays = Math.max(1, Math.round((new Date(maxDate) - new Date(minDate)) / 86400000));
@@ -1019,11 +917,8 @@ function renderSCurve(){
     const W = 600, H = 200, padL = 30, padR = 10, padT = 10, padB = 10;
     const chartW = W - padL - padR, chartH = H - padT - padB;
     
-    // Fungsi untuk posisi X dan Y
     const xPos = d => padL + (Math.round((new Date(d) - new Date(minDate)) / 86400000) / totalDays) * chartW;
     const yPos = pct => padT + chartH - (Math.min(100, Math.max(0, pct)) / 100) * chartH;
-    
-    // Fungsi untuk membuat titik-titik garis
     const points = rows => rows.map(r => xPos(r.tanggal).toFixed(1) + ',' + yPos(r.persen).toFixed(1)).join(' ');
     
     let grid = '';
@@ -1033,18 +928,10 @@ function renderSCurve(){
         grid += '<text x="' + (padL - 5) + '" y="' + (y + 3) + '" font-size="9" fill="#5B6675" text-anchor="end">' + v + '</text>';
     });
     
-    // Garis rencana (putus-putus navy)
-    const planLine = plan.length > 1 ? '<polyline points="' + points(plan) + '" fill="none" stroke="#10263E" stroke-width="2" stroke-dasharray="5,4"/>' : '';
-    
-    // Garis realisasi (oranye solid)
-    const realisasiLine = realisasi.length > 1 ? '<polyline points="' + points(realisasi) + '" fill="none" stroke="#E8801C" stroke-width="2.5"/>' : '';
-    
-    // Titik-titik pada rencana dan realisasi
-    const planDots = plan.map(r => '<circle cx="' + xPos(r.tanggal) + '" cy="' + yPos(r.persen) + '" r="3" fill="#10263E"/>').join('');
-    const realisasiDots = realisasi.map(r => '<circle cx="' + xPos(r.tanggal) + '" cy="' + yPos(r.persen) + '" r="3" fill="#E8801C"/>').join('');
-    
-    svg.innerHTML = grid + planLine + realisasiLine + planDots + realisasiDots;
-    }
+    svg.innerHTML = grid +
+        (plan.length > 1 ? '<polyline points="' + points(plan) + '" fill="none" stroke="#10263E" stroke-width="2" stroke-dasharray="5,4"/>' : '') +
+        (realisasi.length > 1 ? '<polyline points="' + points(realisasi) + '" fill="none" stroke="#E8801C" stroke-width="2.5"/>' : '');
+}
 
 // ===== RENDER TABEL RENCANA =====
 function renderPlanTable(){
@@ -1063,7 +950,6 @@ function renderPlanTable(){
         tbody.appendChild(tr);
     });
     
-    // Jika tidak ada data, tampilkan pesan kosong
     if(rows.length === 0){
         const tr = document.createElement('tr');
         tr.innerHTML = '<td colspan="5" style="text-align:center;color:#5B6675;">Belum ada titik rencana. Tambahkan di atas.</td>';
@@ -1072,24 +958,17 @@ function renderPlanTable(){
 }
 
 // ===== PROGRES =====
-// ===== RENDER PROGRES =====
 function renderProgress(){
     const rows = currentData('progress');
     const tbody = document.querySelector('#tblProgress tbody');
     if(!tbody) return;
     tbody.innerHTML = '';
     
-    // PENTING: Mengisi dropdown "Deskripsi Pekerjaan" dari data RAB
     renderUraianOptions();
     
     rows.forEach(r => {
-        // Hitung sisa progres: 100 - progres
         const sisaProgres = 100 - Number(r.persen || 0);
-        
-        // Hitung bobot dari RAB untuk uraian ini
         const bobot = getBobot(r.deskripsi);
-        
-        // Hitung prestasi pekerjaan: (progres / 100) * bobot
         const prestasi = (Number(r.persen || 0) / 100) * bobot;
         
         const tr = document.createElement('tr');
@@ -1097,7 +976,6 @@ function renderProgress(){
         
         const sisaText = sisaProgres === 0 ? '<span class="tag ok">Selesai</span>' : sisaProgres.toFixed(1) + '%';
         
-        // TAMBAHAN: Kotak ceklis untuk memilih foto
         const checkCell = r.foto ? '<input type="checkbox" class="print-photo-check" value="' + r.id + '">' : '-';
         
         tr.innerHTML = '<td>' + formatTgl(r.tanggal) + '</td><td>' + esc(r.deskripsi) + '</td><td>' + r.persen + '%</td><td>' + sisaText + '</td><td>' + prestasi.toFixed(2) + '%</td><td>' + foto + '</td><td style="text-align:center;">' + checkCell + '</td><td><button class="btn small danger" onclick="deleteEntry(\'progress\',\'' + r.id + '\')">Hapus</button></td>';
@@ -1118,14 +996,12 @@ async function addProgress(e){
     const deskripsi = deskripsiInput.value;
     const persen = Number(persenInput.value);
     
-    // Validasi uraian RAB
     const uraianValid = [...new Set(currentData('rab').map(r => r.uraian))];
     if(uraianValid.length === 0){
         alert('Belum ada RAB. Tambahkan RAB/BoQ terlebih dahulu di menu RAB.');
         return false;
     }
     
-    // Jika deskripsi tidak ada di RAB, cari yang mirip (case-insensitive)
     let deskripsiFinal = deskripsi;
     if(!uraianValid.includes(deskripsi)){
         const found = uraianValid.find(u => u.toLowerCase() === deskripsi.toLowerCase());
@@ -1137,12 +1013,10 @@ async function addProgress(e){
         }
     }
     
-    // Ambil foto (jika ada)
     const file = fotoFile;
     let fotoUrl = null;
     
     if(file){
-        // Kompres foto agar ukuran kecil
         const compressedBlob = await compressImage(file, 800, 0.7);
         if(compressedBlob){
             const path = currentProjectId + '/' + Date.now() + '_' + file.name.replace(/\s+/g, '_');
@@ -1156,7 +1030,6 @@ async function addProgress(e){
         }
     }
     
-    // Simpan ke Supabase
     try{
         const { data, error } = await sb.from('progress_log').insert({
             project_id: currentProjectId,
@@ -1168,7 +1041,6 @@ async function addProgress(e){
         
         if(error) throw error;
         
-        // Reset form
         document.getElementById('pTanggal').value = todayStr();
         deskripsiInput.value = '';
         persenInput.value = '';
@@ -1177,7 +1049,6 @@ async function addProgress(e){
         document.getElementById('pFotoPreview').style.display = 'none';
         fotoFile = null;
         
-        // Refresh tampilan
         progressLog.push(data);
         renderAll();
         renderUraianOptions();
@@ -1251,9 +1122,7 @@ function compressImage(file, maxWidth = 800, quality = 0.7){
 }
 
 // ===== MATERIAL =====
-// ===== RENDER MATERIAL =====
 function renderMaterial(){
-    // Kebutuhan material
     const allocRows = currentData('alloc');
     const tbodyAlloc = document.querySelector('#tblAlloc tbody');
     if(tbodyAlloc){
@@ -1276,7 +1145,6 @@ function renderMaterial(){
         });
     }
     
-    // Riwayat material masuk/keluar
     const matRows = currentData('material');
     const tbodyMat = document.querySelector('#tblMaterial tbody');
     if(tbodyMat){
@@ -1291,7 +1159,6 @@ function renderMaterial(){
     }
 }
 
-// ===== SIMPAN MATERIAL =====
 async function addMaterial(e){
     e.preventDefault();
     if(!currentProjectId) return false;
@@ -1306,7 +1173,6 @@ async function addMaterial(e){
         }).select().single();
         if(error) throw error;
         
-        // PENTING: Masukkan data ke memori dengan format yang benar
         materialLog.push({
             id: data.id,
             projectId: data.project_id,
@@ -1317,13 +1183,11 @@ async function addMaterial(e){
             satuan: data.satuan
         });
         
-        // Reset form
         document.getElementById('mNama').value = '';
         document.getElementById('mJumlah').value = '';
         document.getElementById('mSatuan').value = '';
         document.getElementById('mTanggal').value = todayStr();
         
-        // PENTING: Refresh tampilan LANGSUNG (tanpa reload)
         renderAll();
         renderMaterial();
         
@@ -1336,7 +1200,6 @@ async function addMaterial(e){
     return false;
 }
 
-// ===== SIMPAN KEBUTUHAN MATERIAL =====
 async function addAlloc(e){
     e.preventDefault();
     if(!currentProjectId) return false;
@@ -1349,7 +1212,6 @@ async function addAlloc(e){
         }).select().single();
         if(error) throw error;
         
-        // PENTING: Masukkan data ke memori dengan format yang benar
         allocations.push({
             id: data.id,
             projectId: data.project_id,
@@ -1358,12 +1220,10 @@ async function addAlloc(e){
             satuan: data.satuan
         });
         
-        // Reset form
         document.getElementById('aNama').value = '';
         document.getElementById('aJatah').value = '';
         document.getElementById('aSatuan').value = '';
         
-        // PENTING: Refresh tampilan LANGSUNG (tanpa reload)
         renderAll();
         renderMaterial();
         
@@ -1377,7 +1237,6 @@ async function addAlloc(e){
 }
 
 // ===== PEKERJA =====
-// ===== HITUNG REKAP HARIAN & LEMBUR =====
 function computeRekap(jamMasuk, jamKeluar){
     if(!jamMasuk || !jamKeluar) return null;
     
@@ -1387,39 +1246,32 @@ function computeRekap(jamMasuk, jamKeluar){
     let start = hm * 60 + (mm || 0);
     let end = hk * 60 + (mk || 0);
     
-    // Jika jam keluar lebih kecil dari jam masuk, berarti melewati tengah malam
     if(end <= start) end += 24 * 60;
     
     const totalMenit = end - start;
     
-    // Patokan waktu
-    const JAM_17 = 17 * 60;    // 1020 menit
-    const JAM_22 = 22 * 60;    // 1320 menit
-    const JAM_24 = 24 * 60;    // 1440 menit
-    const JAM_NORMAL = 9 * 60; // 540 menit (1 hari kerja = 9 jam)
+    const JAM_17 = 17 * 60;
+    const JAM_22 = 22 * 60;
+    const JAM_24 = 24 * 60;
+    const JAM_NORMAL = 9 * 60;
     
     let H = 1;
     let L = 0;
     
-    // Hitung lembur jam kerja setelah 17.00
     const menitSetelah17 = Math.max(0, end - JAM_17);
     
-    // Jika kerja sampai 19.00 (1 jam setelah 17.00) = 1 Hari + 1 Jam Lembur
     if(totalMenit > JAM_NORMAL && totalMenit <= JAM_22 - start){
         H = 1;
         L = menitSetelah17 / 60;
     }
-    // Jika kerja sampai 22.00 = 2 Hari
     else if(totalMenit > JAM_22 - start && totalMenit <= JAM_24 - start){
         H = 2;
         L = 0;
     }
-    // Jika kerja sampai 24.00 = 3 Hari
     else if(totalMenit > JAM_24 - start && totalMenit <= (JAM_24 + JAM_NORMAL) - start){
         H = 3;
         L = 0;
     }
-    // Jika kerja melewati tengah malam dan masih lanjut = 4 Hari
     else {
         H = 4;
         L = 0;
@@ -1428,7 +1280,6 @@ function computeRekap(jamMasuk, jamKeluar){
     return { H: H, L: L };
 }
 
-// ===== RENDER DATA PEKERJA =====
 function renderTimesheet(){
     const rows = currentData('timesheet');
     const tbody = document.querySelector('#tblTimesheet tbody');
@@ -1445,7 +1296,6 @@ function renderTimesheet(){
     });
 }
 
-// ===== SIMPAN DATA PEKERJA =====
 async function addTimesheet(e){
     e.preventDefault();
     if(!currentProjectId) return false;
@@ -1463,7 +1313,6 @@ async function addTimesheet(e){
         
         if(error) throw error;
         
-        // PENTING: Masukkan data ke memori dengan format yang benar
         timesheetLog.push({
             id: data.id,
             projectId: data.project_id,
@@ -1475,13 +1324,11 @@ async function addTimesheet(e){
             jamKeluar: data.jam_keluar
         });
         
-        // Reset form
         document.getElementById('tNama').value = '';
         document.getElementById('tTanggal').value = todayStr();
         document.getElementById('tJamMasuk').value = '';
         document.getElementById('tJamKeluar').value = '';
         
-        // PENTING: Refresh tampilan LANGSUNG (tanpa reload)
         renderAll();
         renderTimesheet();
         
@@ -1506,7 +1353,6 @@ function renderRab(){
     });
     
     rows.forEach(r => {
-        // Hitung bobot: (Jumlah item / Total RAB) * 100
         const bobot = total > 0 ? (Number(r.jumlahHarga || 0) / total) * 100 : 0;
         const volumeDisplay = Number(r.volume || 0).toFixed(3).replace(/\.?0+$/, '');
         
@@ -1648,7 +1494,8 @@ function renderWage(){
     const tbody = document.getElementById('tblWage');
     if(!tbody) return;
     tbody.innerHTML = '';
-    ['Mandor','Kepala Tukang','Tukang','Buruh'].forEach(kat => {
+    
+    ['Mandor', 'Kepala Tukang', 'Tukang', 'Buruh'].forEach(kat => {
         const w = wageRates.find(x => x.projectId === currentProjectId && x.kategori === kat);
         const tr = document.createElement('tr');
         tr.innerHTML = '<td>' + kat + '</td><td>' + formatRp(w ? w.upahHarian : 0) + '</td><td>' + formatRp(w ? w.upahLembur : 0) + '</td>';
@@ -1656,7 +1503,6 @@ function renderWage(){
     });
 }
 
-// ===== SIMPAN UPAH =====
 async function saveWage(e){
     e.preventDefault();
     if(!currentProjectId) return false;
@@ -1673,7 +1519,6 @@ async function saveWage(e){
         
         if(error) throw error;
         
-        // PENTING: Masukkan data ke memori dengan format yang benar
         wageRates = wageRates.filter(x => !(x.projectId === currentProjectId && x.kategori === kat));
         wageRates.push({
             id: data.id,
@@ -1683,7 +1528,6 @@ async function saveWage(e){
             upahLembur: data.upah_lembur_per_jam
         });
         
-        // PENTING: Refresh tampilan LANGSUNG (tanpa reload)
         renderAll();
         renderWage();
         
@@ -1694,20 +1538,6 @@ async function saveWage(e){
     }
     
     return false;
-}
-
-// ===== RENDER UPAH =====
-function renderWage(){
-    const tbody = document.getElementById('tblWage');
-    if(!tbody) return;
-    tbody.innerHTML = '';
-    
-    ['Mandor', 'Kepala Tukang', 'Tukang', 'Buruh'].forEach(kat => {
-        const w = wageRates.find(x => x.projectId === currentProjectId && x.kategori === kat);
-        const tr = document.createElement('tr');
-        tr.innerHTML = '<td>' + kat + '</td><td>' + formatRp(w ? w.upahHarian : 0) + '</td><td>' + formatRp(w ? w.upahLembur : 0) + '</td>';
-        tbody.appendChild(tr);
-    });
 }
 
 // ===== PROJECT =====
@@ -1951,11 +1781,10 @@ async function addPlan(e){
     }catch(err){ alert('Gagal: ' + err.message); }
     return false;
 }
-    
-// ===== PRINT ======
+
+// ===== PRINT =====
 // ===== CETAK FOTO TERPILIH =====
 function printProgressPhotos(){
-    // Ambil semua foto yang dicentang
     const checkedIds = Array.from(document.querySelectorAll('.print-photo-check:checked')).map(cb => cb.value);
     
     if(checkedIds.length === 0){
@@ -1963,7 +1792,6 @@ function printProgressPhotos(){
         return;
     }
     
-    // Ambil data progres yang dipilih
     const rows = currentData('progress').filter(r => checkedIds.includes(r.id) && r.foto);
     
     if(rows.length === 0){
@@ -1971,13 +1799,10 @@ function printProgressPhotos(){
         return;
     }
     
-    // Ambil proyek aktif
     const p = projects.find(x => x.id === currentProjectId);
     
-    // Buat area cetak dengan semua foto terpilih
     const area = document.getElementById('printArea');
     
-    // Header yang akan muncul di setiap halaman
     const headerHtml = '<div style="text-align:center; margin-bottom:20px;">' +
         '<h2 style="margin:0;">DOKUMENTASI FOTO PROGRES</h2>' +
         '<p style="margin:0;">CV. DINAMIKA REKONSTRUKSI NUSANTARA</p>' +
@@ -1986,11 +1811,9 @@ function printProgressPhotos(){
         '<hr>' +
         '</div>';
     
-    // Bangun HTML untuk setiap foto (dengan header di setiap halaman)
     let photosHtml = '';
     rows.forEach(r => {
         photosHtml += '<div style="page-break-after:always; text-align:center; padding:20px;">' +
-            // Header di setiap halaman
             headerHtml +
             '<div style="border:1px solid #333; padding:10px; display:inline-block;">' +
             '<img src="' + r.foto + '" style="width:100%; max-width:500px; height:auto; object-fit:cover;">' +
@@ -2002,7 +1825,6 @@ function printProgressPhotos(){
             '</div>';
     });
     
-    // Footer dengan tanggal dan jam saat dicetak
     const now = new Date();
     const bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
     const tanggalCetak = now.getDate() + ' ' + bulan[now.getMonth()] + ' ' + now.getFullYear();
@@ -2015,7 +1837,6 @@ function printProgressPhotos(){
         '</div>' +
         '</div>';
     
-    // Tunggu semua foto dimuat sebelum print
     const imgs = area.querySelectorAll('img');
     let loaded = 0;
     const total = imgs.length;
@@ -2047,19 +1868,6 @@ function printProgressPhotos(){
         }
     });
 }
-    
-// ===== PRINT LAPORAN PROGRES =====
-function printProgressReport(){
-    if(!currentProjectId) return;
-
-    const p = projects.find(x => x.id === currentProjectId);
-    const area = document.getElementById('printArea');
-
-    const rabRows = [...currentData('rab')].sort((a,b) => a.noUrut - b.noUrut);
-
-    const progDates = [...new Set(progressLog.filter(x => x.projectId === currentProjectId).map(x => x.tanggal))].filter(Boolean).sort();
-    const tglMingguLalu = progDates.length > 1 ? progDates[progDates.length - 2] : '';
-    const tglMingguIni = progDates.length > 0 ? progDates[progDates.length - 1] : '';
 
 // ===== PRINT LAPORAN PROGRES =====
 function printProgressReport(){
@@ -2115,7 +1923,6 @@ function printProgressReport(){
             '</tr>';
     }).join('');
 
-    // Footer dengan tanggal dan jam saat dicetak
     const now = new Date();
     const bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
     const tanggalCetak = now.getDate() + ' ' + bulan[now.getMonth()] + ' ' + now.getFullYear();
@@ -2158,6 +1965,30 @@ function printProgressReport(){
     setTimeout(() => window.print(), 200);
 }
 
+// ===== BLOK TANDA TANGAN =====
+function buildSignatureBlock(){
+    const signers = picList.filter(x => x.projectId === currentProjectId && x.ceklis);
+    if(signers.length === 0) return '';
+    
+    const blocks = signers.map(r => {
+        const label = r.kategori === 'Direksi' ? 'Mengetahui,' : 'Dibuat oleh,';
+        return '<div style="text-align:center; width:200px; display:inline-block; margin:0 20px;">' +
+            '<div style="font-size:12px; margin-bottom:60px;">' + label + '</div>' +
+            '<div style="font-weight:bold; font-size:13px; margin-bottom:0;">' + esc(r.nama) + '</div>' +
+            '<div style="border-top:1px solid #333; padding-top:0; font-size:11px; color:#555;">' + esc(r.jabatan) + '</div>' +
+            '</div>';
+    }).join('');
+    
+    const today = new Date();
+    const bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+    const tanggal = today.getDate() + ' ' + bulan[today.getMonth()] + ' ' + today.getFullYear();
+    
+    return '<div style="margin-top:20px; text-align:left; font-size:11px; color:#555; font-style:italic;">' +
+        'Laporan ini dicetak otomatis menggunakan Aplikasi <b>SIMPeL</b> - Sistem Pemantauan Lapangan, ' + tanggal +
+        '</div>' +
+        '<div style="margin-top:40px; text-align:center;">' + blocks + '</div>';
+}
+
 // ===== PRINT KURVA S =====
 function printSCurve(){
     const svg = document.getElementById('sCurve');
@@ -2165,10 +1996,8 @@ function printSCurve(){
     
     const p = projects.find(x => x.id === currentProjectId);
     
-    // Ambil data rencana dari tabel
     const planRows = [...planLog].filter(x => x.projectId === currentProjectId).sort((a,b) => (a.tanggal || '') > (b.tanggal || '') ? 1 : -1);
     
-    // Buat tabel rencana
     let tableHtml = '';
     if(planRows.length > 0){
         tableHtml = '<table border="1" cellpadding="6" style="width:100%;border-collapse:collapse;margin-top:20px;table-layout:fixed;">' +
@@ -2198,13 +2027,11 @@ function printSCurve(){
         tableHtml += '</tbody></table>';
     }
     
-    // Footer dengan tanggal dan jam saat dicetak
     const now = new Date();
     const bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
     const tanggalCetak = now.getDate() + ' ' + bulan[now.getMonth()] + ' ' + now.getFullYear();
     const jamCetak = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ':' + String(now.getSeconds()).padStart(2, '0');
     
-    // Buat area cetak dengan Kurva S + Tabel + Footer
     const area = document.getElementById('printArea');
     area.innerHTML = '<div style="padding:20px;font-family:Arial;">' +
         '<h2 style="text-align:center;">KURVA S</h2>' +
@@ -2221,7 +2048,7 @@ function printSCurve(){
     
     setTimeout(() => window.print(), 200);
 }
-    
+
 // ===== CETAK REKAP UPAH =====
 function printWage(e){
     e.preventDefault();
@@ -2230,7 +2057,6 @@ function printWage(e){
     const awal = document.getElementById('wageAwal').value;
     const akhir = document.getElementById('wageAkhir').value;
     
-    // Ambil data pekerja yang hadir pada periode tersebut
     const rows = currentData('timesheet').filter(r => r.tanggal >= awal && r.tanggal <= akhir && r.status === 'hadir');
     
     if(rows.length === 0){
@@ -2238,7 +2064,6 @@ function printWage(e){
         return false;
     }
     
-    // Rekap per pekerja
     let rekap = {};
     rows.forEach(r => {
         if(!rekap[r.nama]){
@@ -2254,7 +2079,6 @@ function printWage(e){
         if(r.jamMasuk) rekap[r.nama].jamMasuk = r.jamMasuk;
         if(r.jamKeluar) rekap[r.nama].jamKeluar = r.jamKeluar;
         
-        // Hitung rekap harian & lembur
         const rekapHarian = computeRekap(r.jamMasuk, r.jamKeluar);
         if(rekapHarian){
             rekap[r.nama].totalH += rekapHarian.H;
@@ -2262,7 +2086,6 @@ function printWage(e){
         }
     });
     
-    // Hitung total gaji
     let totalGaji = 0;
     const daftarPekerja = Object.values(rekap).sort((a,b) => a.nama.localeCompare(b.nama));
     
@@ -2289,13 +2112,11 @@ function printWage(e){
             '</tr>';
     }).join('');
     
-    // Footer dengan tanggal dan jam saat dicetak
     const now = new Date();
     const bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
     const tanggalCetak = now.getDate() + ' ' + bulan[now.getMonth()] + ' ' + now.getFullYear();
     const jamCetak = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ':' + String(now.getSeconds()).padStart(2, '0');
     
-    // Buat area cetak dengan header berulang di setiap halaman
     const area = document.getElementById('printArea');
     area.innerHTML = '<div style="padding:20px;font-family:Arial;">' +
         '<h2 style="text-align:center;">REKAP UPAH</h2>' +
@@ -2333,7 +2154,7 @@ function printWage(e){
     setTimeout(() => window.print(), 200);
     return false;
 }
-    
+
 // ===== EXPORT =====
 function exportBackup(){
     if(currentRole() !== 'management'){ alert('Khusus Management.'); return; }
@@ -2389,10 +2210,10 @@ async function initApp(){
     } else {
         document.getElementById('loginModal').style.display = 'flex';
     }
-    }
+}
 
 initApp();
 </script>
 
 </body>
-          </html>
+</html>
