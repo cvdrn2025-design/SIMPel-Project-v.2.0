@@ -1818,43 +1818,43 @@ function printProgressReport(){
     }).join('');
 
     area.innerHTML = '<div style="padding:20px;font-family:Arial;">' +
-        '<h2 style="text-align:center;">LAPORAN PROGRES PEKERJAAN</h2>' +
-        '<p style="text-align:center;">CV. DINAMIKA REKONSTRUKSI NUSANTARA</p>' +
-        '<hr>' +
-        '<p><b>Proyek:</b> ' + esc(p ? p.nama : '-') + '</p>' +
-        '<p><b>No. Kontrak:</b> ' + esc(p && p.nomorKontrak ? p.nomorKontrak : '-') + '</p>' +
-        '<p><b>Periode:</b> ' + formatTanggalIndo(tglMingguLalu) + ' s/d ' + formatTanggalIndo(tglMingguIni) + '</p>' +
-        '<p><b>Progres Total:</b> ' + computeProgress().toFixed(1) + '%</p>' +
-        '<table border="1" cellpadding="6" style="width:100%;border-collapse:collapse;margin-top:10px;table-layout:auto;">' +
-        // HEADER BARIS 1
-        '<tr style="background:#eee;">' +
-        '<th rowspan="2" style="text-align:center;">No</th>' +
-        '<th rowspan="2" style="text-align:center;">Uraian Pekerjaan</th>' +
-        '<th style="text-align:center;">Bobot</th>' +
-        '<th style="text-align:center;">Progres</th>' +
-        '<th style="text-align:center;">Progres</th>' +
-        '<th style="text-align:center;">Progres</th>' +
-        '<th style="text-align:center;">Prestasi</th>' +
-        '</tr>' +
-        // HEADER BARIS 2
-        '<tr style="background:#eee;">' +
-        '<th style="text-align:center;">(%)</th>' +
-        '<th style="text-align:center;">Minggu Lalu (%)</th>' +
-        '<th style="text-align:center;">Minggu Ini (%)</th>' +
-        '<th style="text-align:center;">s/d Minggu Ini (%)</th>' +
-        '<th style="text-align:center;">s/d Minggu Ini (%)</th>' +
-        '</tr>' +
-        rowsHtml +
-        // BARIS TOTAL
-        '<tr style="font-weight:bold;background:#eee;">' +
-        '<td colspan="6" style="text-align:right;">TOTAL PRESTASI PEKERJAAN (%)</td>' +
-        '<td style="text-align:center;">' + formatAngka(totalPrestasi) + '</td>' +
-        '</tr>' +
-        '</table>' +
-        '</div>';
-
-    setTimeout(() => window.print(), 200);
-    }
+    '<h2 style="text-align:center;">LAPORAN PROGRES PEKERJAAN</h2>' +
+    '<p style="text-align:center;">CV. DINAMIKA REKONSTRUKSI NUSANTARA</p>' +
+    '<hr>' +
+    '<p><b>Proyek:</b> ' + esc(p ? p.nama : '-') + '</p>' +
+    '<p><b>No. Kontrak:</b> ' + esc(p && p.nomorKontrak ? p.nomorKontrak : '-') + '</p>' +
+    '<p><b>Periode:</b> ' + formatTanggalIndo(tglMingguLalu) + ' s/d ' + formatTanggalIndo(tglMingguIni) + '</p>' +
+    '<p><b>Progres Total:</b> ' + computeProgress().toFixed(1) + '%</p>' +
+    '<table border="1" cellpadding="6" style="width:100%;border-collapse:collapse;margin-top:10px;table-layout:auto;">' +
+    // HEADER BARIS 1
+    '<tr style="background:#eee;">' +
+    '<th rowspan="2" style="text-align:center;">No</th>' +
+    '<th rowspan="2" style="text-align:center;">Uraian Pekerjaan</th>' +
+    '<th style="text-align:center;">Bobot</th>' +
+    '<th style="text-align:center;">Progres</th>' +
+    '<th style="text-align:center;">Progres</th>' +
+    '<th style="text-align:center;">Progres</th>' +
+    '<th style="text-align:center;">Prestasi</th>' +
+    '</tr>' +
+    // HEADER BARIS 2
+    '<tr style="background:#eee;">' +
+    '<th style="text-align:center;">(%)</th>' +
+    '<th style="text-align:center;">Minggu Lalu (%)</th>' +
+    '<th style="text-align:center;">Minggu Ini (%)</th>' +
+    '<th style="text-align:center;">s/d Minggu Ini (%)</th>' +
+    '<th style="text-align:center;">s/d Minggu Ini (%)</th>' +
+    '</tr>' +
+    rowsHtml +
+    // BARIS TOTAL
+    '<tr style="font-weight:bold;background:#eee;">' +
+    '<td colspan="6" style="text-align:right;">TOTAL PRESTASI PEKERJAAN (%)</td>' +
+    '<td style="text-align:center;">' + formatAngka(totalPrestasi) + '</td>' +
+    '</tr>' +
+    '</table>' +
+    // TAMBAHAN: BLOK TANDA TANGAN
+    buildSignatureBlock() +
+    '</div>';
+    
 // ===== BLOK TANDA TANGAN =====
 function buildSignatureBlock(){
     const signers = picList.filter(x => x.projectId === currentProjectId && x.ceklis);
