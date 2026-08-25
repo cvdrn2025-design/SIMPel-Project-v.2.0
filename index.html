@@ -488,20 +488,25 @@ td {
             <table id="tblTimesheet"><thead><tr><th>Tanggal</th><th>Nama</th><th>Kategori</th><th>Status</th><th>Rekap</th><th></th></tr></thead><tbody></tbody></table>
         </div>
         <div class="card">
-            <h2>Pembayaran Upah</h2>
-            <form class="form-grid" onsubmit="return printWage(event)">
-                <div><label>Dari</label><input type="date" id="wageAwal" required></div>
-                <div><label>Sampai</label><input type="date" id="wageAkhir" required></div>
-                <div><button class="btn gold">🖨️ Cetak</button></div>
-            </form>
-            <div class="hint" style="margin-top:10px;">Upah per kategori:</div>
-            <table><thead><tr><th>Kategori</th><th>Harian</th><th>Lembur/Jam</th></tr></thead><tbody id="tblWage"></tbody></table>
-            <form class="form-grid" onsubmit="return saveWage(event)">
-                <div><label>Kategori</label><select id="wageKategori"><option>Mandor</option><option>Kepala Tukang</option><option>Tukang</option><option>Buruh</option></select></div>
-                <div><label>Harian (Rp)</label><input type="number" id="wageHarian" step="1000"></div>
-                <div><label>Lembur/Jam (Rp)</label><input type="number" id="wageLembur" step="1000"></div>
-                <div><button class="btn small">Simpan</button></div>
-            </form>
+    <h2>Pembayaran Upah</h2>
+    
+    <!-- Form periode cetak -->
+    <form class="form-grid" onsubmit="return printWage(event)">
+        <div><label>Dari</label><input type="date" id="wageAwal" required></div>
+        <div><label>Sampai</label><input type="date" id="wageAkhir" required></div>
+        <div><button class="btn gold">🖨️ Cetak</button></div>
+    </form>
+    
+    <div class="hint" style="margin-top:10px;">Upah per kategori:</div>
+    <table><thead><tr><th>Kategori</th><th>Harian</th><th>Lembur/Jam</th></tr></thead><tbody id="tblWage"></tbody></table>
+    
+    <!-- Form simpan upah -->
+    <form class="form-grid" onsubmit="return saveWage(event)" style="margin-top:10px;">
+        <div><label>Kategori</label><select id="wageKategori"><option>Mandor</option><option>Kepala Tukang</option><option>Tukang</option><option>Buruh</option></select></div>
+        <div><label>Harian (Rp)</label><input type="number" id="wageHarian" step="1000"></div>
+        <div><label>Lembur/Jam (Rp)</label><input type="number" id="wageLembur" step="1000"></div>
+        <div><button class="btn small">Simpan</button></div>
+    </form>
         </div>
     </div>
 
