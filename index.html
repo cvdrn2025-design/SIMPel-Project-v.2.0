@@ -1209,6 +1209,7 @@ async function addMaterial(e){
 async function addAlloc(e){
     e.preventDefault();
     if(!currentProjectId) return false;
+    
     try{
         const { data, error } = await sb.from('material_alloc').insert({
             project_id: currentProjectId,
@@ -1218,18 +1219,15 @@ async function addAlloc(e){
         }).select().single();
         if(error) throw error;
         
-        allocations.push({
-            id: data.id,
-            projectId: data.project_id,
-            nama: data.nama,
-            jatah: data.jatah,
-            satuan: data.satuan
-        });
+        // PENTING: Masukkan data ke memori
+        allocations.push(data);
         
+        // Reset form
         document.getElementById('aNama').value = '';
         document.getElementById('aJatah').value = '';
         document.getElementById('aSatuan').value = '';
         
+        // PENTING: Render ulang (tanpa refresh)
         renderAll();
         renderMaterial();
         
