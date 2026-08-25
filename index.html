@@ -1872,14 +1872,15 @@ function buildSignatureBlock(){
             '</div>';
     }).join('');
     
-    return '<div style="margin-top:40px; text-align:center;">' + blocks + '</div>';
-}
-
-function printSCurve(){
-    const svg = document.getElementById('sCurve');
-    const area = document.getElementById('printArea');
-    area.innerHTML = '<div style="padding:20px;font-family:Arial;"><h2>KURVA S</h2><div style="max-width:600px;">' + svg.outerHTML + '</div></div>';
-    setTimeout(() => window.print(), 200);
+    // Footer otomatis dengan tanggal hari ini
+    const today = new Date();
+    const bulan = ['Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun', 'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'];
+    const tanggal = today.getDate() + '/' + bulan[today.getMonth()] + '/' + today.getFullYear();
+    
+    return '<div style="margin-top:40px; text-align:center;">' + blocks + '</div>' +
+        '<div style="margin-top:30px; text-align:center; font-size:11px; color:#555; font-style:italic;">' +
+        'Laporan ini dicetak otomatis menggunakan Aplikasi <b>SIMPeL</b> - Sistem Pemantauan Lapangan, ' + tanggal +
+        '</div>';
 }
 
 function printWage(e){
