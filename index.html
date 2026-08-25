@@ -1340,38 +1340,30 @@ async function addTimesheet(e){
     return false;
 }
 
-<!-- RAB -->
-<div id="tab-rab" class="hide">
-    <div class="card">
-        <div class="toolbar">
-            <h2>RAB/BoQ</h2>
-            <button class="btn gold small" onclick="document.getElementById('rabFileInput').click()">📥 Import Excel</button>
-            <input type="file" id="rabFileInput" accept=".xlsx,.xls" style="display:none;" onchange="handleExistingRabFile(event)">
-        </div>
+// ===== RAB =====
+function renderRab(){
+    const rows = [...currentData('rab')].sort((a,b) => (a.noUrut || 0) - (b.noUrut || 0));
+    const tbody = document.querySelector('#tblRab tbody');
+    if(!tbody) return;
+    tbody.innerHTML = '';
+    let total = 0;
+    rows.forEach(r => {
+        total += Number(r.jumlahHarga || 0);
+    });
+    
+    rows.forEach(r => {
+        const bobot = total > 0 ? (Number(r.jumlahHarga || 0) / total) * 100 : 0;
+        const volumeDisplay = Number(r.volume || 0).toFixed(3).replace(/\.?0+$/, '');
         
-        <div class="stats">
-            <div class="stat"><div class="num" id="rabTotal">Rp 0</div><div class="lbl">Total RAB</div></div>
-            <div class="stat"><div class="num" id="rabPpn">Rp 0</div><div class="lbl">PPN 11%</div></div>
-            <div class="stat"><div class="num" id="rabKontrak">Rp 0</div><div class="lbl">Nilai Kontrak</div></div>
-        </div>
-        
-        <!-- JUDUL ADDENDUM -->
-        <div style="border-top:2px solid var(--safety); margin-top:15px; padding-top:10px;">
-            <h3 style="font-family:Oswald,sans-serif; text-transform:uppercase; color:var(--navy); margin-bottom:10px; font-size:14px;">🔧 ADDENDUM TAMBAH/KURANG</h3>
-        </div>
-        
-        <form class="form-grid" onsubmit="return addRabItem(event)" style="margin-top:10px;">
-            <div><label>Kategori</label><select id="rabKategoriAddendum"><option value="tambah">Tambah</option><option value="kurang">Kurang</option></select></div>
-            <div style="grid-column:span 2;"><label>Uraian</label><input type="text" id="rabUraian" required></div>
-            <div><label>Volume</label><input type="number" id="rabVolume" step="0.01" required></div>
-            <div><label>Satuan</label><input type="text" id="rabSatuan" required></div>
-            <div><label>Harga</label><input type="number" id="rabHarga" step="100" required></div>
-            <div><button class="btn">Tambah</button></div>
-        </form>
-        
-        <table id="tblRab"><thead><tr><th>No</th><th>Uraian</th><th>Vol</th><th>Sat</th><th>Harga</th><th>Jumlah</th><th>Bobot (%)</th><th></th></tr></thead><tbody></tbody></table>
-    </div>
-</div>
+        const tr = document.createElement('tr');
+        tr.innerHTML = '<td>' + r.noUrut + '</td><td>' + esc(r.uraian) + '</td><td>' + volumeDisplay + '</td><td>' + esc(r.satuan) + '</td><td>' + formatRp(r.hargaSatuan) + '</td><td>' + formatRp(r.jumlahHarga) + '</td><td>' + bobot.toFixed(2) + '%</td><td><button class="btn small danger" onclick="deleteEntry(\'rab\',\'' + r.id + '\')">Hapus</button></td>';
+        tbody.appendChild(tr);
+    });
+    
+    document.getElementById('rabTotal').textContent = formatRp(total);
+    document.getElementById('rabPpn').textContent = formatRp(total * 0.11);
+    document.getElementById('rabKontrak').textContent = formatRp(total * 1.11);
+}
 
 // ===== TAMBAH ITEM RAB (ADDENDUM) =====
 async function addRabItem(e){
