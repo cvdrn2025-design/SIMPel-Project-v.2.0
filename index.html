@@ -773,43 +773,49 @@ function toggleKodeProyek(){
     document.getElementById('loginKodeWrap').style.display = role==='staff' ? 'block' : 'none';
     document.getElementById('loginKode').required = role==='staff';
 }
-
 function login(e){
     e.preventDefault();
     const role = document.getElementById('loginRole').value;
     const pass = document.getElementById('loginPass').value;
-    const key = role==='management' ? KEYS.mgmt : KEYS.staff;
+    const key = role === 'management' ? KEYS.mgmt : KEYS.staff;
     const stored = localStorage.getItem(key);
-    
-    if(role==='staff'){
-        const kode = document.getElementById('loginKode').value.trim().padStart(4,'0');
-        const proyek = projects.find(p=>getKode(p.nomorKontrak)===kode);
+
+    // CEK ROLE STAFF & KODE PROYEK
+    if(role === 'staff'){
+        const kode = document.getElementById('loginKode').value.trim().padStart(4, '0');
+        const proyek = projects.find(p => getKode(p.nomorKontrak) === kode);
         if(!proyek){ alert('Kode proyek tidak ditemukan.'); return false; }
         sessionStorage.setItem('drn_project', proyek.id);
         currentProjectId = proyek.id;
         localStorage.setItem(KEYS.current, proyek.id);
     }
-    
+
+    // JIKA BELUM ADA PASSWORD TERSIMPAN, PAKAI DEFAULT
     if(!stored){
-        const defaultPass = DEFAULT_PASSWORDS[role];
+        const defaultPass = role === 'management' ? 'admin01' : 'admin02';
         localStorage.setItem(key, defaultPass);
         if(pass === defaultPass){
             sessionStorage.setItem('drn_role', role);
-            alert('Password default "'+defaultPass+'" berhasil dibuat dan digunakan.');
-            initApp();
+            alert('Password default "' + defaultPass + '" berhasil dibuat. Halaman akan dimuat ulang...');
+            setTimeout(() => location.reload(), 1000); // LANGSUNG RELOAD
             return false;
         } else {
-            alert('Password default untuk peran ini adalah: ' + defaultPass);
+            alert('Password untuk peran ini adalah: ' + defaultPass);
             return false;
         }
     }
-    
+
+    // JIKA PASSWORD SUDAH TERSIMPAN
     if(pass === stored){
         sessionStorage.setItem('drn_role', role);
-        initApp();
+        alert('Login berhasil! Halaman akan dimuat ulang...');
+        setTimeout(() => location.reload(), 1000); // LANGSUNG RELOAD
+        return false;
     } else {
         alert('Password salah. Gunakan: ' + stored);
     }
+    return false;
+}
     return false;
 }
 
