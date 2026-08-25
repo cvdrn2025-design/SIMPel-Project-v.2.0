@@ -1418,14 +1418,20 @@ function computeRekap(jamMasuk, jamKeluar){
     
     return { H: H, L: L };
 }
+
+// ===== RENDER DATA PEKERJA =====
 function renderTimesheet(){
     const rows = currentData('timesheet');
     const tbody = document.querySelector('#tblTimesheet tbody');
     if(!tbody) return;
     tbody.innerHTML = '';
+    
     rows.forEach(r => {
+        const rekap = r.status === 'hadir' ? computeRekap(r.jamMasuk, r.jamKeluar) : null;
+        const rekapText = rekap ? 'H=' + rekap.H + ' · L=' + rekap.L + ' jam' : '-';
+        
         const tr = document.createElement('tr');
-        tr.innerHTML = '<td>' + formatTgl(r.tanggal) + '</td><td>' + esc(r.nama) + '</td><td>' + esc(r.kategori) + '</td><td>' + r.status + '</td><td>-</td><td><button class="btn small danger" onclick="deleteEntry(\'timesheet\',\'' + r.id + '\')">Hapus</button></td>';
+        tr.innerHTML = '<td>' + formatTgl(r.tanggal) + '</td><td>' + esc(r.nama) + '</td><td>' + esc(r.kategori) + '</td><td><span class="tag ' + (r.status === 'hadir' ? 'ok' : r.status === 'alpa' ? 'warn' : 'info') + '">' + r.status + '</span></td><td>' + rekapText + '</td><td><button class="btn small danger" onclick="deleteEntry(\'timesheet\',\'' + r.id + '\')">Hapus</button></td>';
         tbody.appendChild(tr);
     });
 }
