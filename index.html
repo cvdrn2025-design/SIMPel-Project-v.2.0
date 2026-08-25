@@ -1830,8 +1830,8 @@ function printRabBoQ(){
     
     // Buat tabel RAB
     const rowsHtml = rabRows.map((r, i) => {
-        // Format volume: 2 digit di belakang koma (tetap number)
-        const volumeDisplay = Number(r.volume || 0).toFixed(2).replace(/\.00$/, '');
+        // Format volume: 2 angka di belakang koma (selalu)
+        const volumeDisplay = Number(r.volume || 0).toFixed(2);
         
         // Format harga tanpa "Rp."
         const hargaSatuan = Number(r.hargaSatuan || 0).toLocaleString('id-ID');
@@ -1840,7 +1840,7 @@ function printRabBoQ(){
         return '<tr>' +
             '<td style="text-align:center;">' + (i+1) + '</td>' +
             '<td>' + esc(r.uraian) + '</td>' +
-            '<td style="text-align:center;">' + volumeDisplay + '</td>' +
+            '<td style="text-align:right;">' + volumeDisplay + '</td>' +
             '<td style="text-align:center;">' + esc(r.satuan) + '</td>' +
             '<td style="text-align:right;">' + hargaSatuan + '</td>' +
             '<td style="text-align:right;">' + jumlahHarga + '</td>' +
@@ -1864,7 +1864,7 @@ function printRabBoQ(){
         '<tr style="background:#eee;">' +
         '<th style="text-align:center;">No</th>' +
         '<th style="text-align:center;">Uraian Pekerjaan</th>' +
-        '<th style="text-align:center;">Volume</th>' +
+        '<th style="text-align:right;">Volume</th>' +
         '<th style="text-align:center;">Satuan</th>' +
         '<th style="text-align:right;">Harga Satuan (Rp.)</th>' +
         '<th style="text-align:right;">Jumlah Harga (Rp.)</th>' +
@@ -1893,8 +1893,7 @@ function printRabBoQ(){
         '</div>';
     
     setTimeout(() => window.print(), 200);
-}
-    
+}    
 // ===== CETAK FOTO TERPILIH =====
 function printProgressPhotos(){
     const checkedIds = Array.from(document.querySelectorAll('.print-photo-check:checked')).map(cb => cb.value);
