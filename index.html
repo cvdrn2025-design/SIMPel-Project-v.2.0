@@ -1953,23 +1953,6 @@ async function addPlan(e){
 }
     
 // ===== PRINT ======
-// ===== PILIH SEMUA FOTO =====
-function toggleAllPhotoChecks(btn){
-    const checkboxes = document.querySelectorAll('.print-photo-check');
-    const allChecked = Array.from(checkboxes).every(cb => cb.checked);
-    
-    checkboxes.forEach(cb => {
-        cb.checked = !allChecked;
-    });
-    
-    // Ubah teks tombol
-    if(allChecked){
-        btn.textContent = 'Pilih Semua';
-    } else {
-        btn.textContent = 'Batal Pilih';
-    }
-}
-
 // ===== CETAK FOTO TERPILIH =====
 function printProgressPhotos(){
     // Ambil semua foto yang dicentang
@@ -2019,11 +2002,16 @@ function printProgressPhotos(){
             '</div>';
     });
     
+    // Footer dengan tanggal dan jam saat dicetak
+    const now = new Date();
+    const bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+    const tanggalCetak = now.getDate() + ' ' + bulan[now.getMonth()] + ' ' + now.getFullYear();
+    const jamCetak = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ':' + String(now.getSeconds()).padStart(2, '0');
+    
     area.innerHTML = '<div style="font-family:Arial;">' +
         photosHtml +
         '<div style="margin-top:20px; text-align:left; font-size:11px; color:#555; font-style:italic;">' +
-        'Laporan ini dicetak otomatis menggunakan Aplikasi <b>SIMPeL</b> - Sistem Pemantauan Lapangan, ' + 
-        new Date().getDate() + ' ' + ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][new Date().getMonth()] + ' ' + new Date().getFullYear() +
+        'Laporan ini dicetak otomatis menggunakan Aplikasi <b>SIMPeL</b> - Sistem Pemantauan Lapangan, ' + tanggalCetak + ' ' + jamCetak +
         '</div>' +
         '</div>';
     
@@ -2060,6 +2048,19 @@ function printProgressPhotos(){
     });
 }
     
+// ===== PRINT LAPORAN PROGRES =====
+function printProgressReport(){
+    if(!currentProjectId) return;
+
+    const p = projects.find(x => x.id === currentProjectId);
+    const area = document.getElementById('printArea');
+
+    const rabRows = [...currentData('rab')].sort((a,b) => a.noUrut - b.noUrut);
+
+    const progDates = [...new Set(progressLog.filter(x => x.projectId === currentProjectId).map(x => x.tanggal))].filter(Boolean).sort();
+    const tglMingguLalu = progDates.length > 1 ? progDates[progDates.length - 2] : '';
+    const tglMingguIni = progDates.length > 0 ? progDates[progDates.length - 1] : '';
+
 // ===== PRINT LAPORAN PROGRES =====
 function printProgressReport(){
     if(!currentProjectId) return;
@@ -2114,6 +2115,12 @@ function printProgressReport(){
             '</tr>';
     }).join('');
 
+    // Footer dengan tanggal dan jam saat dicetak
+    const now = new Date();
+    const bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+    const tanggalCetak = now.getDate() + ' ' + bulan[now.getMonth()] + ' ' + now.getFullYear();
+    const jamCetak = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ':' + String(now.getSeconds()).padStart(2, '0');
+
     area.innerHTML = '<div style="padding:20px;font-family:Arial;">' +
     '<h2 style="text-align:center;">LAPORAN PROGRES PEKERJAAN</h2>' +
     '<p style="text-align:center;">CV. DINAMIKA REKONSTRUKSI NUSANTARA</p>' +
@@ -2143,42 +2150,19 @@ function printProgressReport(){
     '</tbody>' +
     '</table>' +
     buildSignatureBlock() +
+    '<div style="margin-top:20px; text-align:left; font-size:11px; color:#555; font-style:italic;">' +
+    'Laporan ini dicetak otomatis menggunakan Aplikasi <b>SIMPeL</b> - Sistem Pemantauan Lapangan, ' + tanggalCetak + ' ' + jamCetak +
+    '</div>' +
     '</div>';
 
     setTimeout(() => window.print(), 200);
 }
 
-// ===== BLOK TANDA TANGAN =====
-function buildSignatureBlock(){
-    const signers = picList.filter(x => x.projectId === currentProjectId && x.ceklis);
-    if(signers.length === 0) return '';
-    
-    const blocks = signers.map(r => {
-        const label = r.kategori === 'Direksi' ? 'Mengetahui,' : 'Dibuat oleh,';
-        return '<div style="text-align:center; width:200px; display:inline-block; margin:0 20px;">' +
-            '<div style="font-size:12px; margin-bottom:60px;">' + label + '</div>' +
-            '<div style="font-weight:bold; font-size:13px; margin-bottom:0;">' + esc(r.nama) + '</div>' +
-            '<div style="border-top:1px solid #333; padding-top:0; font-size:11px; color:#555;">' + esc(r.jabatan) + '</div>' +
-            '</div>';
-    }).join('');
-    
-    const today = new Date();
-    const bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-    const tanggal = today.getDate() + ' ' + bulan[today.getMonth()] + ' ' + today.getFullYear();
-    
-    return '<div style="margin-top:20px; text-align:left; font-size:11px; color:#555; font-style:italic;">' +
-        'Laporan ini dicetak otomatis menggunakan Aplikasi <b>SIMPeL</b> - Sistem Pemantauan Lapangan, ' + tanggal +
-        '</div>' +
-        '<div style="margin-top:40px; text-align:center;">' + blocks + '</div>';
-}
-
-    // ===== PRINT KURVA S =====
+// ===== PRINT KURVA S =====
 function printSCurve(){
-    // Ambil elemen SVG Kurva S
     const svg = document.getElementById('sCurve');
     if(!svg) return;
     
-    // Ambil proyek aktif
     const p = projects.find(x => x.id === currentProjectId);
     
     // Ambil data rencana dari tabel
@@ -2187,13 +2171,16 @@ function printSCurve(){
     // Buat tabel rencana
     let tableHtml = '';
     if(planRows.length > 0){
-        tableHtml = '<table border="1" cellpadding="6" style="width:100%;border-collapse:collapse;margin-top:20px;">' +
+        tableHtml = '<table border="1" cellpadding="6" style="width:100%;border-collapse:collapse;margin-top:20px;table-layout:fixed;">' +
+            '<thead style="display:table-header-group;">' +
             '<tr style="background:#eee;">' +
-            '<th style="text-align:center;">Tanggal</th>' +
-            '<th style="text-align:center;">Rencana (%)</th>' +
-            '<th style="text-align:center;">Realisasi (%)</th>' +
-            '<th style="text-align:center;">Deviasi (%)</th>' +
-            '</tr>';
+            '<th style="text-align:center;width:25%;">Tanggal</th>' +
+            '<th style="text-align:center;width:25%;">Rencana (%)</th>' +
+            '<th style="text-align:center;width:25%;">Realisasi (%)</th>' +
+            '<th style="text-align:center;width:25%;">Deviasi (%)</th>' +
+            '</tr>' +
+            '</thead>' +
+            '<tbody>';
         
         planRows.forEach(r => {
             const realisasi = computeProgress(r.tanggal);
@@ -2204,14 +2191,20 @@ function printSCurve(){
                 '<td style="text-align:center;">' + formatTgl(r.tanggal) + '</td>' +
                 '<td style="text-align:center;">' + r.persen + '</td>' +
                 '<td style="text-align:center;">' + realisasi.toFixed(1) + '</td>' +
-                '<td style="text-align:center; color:' + deviasiColor + '; font-weight:600;">' + (deviasi >= 0 ? '+' : '') + deviasi.toFixed(1) + '</td>' +
+                '<td style="text-align:center;color:' + deviasiColor + ';font-weight:600;">' + (deviasi >= 0 ? '+' : '') + deviasi.toFixed(1) + '</td>' +
                 '</tr>';
         });
         
-        tableHtml += '</table>';
+        tableHtml += '</tbody></table>';
     }
     
-    // Buat area cetak dengan Kurva S + Tabel
+    // Footer dengan tanggal dan jam saat dicetak
+    const now = new Date();
+    const bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+    const tanggalCetak = now.getDate() + ' ' + bulan[now.getMonth()] + ' ' + now.getFullYear();
+    const jamCetak = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ':' + String(now.getSeconds()).padStart(2, '0');
+    
+    // Buat area cetak dengan Kurva S + Tabel + Footer
     const area = document.getElementById('printArea');
     area.innerHTML = '<div style="padding:20px;font-family:Arial;">' +
         '<h2 style="text-align:center;">KURVA S</h2>' +
@@ -2222,12 +2215,10 @@ function printSCurve(){
         '<div style="max-width:600px; margin:0 auto;">' + svg.outerHTML + '</div>' +
         tableHtml +
         '<div style="margin-top:20px; text-align:left; font-size:11px; color:#555; font-style:italic;">' +
-        'Laporan ini dicetak otomatis menggunakan Aplikasi <b>SIMPeL</b> - Sistem Pemantauan Lapangan, ' + 
-        new Date().getDate() + ' ' + ['Januari','Februari','Maret','April','Mei','Juni','Juli','Agustus','September','Oktober','November','Desember'][new Date().getMonth()] + ' ' + new Date().getFullYear() +
+        'Laporan ini dicetak otomatis menggunakan Aplikasi <b>SIMPeL</b> - Sistem Pemantauan Lapangan, ' + tanggalCetak + ' ' + jamCetak +
         '</div>' +
         '</div>';
     
-    // Panggil print
     setTimeout(() => window.print(), 200);
 }
     
