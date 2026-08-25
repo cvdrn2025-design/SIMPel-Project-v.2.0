@@ -2242,8 +2242,18 @@ function printWage(e){
     let rekap = {};
     rows.forEach(r => {
         if(!rekap[r.nama]){
-            rekap[r.nama] = { nama: r.nama, kategori: r.kategori, totalH: 0, totalL: 0 };
+            rekap[r.nama] = { 
+                nama: r.nama, 
+                kategori: r.kategori, 
+                totalH: 0, 
+                totalL: 0,
+                jamMasuk: r.jamMasuk || '-',
+                jamKeluar: r.jamKeluar || '-'
+            };
         }
+        // Jika ada beberapa entri, ambil jam terakhir
+        if(r.jamMasuk) rekap[r.nama].jamMasuk = r.jamMasuk;
+        if(r.jamKeluar) rekap[r.nama].jamKeluar = r.jamKeluar;
         
         // Hitung rekap harian & lembur
         const rekapHarian = computeRekap(r.jamMasuk, r.jamKeluar);
@@ -2268,6 +2278,8 @@ function printWage(e){
             '<td style="text-align:center;">' + (idx + 1) + '</td>' +
             '<td>' + esc(pk.nama) + '</td>' +
             '<td style="text-align:center;">' + esc(pk.kategori) + '</td>' +
+            '<td style="text-align:center;">' + pk.jamMasuk + '</td>' +
+            '<td style="text-align:center;">' + pk.jamKeluar + '</td>' +
             '<td style="text-align:center;">' + pk.totalH + '</td>' +
             '<td style="text-align:center;">' + pk.totalL.toFixed(1) + '</td>' +
             '<td style="text-align:right;">' + formatRp(upahHarian) + '</td>' +
@@ -2288,6 +2300,8 @@ function printWage(e){
         '<th style="text-align:center;">No</th>' +
         '<th style="text-align:center;">Nama</th>' +
         '<th style="text-align:center;">Kategori</th>' +
+        '<th style="text-align:center;">Jam Masuk</th>' +
+        '<th style="text-align:center;">Jam Keluar</th>' +
         '<th style="text-align:center;">Hari (H)</th>' +
         '<th style="text-align:center;">Lembur (L)</th>' +
         '<th style="text-align:right;">Upah Harian</th>' +
@@ -2296,7 +2310,7 @@ function printWage(e){
         '</tr>' +
         rowsHtml +
         '<tr style="font-weight:bold;background:#eee;">' +
-        '<td colspan="7" style="text-align:right;">TOTAL PEMBAYARAN</td>' +
+        '<td colspan="9" style="text-align:right;">TOTAL PEMBAYARAN</td>' +
         '<td style="text-align:right;">' + formatRp(totalGaji) + '</td>' +
         '</tr>' +
         '</table>' +
