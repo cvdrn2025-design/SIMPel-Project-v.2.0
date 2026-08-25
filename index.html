@@ -1440,6 +1440,31 @@ function renderCashflow(){
     }
 
 // ===== SIMPAN CASH FLOW =====
+// Fungsi untuk mengisi kategori dinamis
+function updateKategoriOptions() {
+    const jenis = document.getElementById('cfJenis').value;
+    const kategoriSelect = document.getElementById('cfKategori');
+    
+    kategoriSelect.innerHTML = '';
+    
+    let options = [];
+    if (jenis === 'in') {
+        options = ['DP/Uang muka', 'Termin', 'Lainnya'];
+    } else {
+        options = ['Site Manajemen/Operasional', 'Belanja Bahan', 'Belanja Alat', 'Subkon', 'Upah kerja', 'Lainnya'];
+    }
+    
+    options.forEach(opt => {
+        const option = document.createElement('option');
+        option.value = opt;
+        option.textContent = opt;
+        kategoriSelect.appendChild(option);
+    });
+}
+
+// Panggil fungsi ini saat halaman dimuat agar kategori terisi default (Cash in)
+updateKategoriOptions();
+    
 async function addCashflow(e){
     e.preventDefault();
     if(!currentProjectId) return false;
