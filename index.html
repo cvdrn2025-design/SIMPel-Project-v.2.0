@@ -1634,6 +1634,7 @@ async function addPlan(e){
     e.preventDefault();
     if(!currentProjectId) return false;
     try{
+        // Simpan ke Supabase
         const { data, error } = await sb.from('plan_progress').insert({
             project_id: currentProjectId,
             tanggal: document.getElementById('rpTanggal').value,
@@ -1641,8 +1642,13 @@ async function addPlan(e){
         }).select().single();
         if(error) throw error;
         
-        // TAMBAHAN PENTING: Masukkan data baru ke memori
-        planLog.push(data);
+        // TAMBAHAN PENTING: Masukkan data baru ke memori dengan format yang BENAR
+        planLog.push({
+            id: data.id,
+            projectId: data.project_id,
+            tanggal: data.tanggal,
+            persen: data.persen
+        });
         
         // Reset form
         document.getElementById('rpTanggal').value = todayStr();
@@ -1656,7 +1662,7 @@ async function addPlan(e){
         alert('✅ Titik rencana berhasil ditambahkan!');
     }catch(err){ alert('Gagal: ' + err.message); }
     return false;
-}
+            }
     
 // ===== PRINT =====
 function printProgressReport(){
