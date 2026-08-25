@@ -1971,6 +1971,7 @@ function printProgressReport(){
     '</table>' +
     buildSignatureBlock() +
     '<div style="margin-top:20px; text-align:left; font-size:11px; color:#555; font-style:italic;">' +
+    'Laporan ini dicetak otomatis menggunakan Aplikasi <b>SIMPeL</b> - Sistem Pemantauan Lapangan, ' + tanggalCetak + ' ' + jamCetak +
     '</div>' +
     '</div>';
 
@@ -1991,14 +1992,7 @@ function buildSignatureBlock(){
             '</div>';
     }).join('');
     
-    const today = new Date();
-    const bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
-    const tanggal = today.getDate() + ' ' + bulan[today.getMonth()] + ' ' + today.getFullYear();
-    
-    return '<div style="margin-top:20px; text-align:left; font-size:11px; color:#555; font-style:italic;">' +
-        'Laporan ini dicetak otomatis menggunakan Aplikasi <b>SIMPeL</b> - Sistem Pemantauan Lapangan, ' + tanggal +
-        '</div>' +
-        '<div style="margin-top:40px; text-align:center;">' + blocks + '</div>';
+    return '<div style="margin-top:40px; text-align:center;">' + blocks + '</div>';
 }
 
 // ===== PRINT KURVA S =====
