@@ -963,9 +963,23 @@ function renderSCurve(){
         grid += '<text x="' + (padL - 5) + '" y="' + (y + 3) + '" font-size="9" fill="#5B6675" text-anchor="end">' + v + '</text>';
     });
     
+    // Tambahkan titik (circles) untuk rencana
+    let planCircles = '';
+    plan.forEach(r => {
+        planCircles += '<circle cx="' + xPos(r.tanggal).toFixed(1) + '" cy="' + yPos(r.persen).toFixed(1) + '" r="4" fill="#10263E" stroke="#fff" stroke-width="2"/>';
+    });
+    
+    // Tambahkan titik (circles) untuk realisasi
+    let realisasiCircles = '';
+    realisasi.forEach(r => {
+        realisasiCircles += '<circle cx="' + xPos(r.tanggal).toFixed(1) + '" cy="' + yPos(r.persen).toFixed(1) + '" r="4" fill="#E8801C" stroke="#fff" stroke-width="2"/>';
+    });
+    
     svg.innerHTML = grid +
         (plan.length > 1 ? '<polyline points="' + points(plan) + '" fill="none" stroke="#10263E" stroke-width="2" stroke-dasharray="5,4"/>' : '') +
-        (realisasi.length > 1 ? '<polyline points="' + points(realisasi) + '" fill="none" stroke="#E8801C" stroke-width="2.5"/>' : '');
+        (realisasi.length > 1 ? '<polyline points="' + points(realisasi) + '" fill="none" stroke="#E8801C" stroke-width="2.5"/>' : '') +
+        planCircles +
+        realisasiCircles;
 }
 
 // ===== RENDER TABEL RENCANA =====
