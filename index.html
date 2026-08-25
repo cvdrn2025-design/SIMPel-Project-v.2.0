@@ -2260,7 +2260,6 @@ function printWage(e){
                 jamKeluar: r.jamKeluar || '-'
             };
         }
-        // Jika ada beberapa entri, ambil jam terakhir
         if(r.jamMasuk) rekap[r.nama].jamMasuk = r.jamMasuk;
         if(r.jamKeluar) rekap[r.nama].jamKeluar = r.jamKeluar;
         
@@ -2280,7 +2279,9 @@ function printWage(e){
         const w = wageRates.find(x => x.projectId === currentProjectId && x.kategori === pk.kategori);
         const upahHarian = w ? Number(w.upahHarian) : 0;
         const upahLembur = w ? Number(w.upahLembur) : 0;
-        const total = Math.round((pk.totalH * upahHarian) + (pk.totalL * upahLembur));
+        const jumlahUpahHarian = Math.round(pk.totalH * upahHarian);
+        const jumlahUpahLemburan = Math.round(pk.totalL * upahLembur);
+        const total = jumlahUpahHarian + jumlahUpahLemburan;
         totalGaji += total;
         
         return '<tr>' +
@@ -2291,8 +2292,8 @@ function printWage(e){
             '<td style="text-align:center;">' + pk.jamKeluar + '</td>' +
             '<td style="text-align:center;">' + pk.totalH + '</td>' +
             '<td style="text-align:center;">' + pk.totalL.toFixed(1) + '</td>' +
-            '<td style="text-align:right;">' + formatRp(upahHarian) + '</td>' +
-            '<td style="text-align:right;">' + formatRp(upahLembur) + '</td>' +
+            '<td style="text-align:right;">' + formatRp(jumlahUpahHarian) + '</td>' +
+            '<td style="text-align:right;">' + formatRp(jumlahUpahLemburan) + '</td>' +
             '<td style="text-align:right;">' + formatRp(total) + '</td>' +
             '</tr>';
     }).join('');
@@ -2313,8 +2314,8 @@ function printWage(e){
         '<th style="text-align:center;">Jam Keluar</th>' +
         '<th style="text-align:center;">Hari (H)</th>' +
         '<th style="text-align:center;">Lembur (L)</th>' +
-        '<th style="text-align:right;">Upah Harian</th>' +
-        '<th style="text-align:right;">Upah Lembur/Jam</th>' +
+        '<th style="text-align:right;">Jumlah Upah Harian</th>' +
+        '<th style="text-align:right;">Jumlah Upah Lemburan</th>' +
         '<th style="text-align:right;">Total Gaji</th>' +
         '</tr>' +
         rowsHtml +
