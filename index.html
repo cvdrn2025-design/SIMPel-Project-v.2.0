@@ -545,24 +545,27 @@ td {
 </div>
 
     <!-- COST CONTROL -->
-    <div id="tab-cost" class="hide">
-        <div class="card">
-            <h2>Arus Kas</h2>
-            <div class="stats">
-                <div class="stat"><div class="num" id="costIn">Rp 0</div><div class="lbl">Cash In</div></div>
-                <div class="stat"><div class="num" id="costOut">Rp 0</div><div class="lbl">Cash Out</div></div>
-                <div class="stat"><div class="num" id="costSaldo">Rp 0</div><div class="lbl">Saldo</div></div>
-            </div>
-            <form class="form-grid" onsubmit="return addCashflow(event)" style="margin-top:12px;">
-                <div><label>Tanggal</label><input type="date" id="cfTanggal" required></div>
-                <div><label>Jenis</label><select id="cfJenis"><option value="in">Masuk</option><option value="out">Keluar</option></select></div>
-                <div><label>Jumlah</label><input type="number" id="cfJumlah" step="0.01" required></div>
-                <div><label>Keterangan</label><input type="text" id="cfKeterangan"></div>
-                <div><button class="btn">Simpan</button></div>
-            </form>
-            <table id="tblCashflow"><thead><tr><th>Tanggal</th><th>Jenis</th><th>Keterangan</th><th>Jumlah</th><th></th></tr></thead><tbody></tbody></table>
+<div id="tab-cost" class="hide">
+    <div class="card">
+        <h2>Arus Kas</h2>
+        <div class="stats">
+            <div class="stat"><div class="num" id="costIn">Rp 0</div><div class="lbl">Cash In</div></div>
+            <div class="stat"><div class="num" id="costOut">Rp 0</div><div class="lbl">Cash Out</div></div>
+            <div class="stat"><div class="num" id="costSaldo">Rp 0</div><div class="lbl">Saldo</div></div>
         </div>
+        
+        <!-- Form Simpan Arus Kas -->
+        <form class="form-grid" onsubmit="return addCashflow(event)" style="margin-top:12px;">
+            <div><label>Tanggal</label><input type="date" id="cfTanggal" required></div>
+            <div><label>Jenis</label><select id="cfJenis"><option value="in">Masuk</option><option value="out">Keluar</option></select></div>
+            <div><label>Jumlah</label><input type="number" id="cfJumlah" step="0.01" required></div>
+            <div><label>Keterangan</label><input type="text" id="cfKeterangan"></div>
+            <div><button class="btn">Simpan</button></div>
+        </form>
+        
+        <table id="tblCashflow"><thead><tr><th>Tanggal</th><th>Jenis</th><th>Keterangan</th><th>Jumlah</th><th></th></tr></thead><tbody></tbody></table>
     </div>
+</div>
 
     <!-- PIC -->
     <div id="tab-pic" class="hide">
@@ -1413,27 +1416,33 @@ async function addRabItem(e){
     return false;
 }
     
-// ===== CASHFLOW =====
+// ===== RENDER CASH FLOW =====
 function renderCashflow(){
     const rows = currentData('cashflow');
     const tbody = document.querySelector('#tblCashflow tbody');
     if(!tbody) return;
     tbody.innerHTML = '';
+    
     let totalIn = 0, totalOut = 0;
     rows.forEach(r => {
         if(r.jenis === 'in') totalIn += r.jumlah; else totalOut += r.jumlah;
+        
         const tr = document.createElement('tr');
-        tr.innerHTML = '<td>' + formatTgl(r.tanggal) + '</td><td>' + (r.jenis === 'in' ? '<span class="tag ok">Masuk</span>' : '<span class="tag warn">Keluar</span>') + '</td><td>' + esc(r.keterangan || '-') + '</td><td>' + formatRp(r.jumlah) + '</td><td><button class="btn small danger" onclick="deleteEntry(\'cashflow\',\'' + r.id + '\')">Hapus</button></td>';
+        const jenisTag = r.jenis === 'in' ? '<span class="tag ok">Masuk</span>' : '<span class="tag warn">Keluar</span>';
+        tr.innerHTML = '<td>' + formatTgl(r.tanggal) + '</td><td>' + jenisTag + '</td><td>' + esc(r.keterangan || '-') + '</td><td>' + formatRp(r.jumlah) + '</td><td><button class="btn small danger" onclick="deleteEntry(\'cashflow\',\'' + r.id + '\')">Hapus</button></td>';
         tbody.appendChild(tr);
     });
+    
     document.getElementById('costIn').textContent = formatRp(totalIn);
     document.getElementById('costOut').textContent = formatRp(totalOut);
     document.getElementById('costSaldo').textContent = formatRp(totalIn - totalOut);
 }
 
+// ===== SIMPAN CASH FLOW =====
 async function addCashflow(e){
     e.preventDefault();
     if(!currentProjectId) return false;
+    
     try{
         const { data, error } = await sb.from('cashflow_log').insert({
             project_id: currentProjectId,
@@ -1442,13 +1451,34 @@ async function addCashflow(e){
             keterangan: document.getElementById('cfKeterangan').value || null,
             jumlah: Number(document.getElementById('cfJumlah').value)
         }).select().single();
+        
         if(error) throw error;
-        cashflowLog.push(data);
+        
+        // PENTING: Masukkan data ke memori dengan format yang benar
+        cashflowLog.push({
+            id: data.id,
+            projectId: data.project_id,
+            tanggal: data.tanggal,
+            jenis: data.jenis,
+            keterangan: data.keterangan,
+            jumlah: data.jumlah
+        });
+        
+        // Reset form
+        document.getElementById('cfTanggal').value = todayStr();
+        document.getElementById('cfJenis').value = 'in';
         document.getElementById('cfKeterangan').value = '';
         document.getElementById('cfJumlah').value = '';
-        document.getElementById('cfTanggal').value = todayStr();
+        
+        // PENTING: Render ulang (tanpa refresh)
         renderAll();
-    }catch(err){ alert('Gagal: ' + err.message); }
+        
+        alert('✅ Arus kas berhasil disimpan!');
+        
+    }catch(err){
+        alert('❌ Gagal menyimpan: ' + err.message);
+    }
+    
     return false;
 }
 
