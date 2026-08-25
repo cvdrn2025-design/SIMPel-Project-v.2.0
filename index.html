@@ -1728,7 +1728,6 @@ async function addPlan(e){
     e.preventDefault();
     if(!currentProjectId) return false;
     try{
-        // Simpan ke Supabase
         const { data, error } = await sb.from('plan_progress').insert({
             project_id: currentProjectId,
             tanggal: document.getElementById('rpTanggal').value,
@@ -1736,7 +1735,6 @@ async function addPlan(e){
         }).select().single();
         if(error) throw error;
         
-        // TAMBAHAN PENTING: Masukkan data baru ke memori dengan format yang BENAR
         planLog.push({
             id: data.id,
             projectId: data.project_id,
@@ -1744,19 +1742,17 @@ async function addPlan(e){
             persen: data.persen
         });
         
-        // Reset form
         document.getElementById('rpTanggal').value = todayStr();
         document.getElementById('rpPersen').value = '';
         
-        // Refresh HANYA kurva dan tabel, TANPA reload data dari database
-        renderSCurve();     // Refresh kurva S
-        renderPlanTable();  // Refresh tabel rencana
-        renderUraianOptions(); // Refresh dropdown
+        renderSCurve();
+        renderPlanTable();
+        renderUraianOptions();
         
         alert('✅ Titik rencana berhasil ditambahkan!');
     }catch(err){ alert('Gagal: ' + err.message); }
     return false;
-            }
+}
     
 // ===== PRINT =====
 function printProgressReport(){
