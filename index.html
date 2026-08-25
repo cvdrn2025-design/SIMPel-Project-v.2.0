@@ -1470,7 +1470,7 @@ function updateKategoriOptions() {
 
 // Panggil fungsi ini saat halaman dimuat agar kategori terisi default (Cash in)
 updateKategoriOptions();
-    
+
 async function addCashflow(e){
     e.preventDefault();
     if(!currentProjectId) return false;
@@ -1480,7 +1480,7 @@ async function addCashflow(e){
             project_id: currentProjectId,
             tanggal: document.getElementById('cfTanggal').value,
             jenis: document.getElementById('cfJenis').value,
-            kategori: document.getElementById('cfKategori').value, // <-- Tambahkan baris ini
+            kategori: document.getElementById('cfKategori').value, 
             keterangan: document.getElementById('cfKeterangan').value || null,
             jumlah: Number(document.getElementById('cfJumlah').value)
         }).select().single();
@@ -1505,29 +1505,16 @@ async function addCashflow(e){
         
         // PENTING: Render ulang (tanpa refresh)
         renderAll();
+        updateKategoriOptions(); // Panggil ulang agar kategori kembali ke "DP/Uang muka"
         
         alert('✅ Arus kas berhasil disimpan!');
-        document.getElementById('cfKategori').value = 'Pemasukan'; // Reset ke default
         
     }catch(err){
         alert('❌ Gagal menyimpan: ' + err.message);
     }
     
     return false;
-}
-    
-// ===== PIC =====
-function renderPic(){
-    const rows = picList.filter(x => x.projectId === currentProjectId);
-    const tbody = document.querySelector('#tblPic tbody');
-    if(!tbody) return;
-    tbody.innerHTML = '';
-    rows.forEach(r => {
-        const tr = document.createElement('tr');
-        tr.innerHTML = '<td>' + esc(r.kategori) + '</td><td>' + esc(r.jabatan) + '</td><td>' + esc(r.nama) + '</td><td><input type="checkbox" ' + (r.ceklis ? 'checked' : '') + ' onchange="togglePic(\'' + r.id + '\',this.checked)"></td><td><button class="btn small danger" onclick="deleteEntry(\'pic\',\'' + r.id + '\')">Hapus</button></td>';
-        tbody.appendChild(tr);
-    });
-}
+    }
 
 async function addPic(e){
     e.preventDefault();
