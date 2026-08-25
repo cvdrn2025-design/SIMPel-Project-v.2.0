@@ -1762,15 +1762,12 @@ function printProgressReport(){
     const p = projects.find(x => x.id === currentProjectId);
     const area = document.getElementById('printArea');
 
-    // Ambil semua uraian RAB
     const rabRows = [...currentData('rab')].sort((a,b) => a.noUrut - b.noUrut);
 
-    // Ambil semua tanggal progres yang ada (untuk menentukan periode)
     const progDates = [...new Set(progressLog.filter(x => x.projectId === currentProjectId).map(x => x.tanggal))].filter(Boolean).sort();
     const tglMingguLalu = progDates.length > 1 ? progDates[progDates.length - 2] : '';
     const tglMingguIni = progDates.length > 0 ? progDates[progDates.length - 1] : '';
 
-    // Fungsi helper untuk format tanggal: dd bulan lengkap yyyy (tanpa /)
     const formatTanggalIndo = (dateStr) => {
         if(!dateStr) return '-';
         const bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
@@ -1781,7 +1778,6 @@ function printProgressReport(){
         return tanggal + ' ' + bulan[bulanAngka - 1] + ' ' + tahun;
     };
 
-    // Fungsi helper untuk format angka: 3 desimal dengan koma, kecuali 100
     const formatAngka = (val) => {
         const num = Number(val || 0);
         if(num === 100) return '100';
@@ -1793,16 +1789,12 @@ function printProgressReport(){
     const rowsHtml = rabRows.map((r, i) => {
         const bobot = getBobot(r.uraian);
 
-        // Progres minggu lalu (entri terakhir sebelum tglMingguIni)
         const progMingguLalu = progressLog.filter(x => x.projectId === currentProjectId && x.deskripsi === r.uraian && x.tanggal < tglMingguIni).sort((a,b) => a.tanggal > b.tanggal ? -1 : 1)[0]?.persen || 0;
 
-        // Progres minggu ini (entri terakhir pada tglMingguIni)
         const progMingguIni = progressLog.filter(x => x.projectId === currentProjectId && x.deskripsi === r.uraian && x.tanggal <= tglMingguIni).sort((a,b) => a.tanggal > b.tanggal ? -1 : 1)[0]?.persen || 0;
 
-        // Progres s/d minggu ini (entri terakhir)
         const progsdMingguIni = progressLog.filter(x => x.projectId === currentProjectId && x.deskripsi === r.uraian).sort((a,b) => a.tanggal > b.tanggal ? -1 : 1)[0]?.persen || 0;
 
-        // Prestasi s/d minggu ini = (progres / 100) * bobot
         const prestasi = (progsdMingguIni / 100) * bobot;
         totalPrestasi += prestasi;
 
@@ -1826,32 +1818,25 @@ function printProgressReport(){
     '<p><b>Periode:</b> ' + formatTanggalIndo(tglMingguLalu) + ' s/d ' + formatTanggalIndo(tglMingguIni) + '</p>' +
     '<p><b>Progres Total:</b> ' + computeProgress().toFixed(1) + '%</p>' +
     '<table border="1" cellpadding="6" style="width:100%;border-collapse:collapse;margin-top:10px;table-layout:auto;">' +
-    // HEADER BARIS 1
+    '<thead style="display:table-header-group;">' +
     '<tr style="background:#eee;">' +
-    '<th rowspan="2" style="text-align:center;">No</th>' +
-    '<th rowspan="2" style="text-align:center;">Uraian Pekerjaan</th>' +
-    '<th style="text-align:center;">Bobot</th>' +
-    '<th style="text-align:center;">Progres</th>' +
-    '<th style="text-align:center;">Progres</th>' +
-    '<th style="text-align:center;">Progres</th>' +
-    '<th style="text-align:center;">Prestasi</th>' +
+    '<th style="text-align:center;">No</th>' +
+    '<th style="text-align:center;">Uraian Pekerjaan</th>' +
+    '<th style="text-align:center;">Bobot (%)</th>' +
+    '<th style="text-align:center;">Progres Minggu Lalu (%)</th>' +
+    '<th style="text-align:center;">Progres Minggu Ini (%)</th>' +
+    '<th style="text-align:center;">Progres s/d Minggu Ini (%)</th>' +
+    '<th style="text-align:center;">Prestasi s/d Minggu Ini (%)</th>' +
     '</tr>' +
-    // HEADER BARIS 2
-    '<tr style="background:#eee;">' +
-    '<th style="text-align:center;">(%)</th>' +
-    '<th style="text-align:center;">Minggu Lalu (%)</th>' +
-    '<th style="text-align:center;">Minggu Ini (%)</th>' +
-    '<th style="text-align:center;">s/d Minggu Ini (%)</th>' +
-    '<th style="text-align:center;">s/d Minggu Ini (%)</th>' +
-    '</tr>' +
+    '</thead>' +
+    '<tbody>' +
     rowsHtml +
-    // BARIS TOTAL
     '<tr style="font-weight:bold;background:#eee;">' +
     '<td colspan="6" style="text-align:right;">TOTAL PRESTASI PEKERJAAN (%)</td>' +
     '<td style="text-align:center;">' + formatAngka(totalPrestasi) + '</td>' +
     '</tr>' +
+    '</tbody>' +
     '</table>' +
-    // FOOTER (DI BAWAH TABEL, SEBELUM TANDA TANGAN)
     buildSignatureBlock() +
     '</div>';
 
@@ -1872,19 +1857,16 @@ function buildSignatureBlock(){
             '</div>';
     }).join('');
     
-    // Footer otomatis dengan tanggal hari ini (alignment left)
     const today = new Date();
     const bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
     const tanggal = today.getDate() + ' ' + bulan[today.getMonth()] + ' ' + today.getFullYear();
     
-    // Kembalikan blok tanda tangan DAN footer (footer di bawah tabel, sebelum tanda tangan)
     return '<div style="margin-top:20px; text-align:left; font-size:11px; color:#555; font-style:italic;">' +
         'Laporan ini dicetak otomatis menggunakan Aplikasi <b>SIMPeL</b> - Sistem Pemantauan Lapangan, ' + tanggal +
         '</div>' +
         '<div style="margin-top:40px; text-align:center;">' + blocks + '</div>';
 }
-
-
+    
 function printWage(e){
     e.preventDefault();
     if(!currentProjectId) return false;
