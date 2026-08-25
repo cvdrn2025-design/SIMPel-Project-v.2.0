@@ -780,6 +780,30 @@ async function loadAll(){
 }
 
 // ===== RENDER =====
+// ===== PIC =====
+function renderPic(){
+    const rows = picList.filter(x => x.projectId === currentProjectId);
+    const tbody = document.querySelector('#tblPic tbody');
+    if(!tbody) return;
+    tbody.innerHTML = '';
+    
+    rows.forEach(r => {
+        const tr = document.createElement('tr');
+        // Pastikan properti sesuai dengan format data picList (camelCase)
+        tr.innerHTML = '<td>' + esc(r.kategori) + '</td>' + 
+                       '<td>' + esc(r.jabatan) + '</td>' + 
+                       '<td>' + esc(r.nama) + '</td>' + 
+                       '<td><input type="checkbox" ' + (r.ceklis ? 'checked' : '') + ' onchange="togglePic(\'' + r.id + '\',this.checked)"></td>' + 
+                       '<td><button class="btn small danger" onclick="deleteEntry(\'pic\',\'' + r.id + '\')">Hapus</button></td>';
+        tbody.appendChild(tr);
+    });
+}
+
+// Fungsi untuk menambahkan PIC (sudah ada, jangan diubah)
+async function addPic(e){
+    // ... kode yang sudah ada ...
+}
+    
 function renderProjectSelect(){
     const sel = document.getElementById('projectSelect');
     if(!sel) return;
