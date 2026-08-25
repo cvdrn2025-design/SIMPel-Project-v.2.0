@@ -1817,7 +1817,7 @@ function printProgressReport(){
             '</tr>';
     }).join('');
 
-    area.innerHTML = '<div style="padding:20px;font-family:Arial;">' +
+        area.innerHTML = '<div style="padding:20px;font-family:Arial;">' +
     '<h2 style="text-align:center;">LAPORAN PROGRES PEKERJAAN</h2>' +
     '<p style="text-align:center;">CV. DINAMIKA REKONSTRUKSI NUSANTARA</p>' +
     '<hr>' +
@@ -1854,7 +1854,10 @@ function printProgressReport(){
     // TAMBAHAN: BLOK TANDA TANGAN
     buildSignatureBlock() +
     '</div>';
-    
+
+    setTimeout(() => window.print(), 200);
+}
+
 // ===== BLOK TANDA TANGAN =====
 function buildSignatureBlock(){
     const signers = picList.filter(x => x.projectId === currentProjectId && x.ceklis);
