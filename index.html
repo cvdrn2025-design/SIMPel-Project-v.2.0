@@ -1698,6 +1698,7 @@ async function initApp(){
             currentProjectId = sessionStorage.getItem('drn_project');
         }
         renderAll();
+        renderPlanTable(); // TAMBAHAN BARU
         renderUraianOptions();
         if(role === 'staff'){
             document.querySelector('.proj-bar button[onclick="openProjectModal()"]').style.display = 'none';
