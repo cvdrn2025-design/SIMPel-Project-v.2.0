@@ -1640,6 +1640,20 @@ async function saveWage(e){
     return false;
 }
 
+// ===== RENDER UPAH =====
+function renderWage(){
+    const tbody = document.getElementById('tblWage');
+    if(!tbody) return;
+    tbody.innerHTML = '';
+    
+    ['Mandor', 'Kepala Tukang', 'Tukang', 'Buruh'].forEach(kat => {
+        const w = wageRates.find(x => x.projectId === currentProjectId && x.kategori === kat);
+        const tr = document.createElement('tr');
+        tr.innerHTML = '<td>' + kat + '</td><td>' + formatRp(w ? w.upahHarian : 0) + '</td><td>' + formatRp(w ? w.upahLembur : 0) + '</td>';
+        tbody.appendChild(tr);
+    });
+}
+
 // ===== PROJECT =====
 function openProjectModal(){
     if(currentRole() !== 'management'){ alert('Khusus Management.'); return; }
