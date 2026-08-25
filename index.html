@@ -1449,6 +1449,7 @@ async function addCashflow(e){
             project_id: currentProjectId,
             tanggal: document.getElementById('cfTanggal').value,
             jenis: document.getElementById('cfJenis').value,
+            kategori: document.getElementById('cfKategori').value, // <-- Tambahkan baris ini
             keterangan: document.getElementById('cfKeterangan').value || null,
             jumlah: Number(document.getElementById('cfJumlah').value)
         }).select().single();
@@ -1475,6 +1476,7 @@ async function addCashflow(e){
         renderAll();
         
         alert('✅ Arus kas berhasil disimpan!');
+        document.getElementById('cfKategori').value = 'Pemasukan'; // Reset ke default
         
     }catch(err){
         alert('❌ Gagal menyimpan: ' + err.message);
