@@ -941,6 +941,10 @@ const currentData = type => {
 // ===== TAB =====
 function switchTab(name){
     if(name === 'cost' && currentRole() !== 'management'){ alert('Khusus Management.'); return; }
+    
+    // TAMBAHKAN BARIS INI UNTUK PROTEKSI TAB KELOLA STAFF
+    if(name === 'kelola_staff' && currentRole() !== 'management'){ alert('Khusus Management.'); return; }
+    
     document.querySelectorAll('#mainTabs button').forEach(b => b.classList.remove('active'));
     document.querySelector('#mainTabs button[data-tab="' + name + '"]').classList.add('active');
     document.querySelectorAll('.container > div[id^="tab-"]').forEach(d => d.classList.add('hide'));
