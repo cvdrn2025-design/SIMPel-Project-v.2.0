@@ -83,14 +83,28 @@
 
     // ===== LOGIN ADMIN =====
     function loginAdmin() {
-        if (document.getElementById('adminPass').value === 'admin123') {
-            document.getElementById('loginArea').classList.add('hide');
-            document.getElementById('dashboardArea').classList.remove('hide');
-            listen();
-        } else {
-            document.getElementById('loginError').style.display = 'block';
-        }
+    const pass = document.getElementById('adminPass').value;
+    
+    // Ganti 'admin123' dengan password admin Anda
+    if (pass === 'admin123') {
+        // Simpan status login ke sessionStorage agar tidak hilang saat refresh
+        sessionStorage.setItem('adminLoggedIn', 'true');
+        
+        document.getElementById('loginArea').classList.add('hide');
+        document.getElementById('dashboardArea').classList.remove('hide');
+        listen(); // Mulai listener realtime
+    } else {
+        document.getElementById('loginError').style.display = 'block';
     }
+}
+
+function logoutAdmin() {
+    // Hapus status login saat logout
+    sessionStorage.removeItem('adminLoggedIn');
+    
+    document.getElementById('loginArea').classList.remove('hide');
+    document.getElementById('dashboardArea').classList.add('hide');
+}
 
     // ===== REALTIME LISTENER =====
     function listen() {
