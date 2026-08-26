@@ -2511,6 +2511,20 @@ async function initApp(){
 // Start aplikasi
 initApp();
 </script>
-
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', function() {
+                navigator.serviceWorker.register('./sw.js')
+                    .then(function(registration) {
+                        console.log('Service Worker terdaftar:', registration.scope);
+                    })
+                    .catch(function(error) {
+                        console.log('Gagal mendaftarkan Service Worker:', error);
+                    });
+            });
+        }
+    </script>
+</body>
+</html>
 </body>
 </html>
