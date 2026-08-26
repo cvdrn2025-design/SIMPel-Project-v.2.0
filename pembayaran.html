@@ -5,35 +5,163 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pembayaran SIMPeL</title>
     <style>
-        body { font-family: sans-serif; background: #E9EBE6; padding: 20px; }
-        .card { background: #fff; padding: 20px; border-radius: 8px; max-width: 400px; margin: auto; text-align: center; }
-        h1, h2 { color: #10263E; }
-        .paket { border: 2px solid #E9EBE6; border-radius: 8px; padding: 15px; margin-bottom: 15px; cursor: pointer; transition: all 0.3s; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            margin: 0;
+            padding: 0;
+            background: #E9EBE6;
+        }
+
+        /* ===== HEADER PILIH PAKET (DESAIN BARU) ===== */
+        .hero {
+            background-image: url('pembayaran.png');
+            background-size: cover;
+            background-position: center;
+            height: 320px;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: flex-end;
+            padding-bottom: 10px;
+        }
+
+        .hero h1 {
+            font-size: 24px;
+            font-weight: 700;
+            color: #10263E;
+            text-shadow: 0 1px 2px rgba(255,255,255,0.8);
+            margin: 0;
+        }
+
+        /* ===== KONTEN PILIH PAKET ===== */
+        .container {
+            max-width: 400px;
+            margin: -40px auto 30px;
+            background: #fff;
+            border-radius: 20px 20px 0 0;
+            padding: 20px;
+            box-shadow: 0 -5px 15px rgba(0,0,0,0.1);
+            position: relative;
+            min-height: 400px;
+        }
+
+        .paket {
+            border: 2px solid #E9EBE6;
+            border-radius: 12px;
+            padding: 15px;
+            margin-bottom: 15px;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
         .paket:hover { border-color: #E8801C; }
         .paket.selected { border-color: #E8801C; background: #FFF3DA; }
-        .paket h3 { margin: 0 0 5px 0; color: #10263E; }
-        .paket .harga { font-size: 18px; font-weight: bold; color: #E8801C; }
-        .paket .fitur { font-size: 13px; color: #5B6675; margin-top: 8px; }
-        #paymentSection { display: none; }
-        img#qris { width: 100%; max-width: 250px; border: 1px solid #ccc; border-radius: 8px; margin-bottom: 15px; }
+
+        .paket h3 {
+            margin: 0 0 5px 0;
+            color: #10263E;
+            font-size: 16px;
+        }
+
+        .paket .harga {
+            font-size: 18px;
+            font-weight: 700;
+            color: #E8801C;
+        }
+
+        .paket .fitur {
+            font-size: 12px;
+            color: #5B6675;
+            margin-top: 8px;
+        }
+
+        /* TOMBOL LANJUT */
+        #btnLanjut {
+            width: 100%;
+            padding: 14px;
+            background: #E8801C;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            display: none;
+            margin-top: 10px;
+        }
+
+        /* ===== HALAMAN PEMBAYARAN (TAMPILAN SEDERHANA) ===== */
+        #paymentSection {
+            display: none;
+            background: #fff;
+            padding: 20px;
+            max-width: 400px;
+            margin: 20px auto;
+            border-radius: 8px;
+            text-align: center;
+        }
+
+        img#qris {
+            width: 100%;
+            max-width: 250px;
+            border: 1px solid #ccc;
+            border-radius: 8px;
+            margin-bottom: 15px;
+        }
+
         .status { font-size: 14px; margin-top: 15px; }
         .status.waiting { color: #5B6675; }
         .status.paid { color: green; font-weight: bold; }
-        button { width: 100%; padding: 12px; background: #25D366; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 20px; }
-        button:hover { background: #1DA851; }
-        button.orange { background: #E8801C; }
-        button.orange:hover { background: #C56A12; }
-        a.btn-link { width: 100%; padding: 12px; background: #10263E; color: white; border: none; border-radius: 6px; font-weight: bold; text-decoration: none; display: inline-block; margin-top: 10px; }
-        a.btn-link:hover { background: #0A1B2E; }
+
+        button#btnKirimWA {
+            width: 100%;
+            padding: 14px;
+            background: #25D366;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: 20px;
+        }
+
+        a.btn-link {
+            width: 100%;
+            padding: 14px;
+            background: #10263E;
+            color: white;
+            border: none;
+            border-radius: 12px;
+            font-size: 16px;
+            font-weight: 700;
+            text-decoration: none;
+            display: inline-block;
+            margin-top: 10px;
+        }
+
+        button.orange {
+            width: 100%;
+            padding: 14px;
+            background: #E9EBE6;
+            color: #333;
+            border: none;
+            border-radius: 12px;
+            font-size: 14px;
+            cursor: pointer;
+            margin-top: 10px;
+        }
     </style>
 </head>
 <body>
-<div class="container">
 
-    <!-- SECTION PILIH PAKET -->
-    <div id="pilihPaketSection" class="card">
-        <h1 style="text-align:center;">Pilih Paket Anda</h1>
-        
+    <!-- HEADER PILIH PAKET -->
+    <div class="hero" id="heroSection">
+        <h1>Pilih Paket Anda</h1>
+    </div>
+
+    <!-- KONTEN PILIH PAKET -->
+    <div class="container" id="pilihPaketSection">
         <div class="paket" onclick="pilihPaket('basic')">
             <h3>Paket Basic</h3>
             <div class="harga">Rp 60.000 / bulan</div>
@@ -56,11 +184,11 @@
             <div class="fitur">✔️ Modul SiCerMat</div>
         </div>
         
-        <button class="orange" id="btnLanjut" onclick="lanjutKePembayaran()" style="display:none;">Lanjut ke Pembayaran</button>
+        <button id="btnLanjut" onclick="lanjutKePembayaran()">Lanjut ke Pembayaran</button>
     </div>
 
-    <!-- SECTION PEMBAYARAN -->
-    <div id="paymentSection" class="card">
+    <!-- HALAMAN PEMBAYARAN -->
+    <div id="paymentSection">
         <h2>Scan untuk Membayar</h2>
         <img id="qris" src="" alt="QRIS Pembayaran" style="display:none;">
         <div class="paket" id="paketInfo" style="border:none; padding:0; margin-top:10px;">-</div>
@@ -69,18 +197,14 @@
         <p style="color:#5B6675;">Setelah membayar, kirim bukti transfer ke WhatsApp Admin. Status akan otomatis ter-update.</p>
         <div class="status waiting" id="statusText">Menunggu pembayaran...</div>
         
-        <!-- Link Aplikasi (Muncul otomatis saat status PAID) -->
         <div id="linkAplikasiBox" style="display:none;">
             <a href="https://cvdrn2025-design.github.io/SIMPel-Project-v.2.0/" class="btn-link">🔗 Masuk ke Aplikasi SIMPeL</a>
         </div>
         
-        <!-- Tombol Kirim ke WhatsApp Admin -->
         <button id="btnKirimWA" onclick="kirimKeWhatsApp()">Kirim Bukti ke WhatsApp Admin</button>
         
-        <button class="orange" onclick="kembaliPilihPaket()" style="background:#E9EBE6; color:#333; margin-top:10px;">Kembali Pilih Paket</button>
+        <button class="orange" onclick="kembaliPilihPaket()">Kembali Pilih Paket</button>
     </div>
-
-</div>
 
 <!-- LIBRARY FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
@@ -100,78 +224,65 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // ===== DATA USER =====
     const userId = sessionStorage.getItem('userId') || 'DRN-ADMIN-001';
-    
-    // ===== HARGA PAKET =====
     const paketHarga = {
         basic: 60000,
         premium: 299000,
         pro_max: 499000
     };
 
-    // ===== QRIS BASE64 =====
+    // GANTI DENGAN KODE BASE64 QRIS ANDA
     const qrisBase64 = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=";
 
     let paketTerpilih = null;
 
-    // ===== PILIH PAKET =====
     function pilihPaket(paket) {
         paketTerpilih = paket;
-        
         document.querySelectorAll('.paket').forEach(el => el.classList.remove('selected'));
         event.currentTarget.classList.add('selected');
-        
         document.getElementById('btnLanjut').style.display = 'block';
     }
 
-    // ===== LANJUT KE PEMBAYARAN =====
     function lanjutKePembayaran() {
         if (!paketTerpilih) return;
-        
-        // CEGAH DATA GANDA: Cek apakah sudah ada orderId
         const existingOrderId = sessionStorage.getItem('orderId');
         if (existingOrderId) {
             alert('⚠️ Transaksi sudah dibuat. Menunggu verifikasi admin...');
-            document.getElementById('pilihPaketSection').classList.add('hide');
+            document.getElementById('pilihPaketSection').style.display = 'none';
+            document.getElementById('heroSection').style.display = 'none';
             document.getElementById('paymentSection').style.display = 'block';
             cekStatus();
             return;
         }
         
         sessionStorage.setItem('paket', paketTerpilih);
-        
-        document.getElementById('pilihPaketSection').classList.add('hide');
+        document.getElementById('pilihPaketSection').style.display = 'none';
+        document.getElementById('heroSection').style.display = 'none';
         document.getElementById('paymentSection').style.display = 'block';
         
-        // Tampilkan QRIS
         const qrisImg = document.getElementById('qris');
         qrisImg.style.display = 'block';
         qrisImg.src = 'data:image/png;base64,' + qrisBase64;
         
-        // Tampilkan harga
         const namaPaket = paketTerpilih.charAt(0).toUpperCase() + paketTerpilih.slice(1);
         document.getElementById('paketInfo').textContent = 'Paket: ' + namaPaket;
         document.getElementById('hargaInfo').textContent = 'Rp ' + paketHarga[paketTerpilih].toLocaleString('id-ID');
         
-        // Tulis ke Firebase
         tulisKeFirebase();
         cekStatus();
     }
 
-    // ===== KEMBALI PILIH PAKET =====
     function kembaliPilihPaket() {
         sessionStorage.removeItem('paket');
         sessionStorage.removeItem('orderId');
         document.getElementById('paymentSection').style.display = 'none';
-        document.getElementById('pilihPaketSection').classList.remove('hide');
+        document.getElementById('pilihPaketSection').style.display = 'block';
+        document.getElementById('heroSection').style.display = 'block';
         document.getElementById('btnLanjut').style.display = 'none';
     }
 
-    // ===== TULIS KE FIREBASE =====
     async function tulisKeFirebase() {
         const orderId = 'SIM-' + Date.now();
-        
         try {
             await db.ref('transactions/' + orderId).set({
                 order_id: orderId,
@@ -181,9 +292,7 @@
                 user_id: userId,
                 created_at: Date.now()
             });
-            
             sessionStorage.setItem('orderId', orderId);
-            
             document.getElementById('statusText').textContent = 'Menunggu verifikasi admin...';
             document.getElementById('statusText').classList.add('waiting');
         } catch (err) {
@@ -191,21 +300,16 @@
         }
     }
 
-    // ===== KIRIM KE WHATSAPP ADMIN =====
     function kirimKeWhatsApp() {
         const orderId = sessionStorage.getItem('orderId');
         const nomorAdmin = '6282145111853';
-        
         const pesan = `Halo Admin SIMPeL!\n\nSaya sudah membayar paket ${paketTerpilih}.\nOrder ID: ${orderId}\n\nBerikut bukti transfer saya (dilampirkan).\nMohon diaktifkan. Terima kasih!`;
-        
         window.open(`https://wa.me/${nomorAdmin}?text=${encodeURIComponent(pesan)}`, '_blank');
     }
 
-    // ===== CEK STATUS (REALTIME - MUNCUL OTOMATIS) =====
     function cekStatus() {
         const orderId = sessionStorage.getItem('orderId');
         if (!orderId) return;
-        
         const statusRef = db.ref('transactions/' + orderId + '/status');
         statusRef.on('value', (snap) => {
             const val = snap.val();
@@ -213,17 +317,13 @@
                 document.getElementById('statusText').textContent = '✅ Pembayaran Diterima!';
                 document.getElementById('statusText').classList.remove('waiting');
                 document.getElementById('statusText').classList.add('paid');
-                
-                // TAMPILKAN LINK APLIKASI OTOMATIS
                 document.getElementById('linkAplikasiBox').style.display = 'block';
-                
-                // SEMBUNYIKAN TOMBOL KIRIM WA (karena sudah terverifikasi)
                 document.getElementById('btnKirimWA').style.display = 'none';
             }
         });
     }
     
-    document.getElementById('pilihPaketSection').classList.remove('hide');
+    document.getElementById('pilihPaketSection').style.display = 'block';
     document.getElementById('paymentSection').style.display = 'none';
 </script>
 </body>
