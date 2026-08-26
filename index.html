@@ -761,28 +761,59 @@ function login(e){
     }
     
         if(role === 'staff'){
-        const kode = document.getElementById('loginKode').value.trim().padStart(4, '0');
-        const proyek = projects.find(p => getKode(p.nomorKontrak) === kode);
-        if(!proyek){
-            alert('Kode proyek tidak ditemukan.');
-            return false;
+    const userIdInput = document.getElementById('loginKode').value.trim().toUpperCase();
+    
+    // CEK USER ID DI FIREBASE
+    db.ref('users/' + userIdInput).once('value', (snap) => {
+        const userData = snap.val();
+        
+        if(!userData){
+            alert('User ID tidak ditemukan. Pastikan sudah diverifikasi admin.');
+            return;
         }
-        if(pass === 'admin02'){
+        
+        if(userData.status !== 'Aktif'){
+            alert('Akun Anda tidak aktif. Hubungi admin.');
+            return;
+        }
+        
+        if(pass !== 'admin02'){
+            alert('Password Staff yang benar adalah: admin02');
+            return;
+        }
+        
+        // ===== CEK IZIN AKSES KE FIREBASE =====
+        // Ambil daftar proyek yang diizinkan management
+        db.ref('staff_access/' + userIdInput).once('value', (snap) => {
+            const accessData = snap.val() || {};
+            const projectIds = Object.keys(accessData);
+            
+            if(projectIds.length === 0){
+                alert('Anda tidak memiliki akses ke proyek apa pun. Hubungi Management.');
+                return;
+            }
+            
+            // Ambil proyek pertama yang diizinkan
+            const proyek = projects.find(p => p.id === projectIds[0]);
+            if(!proyek){
+                alert('Proyek tidak ditemukan di database. Hubungi Management.');
+                return;
+            }
+            
+            // ===== SUKSES LOGIN =====
             sessionStorage.setItem('drn_role', 'staff');
             sessionStorage.setItem('drn_project', proyek.id);
+            sessionStorage.setItem('drn_user_id', userIdInput);
             localStorage.setItem(KEYS.current, proyek.id);
             currentProjectId = proyek.id;
-            alert('Login Staff berhasil!');
+            
+            alert('✅ Login Staff berhasil! User ID: ' + userIdInput);
             location.reload();
-            return false;
-        } else {
-            alert('Password Staff yang benar adalah: admin02');
-            return false;
-        }
-    }
+        });
+    });
     
     return false;
-}
+        }
         
         // ===== SUKSES LOGIN =====
         sessionStorage.setItem('drn_role', 'staff');
