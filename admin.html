@@ -53,10 +53,14 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 <script>
-    const firebaseConfig = { /* config Anda */ };
-    firebase.initializeApp(firebaseConfig);
-    const db = firebase.database();
-
+    const firebaseConfig = {
+  apiKey: "AIzaSyAD3HHCS6nEf-K2RV2F-niPNmyoxlV49PE",
+  authDomain: "simpeldb.firebaseapp.com",
+  projectId: "simpeldb",
+  storageBucket: "simpeldb.firebasestorage.app",
+  messagingSenderId: "740760479162",
+  appId: "1:740760479162:web:a073dcbac184462b80e983"
+};
     function loginAdmin() {
         if (document.getElementById('adminPass').value === 'admin123') {
             document.getElementById('loginArea').classList.add('hide');
