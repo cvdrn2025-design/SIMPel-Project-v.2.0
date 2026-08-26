@@ -6,75 +6,130 @@
     <title>Pembayaran SIMPeL</title>
     <style>
         body { font-family: sans-serif; background: #E9EBE6; padding: 20px; }
-        .card { background: #fff; padding: 20px; border-radius: 8px; max-width: 400px; margin: auto; }
-        img { width: 100%; border-radius: 8px; }
+        .card { background: #fff; padding: 20px; border-radius: 8px; max-width: 400px; margin: auto; text-align: center; }
         h2 { color: #10263E; }
-        .status { font-weight: bold; margin-top: 15px; }
+        .paket { font-size: 14px; color: #5B6675; margin-bottom: 10px; }
+        .harga { font-size: 24px; font-weight: bold; color: #E8801C; margin-bottom: 20px; }
+        img#qris { width: 100%; max-width: 300px; border: 2px solid #E9EBE6; border-radius: 8px; margin-bottom: 20px; }
+        .status { font-size: 14px; margin-top: 15px; }
+        .status.waiting { color: #5B6675; }
+        .status.paid { color: green; font-weight: bold; }
+        button { width: 100%; padding: 12px; background: #25D366; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 20px; }
+        button:hover { background: #1DA851; }
     </style>
 </head>
 <body>
 <div class="card">
     <h2>Scan untuk Membayar</h2>
     
-    <!-- QRIS ditampilkan dari API Pakasir (backend) -->
-    <img id="qrisImage" src="https://via.placeholder.com/300" alt="QRIS">
+    <!-- Tampilkan QRIS Statis (qris.png) -->
+    <img id="qris" src="qris.png" alt="QRIS Pembayaran">
     
-    <p style="color:#5B6675;">Setelah membayar, status akan otomatis terkirim ke admin.</p>
-    <div class="status" id="statusText">Menunggu pembayaran...</div>
+    <div class="paket" id="paketInfo">-</div>
+    <div class="harga" id="hargaInfo">-</div>
+    
+    <p style="color:#5B6675;">Setelah membayar, kirim bukti transfer ke WhatsApp Admin. Status akan otomatis ter-update.</p>
+    
+    <div class="status waiting" id="statusText">Menunggu pembayaran...</div>
+    
+    <button id="btnKirimWA" onclick="kirimKeWhatsApp()">Kirim Bukti ke WhatsApp Admin</button>
 </div>
 
+<!-- LIBRARY FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
 <script>
+    // ===== KONFIGURASI FIREBASE (SAMA DENGAN ADMIN.HTML) =====
     const firebaseConfig = {
-  apiKey: "AIzaSyAD3HHCS6nEf-K2RV2F-niPNmyoxlV49PE",
-  authDomain: "simpeldb.firebaseapp.com",
-  projectId: "simpeldb",
-  storageBucket: "simpeldb.firebasestorage.app",
-  messagingSenderId: "740760479162",
-  appId: "1:740760479162:web:a073dcbac184462b80e983"
-};
+        apiKey: "AIzaSyAD3HHCS6nEf-K2RV2F-niPNmyoxlV49PE",
+        authDomain: "simpeldb.firebaseapp.com",
+        projectId: "simpeldb",
+        storageBucket: "simpeldb.firebasestorage.app",
+        messagingSenderId: "740760479162",
+        appId: "1:740760479162:web:a073dcbac184462b80e983"
+    };
     
-    const orderId = 'SIM-' + Date.now();
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // ===== DATA USER (GANTI SESUAI LOGIN ANDA) =====
+    // Asumsikan user sudah login, ambil dari sessionStorage atau variabel global
+    const userId = sessionStorage.getItem('userId') || 'DEMO-USER-001';
+    const paket = sessionStorage.getItem('paket') || 'premium'; // basic, premium, pro_max
     
-    async function startPayment() {
+    // ===== HARGA PAKET =====
+    const paketHarga = {
+        basic: 60000,
+        premium: 299000,
+        pro_max: 499000
+    };
+
+    // ===== TAMPILKAN INFO PAKET =====
+    function renderPaket() {
+        const namaPaket = paket.charAt(0).toUpperCase() + paket.slice(1);
+        document.getElementById('paketInfo').textContent = 'Paket: ' + namaPaket;
+        document.getElementById('hargaInfo').textContent = 'Rp ' + paketHarga[paket].toLocaleString('id-ID');
+    }
+
+    // ===== TULIS STATUS KE FIREBASE =====
+    // Karena QRIS statis, user menulis status 'WAITING' dulu, lalu admin verifikasi manual
+    async function tulisKeFirebase() {
+        const orderId = 'SIM-' + Date.now();
+        
         try {
-            const response = await fetch('https://backend-anda.com/create-payment', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ orderId, paket: 'premium' })
-            });
-            const data = await response.json();
-            
-            // Tampilkan QRIS
-            document.getElementById('qrisImage').src = data.qr_url;
-            
-            // Tulis data ke Firebase Realtime Database
             await db.ref('transactions/' + orderId).set({
                 order_id: orderId,
-                paket: 'premium',
-                amount: 299000,
-                status: 'PENDING',
-                user_email: 'user@email.com'
+                paket: paket,
+                amount: paketHarga[paket],
+                status: 'WAITING', // Menunggu admin verifikasi
+                user_id: userId,
+                created_at: Date.now()
             });
             
+            // Simpan orderId di sessionStorage untuk dikirim ke WA
+            sessionStorage.setItem('orderId', orderId);
+            
+            // Reset status tampilan
+            document.getElementById('statusText').textContent = 'Menunggu verifikasi admin...';
+            document.getElementById('statusText').classList.add('waiting');
         } catch (err) {
-            alert('Gagal memuat QRIS: ' + err.message);
+            alert('Gagal menulis ke Firebase: ' + err.message);
         }
     }
-    
-    // Cek status pembayaran setiap 5 detik
-    setInterval(async () => {
+
+    // ===== KIRIM KE WHATSAPP =====
+    function kirimKeWhatsApp() {
+        const orderId = sessionStorage.getItem('orderId');
+        const nomorAdmin = '6282145111853'; // <-- GANTI DENGAN NOMOR WHATSAPP ADMIN (TANPA 0 DI DEPAN)
+        
+        const pesan = `Halo Admin SIMPeL!\n\nSaya sudah membayar paket ${paket}.\nOrder ID: ${orderId}\n\nBerikut bukti transfer saya (dilampirkan).\nMohon diaktifkan. Terima kasih!`;
+        
+        // Buka WhatsApp dengan pesan terisi otomatis
+        window.open(`https://wa.me/${nomorAdmin}?text=${encodeURIComponent(pesan)}`, '_blank');
+    }
+
+    // ===== POLLING STATUS (Cek apakah admin sudah verifikasi) =====
+    // Halaman akan otomatis update jika admin menandai status 'PAID'
+    function cekStatus() {
+        const orderId = sessionStorage.getItem('orderId');
+        if (!orderId) return;
+        
         const statusRef = db.ref('transactions/' + orderId + '/status');
         statusRef.on('value', (snap) => {
             const val = snap.val();
             if (val === 'PAID') {
-                document.getElementById('statusText').innerHTML = '✅ <b style="color:green;">Pembayaran Diterima!</b>';
+                document.getElementById('statusText').textContent = '✅ Pembayaran Diterima! User ID: ' + userId;
+                document.getElementById('statusText').classList.remove('waiting');
+                document.getElementById('statusText').classList.add('paid');
             }
         });
-    }, 5000);
-    
-    startPayment();
+    }
+
+    // ===== INIT =====
+    renderPaket();
+    tulisKeFirebase();
+    cekStatus();
 </script>
 </body>
 </html>
