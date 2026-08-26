@@ -742,7 +742,7 @@ function login(e){
     if(role === 'staff'){
     const userIdInput = document.getElementById('loginKode').value.trim().toUpperCase();
     
-    // Cek apakah user ID ada di Firebase Realtime Database
+    // CEK USER ID DI FIREBASE
     db.ref('users/' + userIdInput).once('value', (snap) => {
         const userData = snap.val();
         
@@ -751,13 +751,11 @@ function login(e){
             return;
         }
         
-        // Validasi status user
         if(userData.status !== 'Aktif'){
             alert('Akun Anda tidak aktif. Hubungi admin.');
             return;
         }
         
-        // Validasi password (Ganti 'admin02' jika ingin beda per user)
         if(pass !== 'admin02'){
             alert('Password Staff yang benar adalah: admin02');
             return;
@@ -767,7 +765,7 @@ function login(e){
         sessionStorage.setItem('drn_role', 'staff');
         sessionStorage.setItem('drn_project', userIdInput);
         sessionStorage.setItem('drn_user_id', userIdInput);
-        sessionStorage.setItem('drn_kode_unik', userData.kode_unik || ''); // Simpan kode unik
+        sessionStorage.setItem('drn_kode_unik', userData.kode_unik || '');
         localStorage.setItem(KEYS.current, userIdInput);
         currentProjectId = userIdInput;
         
@@ -776,7 +774,7 @@ function login(e){
     });
     
     return false;
-                                        }
+    }
 
 function logout(){
     sessionStorage.removeItem('drn_role');
