@@ -1,0 +1,41 @@
+{
+  "name": "SIMPeL - Sistem Pemantauan Lapangan",
+  "short_name": "SIMPeL",
+  "description": "Aplikasi Sistem Pemantauan Lapangan untuk CV. Dinamika Rekonstruksi Nusantara",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#10263E",
+  "theme_color": "#10263E",
+  "lang": "id",
+  "dir": "ltr",
+  "icons": [
+    {
+      "src": "https://cvdrn2025-design.github.io/SIMPel-Project-v.2.0/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "https://cvdrn2025-design.github.io/SIMPel-Project-v.2.0/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any maskable"
+    }
+  ],
+  "shortcuts": [
+    {
+      "name": "Masuk ke Aplikasi",
+      "url": "./index.html",
+      "description": "Buka aplikasi SIMPeL"
+    },
+    {
+      "name": "Pembayaran",
+      "url": "./pembayaran.html",
+      "description": "Buka halaman pembayaran"
+    }
+  ],
+  "categories": ["business", "productivity", "utilities"],
+  "prefer_related_applications": false
+}
