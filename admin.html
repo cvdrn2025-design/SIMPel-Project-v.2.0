@@ -8,11 +8,18 @@
         body { font-family: sans-serif; background: #E9EBE6; padding: 20px; }
         .container { max-width: 800px; margin: auto; }
         .card { background: #fff; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
-        button { padding: 10px; background: #E8801C; color: white; border: none; border-radius: 4px; cursor: pointer; }
-        .hide { display: none !important; }
+        h1, h2 { color: #10263E; }
         .tag { display: inline-block; padding: 4px 10px; border-radius: 10px; font-size: 12px; font-weight: bold; }
         .ok { background: #E4F3EA; color: #2F7D5A; }
         .warn { background: #FBE9E7; color: #B23A2E; }
+        .hide { display: none !important; }
+        button { padding: 10px; background: #E8801C; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
+        button:hover { background: #C56A12; }
+        button.wa { background: #25D366; }
+        button.wa:hover { background: #1DA851; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; font-size: 14px; }
+        td.amount { text-align: right; }
     </style>
 </head>
 <body>
@@ -23,11 +30,14 @@
         <h1>Admin SIMPeL</h1>
         <input type="password" id="adminPass" placeholder="Password Admin">
         <button onclick="loginAdmin()">Masuk</button>
+        <p style="color:red; display:none;" id="loginError">Password salah!</p>
     </div>
 
     <!-- DASHBOARD -->
     <div id="dashboardArea" class="hide card">
         <h2>Daftar Transaksi</h2>
+        <p style="color:#5B6675;">Transaksi yang masuk melalui Firebase Realtime Database akan otomatis muncul di sini.</p>
+        
         <table>
             <thead>
                 <tr>
@@ -41,92 +51,137 @@
             <tbody id="tblTransactions"></tbody>
         </table>
         
+        <!-- Hasil Verifikasi -->
         <div id="hasilVerifikasi" class="hide" style="margin-top:20px; border-top:1px solid #ddd; padding-top:20px;">
-            <h3>Hasil</h3>
-            <b id="hasilUserId" style="font-size: 18px;"></b>
-            <button onclick="kirimKeWhatsApp()" style="background:#25D366;">Kirim ke WhatsApp</button>
+            <h3>Hasil Verifikasi</h3>
+            <div style="background: #F6F7F5; border: 2px dashed #E8801C; text-align: center; padding: 15px; font-size: 24px; font-family: monospace; font-weight: bold; margin: 15px 0; border-radius: 6px;" id="hasilKode">-</div>
+            <p><b>User ID:</b> <span id="hasilUserId" style="font-size:18px; font-weight:bold; color:#E8801C;"></span></p>
+            <p style="color:#5B6675;">Kirim User ID ini ke User melalui WhatsApp agar mereka bisa login.</p>
+            <button class="wa" onclick="kirimKeWhatsApp()">Kirim ke WhatsApp User</button>
         </div>
     </div>
 
 </div>
 
+<!-- LIBRARY FIREBASE -->
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
 <script>
+    // ===== KONFIGURASI FIREBASE (SAMA DENGAN PEMBAYARAN.HTML) =====
     const firebaseConfig = {
-  apiKey: "AIzaSyAD3HHCS6nEf-K2RV2F-niPNmyoxlV49PE",
-  authDomain: "simpeldb.firebaseapp.com",
-  projectId: "simpeldb",
-  storageBucket: "simpeldb.firebasestorage.app",
-  messagingSenderId: "740760479162",
-  appId: "1:740760479162:web:a073dcbac184462b80e983"
-};
+        apiKey: "AIzaSyAD3HHCS6nEf-K2RV2F-niPNmyoxlV49PE",
+        authDomain: "simpeldb.firebaseapp.com",
+        projectId: "simpeldb",
+        storageBucket: "simpeldb.firebasestorage.app",
+        messagingSenderId: "740760479162",
+        appId: "1:740760479162:web:a073dcbac184462b80e983"
+    };
+    
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // ===== LOGIN ADMIN =====
     function loginAdmin() {
         if (document.getElementById('adminPass').value === 'admin123') {
             document.getElementById('loginArea').classList.add('hide');
             document.getElementById('dashboardArea').classList.remove('hide');
             listen();
+        } else {
+            document.getElementById('loginError').style.display = 'block';
         }
     }
 
+    // ===== REALTIME LISTENER =====
     function listen() {
-        // Listener real-time: otomatis update saat data berubah
+        // Mendengarkan semua transaksi secara real-time
         db.ref('transactions').on('value', (snap) => {
             const data = snap.val();
             renderTable(data);
         });
     }
 
+    // ===== RENDER TABEL =====
     function renderTable(data) {
         const tbody = document.getElementById('tblTransactions');
         tbody.innerHTML = '';
-        if (!data) return;
         
+        if (!data) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Belum ada transaksi.</td></tr>';
+            return;
+        }
+        
+        // Konversi objek Firebase ke array
         Object.entries(data).forEach(([key, val]) => {
-            const status = val.status === 'PAID' ? '<span class="tag ok">PAID</span>' : '<span class="tag warn">PENDING</span>';
+            const status = val.status === 'PAID' ? '<span class="tag ok">PAID</span>' : '<span class="tag warn">WAITING</span>';
+            const amount = (val.amount || 0).toLocaleString('id-ID');
+            
             const tr = document.createElement('tr');
             tr.innerHTML = `
                 <td><b>${val.order_id}</b></td>
                 <td>${val.paket}</td>
-                <td>Rp ${val.amount.toLocaleString()}</td>
+                <td class="amount">Rp ${amount}</td>
                 <td>${status}</td>
                 <td>
-                    ${val.status === 'PAID' ? 
-                        `<button onclick="buatUserID('${val.order_id}', '${val.paket}', '${key}')">Buat User ID</button>` : 
-                        '-'}
+                    ${val.status === 'WAITING' ? 
+                        `<button onclick="verifikasiPembayaran('${key}')">Tandai Sudah Bayar</button>` : 
+                        (val.status === 'PAID' ? 
+                            `<button onclick="buatUserID('${val.order_id}', '${val.paket}', '${key}')">Buat User ID</button>` : 
+                            '-')}
                 </td>
             `;
             tbody.appendChild(tr);
         });
     }
 
-    async function buatUserID(orderId, paket, key) {
-        const userId = 'DRN-' + Math.random().toString(36).substring(2, 8).toUpperCase();
-        
-        // Simpan User ID ke database
-        await db.ref('users/' + userId).set({
-            id: userId,
-            paket: paket,
-            order_id: orderId,
-            status: 'Aktif'
-        });
-        
-        // Tandai sebagai sudah diproses
-        await db.ref('transactions/' + key + '/verified').set(true);
-        
-        document.getElementById('hasilVerifikasi').classList.remove('hide');
-        document.getElementById('hasilUserId').textContent = userId;
-        
-        // Reset untuk kirim WhatsApp
-        sessionStorage.setItem('currentUserId', userId);
-        sessionStorage.setItem('currentOrderId', orderId);
+    // ===== VERIFIKASI PEMBAYARAN =====
+    async function verifikasiPembayaran(key) {
+        await db.ref('transactions/' + key + '/status').set('PAID');
+        alert('Status diubah menjadi PAID!');
     }
 
+    // ===== BUAT USER ID =====
+    async function buatUserID(orderId, paket, key) {
+        const kodeUnik = 'SIM-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+        const userId = 'DRN-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+        
+        try {
+            // Simpan User ID ke Firebase Realtime Database
+            await db.ref('users/' + userId).set({
+                id: userId,
+                kode_unik: kodeUnik,
+                paket: paket,
+                status: 'Aktif',
+                order_id: orderId,
+                created_at: Date.now()
+            });
+            
+            // Tandai transaksi sebagai sudah diproses
+            await db.ref('transactions/' + key + '/verified').set(true);
+            
+            // Tampilkan hasil
+            document.getElementById('hasilVerifikasi').classList.remove('hide');
+            document.getElementById('hasilKode').textContent = kodeUnik;
+            document.getElementById('hasilUserId').textContent = userId;
+            
+            sessionStorage.setItem('currentUserId', userId);
+            sessionStorage.setItem('currentOrderId', orderId);
+            
+            alert('✅ User ID berhasil dibuat!');
+        } catch (err) {
+            alert('Gagal menyimpan User ID: ' + err.message);
+        }
+    }
+
+    // ===== KIRIM KE WHATSAPP =====
     function kirimKeWhatsApp() {
         const userId = sessionStorage.getItem('currentUserId');
-        const nomor = '6281234567890';
-        const pesan = `Halo Admin, User ID saya: ${userId}. Mohon diaktifkan`;
-        window.open(`https://wa.me/${nomor}?text=${encodeURIComponent(pesan)}`);
+        const kode = document.getElementById('hasilKode').textContent;
+        const nomorAdmin = '6282145111853'; // Ganti dengan nomor WhatsApp yang dituju
+        
+        const pesan = `Halo! User ID Anda: ${userId}\nKode Unik: ${kode}\n\nSilakan login di aplikasi SIMPeL. Terima kasih!`;
+        
+        window.open(`https://wa.me/${nomorAdmin}?text=${encodeURIComponent(pesan)}`, '_blank');
     }
 </script>
 </body>
