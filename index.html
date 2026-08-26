@@ -2529,6 +2529,13 @@ async function initApp(){
     const role = currentRole();
     if(role){
         document.getElementById('loginModal').style.display = 'none';
+        
+        // TAMBAHKAN LOGIKA INI AGAR TOMBOL KELOLA STAFF MUNCUL SAAT MANAGEMENT LOGIN
+        if(role === 'management'){
+            document.getElementById('btnKelolaStaff').style.display = 'block';
+            loadStaffUsers(); // Muat daftar User ID dari Firebase
+        }
+        
         if(role === 'staff' && sessionStorage.getItem('drn_project')){
             currentProjectId = sessionStorage.getItem('drn_project');
         }
@@ -2541,6 +2548,7 @@ async function initApp(){
             document.querySelector('.proj-bar button[onclick="exportBackup()"]').style.display = 'none';
             document.querySelector('.proj-bar button[onclick="deleteProject()"]').style.display = 'none';
             document.querySelector('#mainTabs button[data-tab="cost"]').style.display = 'none';
+            document.querySelector('#mainTabs button[data-tab="kelola_staff"]').style.display = 'none'; // Sembunyikan juga di staff
         }
     } else {
         document.getElementById('loginModal').style.display = 'flex';
