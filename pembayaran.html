@@ -13,24 +13,23 @@
             padding-bottom: 80px;
         }
 
-        /* HEADER PENUH SATU LAYAR */
+        /* HEADER - Background hanya setinggi konten, tidak fixed */
         .hero {
             background-image: url('https://cvdrn2025-design.github.io/SIMPel-Project-v.2.0/pembayaran.png');
             background-size: cover;
-            background-position: center;
-            height: 100vh; /* Memenuhi seluruh layar */
+            background-position: top center;
+            height: 320px; /* Ubah dari 100vh ke 320px agar tidak terlalu tinggi */
             width: 100%;
-            position: fixed;
-            top: 0;
-            left: 0;
-            z-index: -1; /* Background di belakang semua */
+            position: relative;
+            z-index: 0;
+            padding-top: 0;
         }
 
-        /* KARTU PILIH PAKET (TRANSPARAN DI BELAKANG, PUTIH DI DEPAN) */
+        /* KARTU PILIH PAKET (Turunkan dengan margin 100px) */
         .container {
             max-width: 360px;
-            margin: 40px auto 0;
-            background: transparent; /* Background kosong */
+            margin: 100px auto 0; /* Ubah dari 40px ke 100px agar cukup turun! */
+            background: transparent;
             border-radius: 14px 14px 0 0;
             padding: 15px;
             position: relative;
@@ -46,7 +45,7 @@
             margin-bottom: 12px;
             cursor: pointer;
             transition: all 0.3s;
-            background: #fff; /* Kartu tetap putih */
+            background: #fff;
             box-shadow: 0 2px 8px rgba(0,0,0,0.1);
         }
 
@@ -95,18 +94,16 @@
         /* HALAMAN PEMBAYARAN */
         #paymentSection {
             display: none;
-            background: transparent;
+            background: #fff;
             padding: 20px;
             max-width: 360px;
-            margin: 10px auto 0;
+            margin: 20px auto 0;
             border-radius: 8px;
             text-align: center;
             position: relative;
             z-index: 1;
-            min-height: 400px;
         }
 
-        /* QRIS TAMPIL DI TENGAH */
         img#qris {
             width: 100%;
             max-width: 300px;
@@ -163,10 +160,8 @@
 </head>
 <body>
 
-    <!-- BACKGROUND GAMBAR PENUH 1 LAYAR -->
     <div class="hero" id="heroSection"></div>
 
-    <!-- KARTU PILIH PAKET -->
     <div class="container" id="pilihPaketSection">
         <div class="paket" onclick="pilihPaket('basic')">
             <h3>Paket Basic</h3>
