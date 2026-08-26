@@ -20,7 +20,8 @@
         .ok { background: #E4F3EA; color: #2F7D5A; }
         .warn { background: #FBE9E7; color: #B23A2E; }
         
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .table-wrapper { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; min-width: 600px; }
         th, td { border: 1px solid #ddd; padding: 8px; text-align: left; font-size: 14px; }
         td.amount { text-align: right; }
         
@@ -48,18 +49,21 @@
         
         <p style="color:#5B6675;">Data transaksi akan otomatis muncul dan ter-update secara real-time.</p>
         
-        <table>
-            <thead>
-                <tr>
-                    <th>Order ID</th>
-                    <th>Paket</th>
-                    <th>Jumlah</th>
-                    <th>Status</th>
-                    <th>Aksi</th>
-                </tr>
-            </thead>
-            <tbody id="tblTransactions"></tbody>
-        </table>
+        <!-- Table Wrapper untuk responsive HP -->
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Paket</th>
+                        <th>Jumlah</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="tblTransactions"></tbody>
+            </table>
+        </div>
         
         <!-- Hasil Verifikasi -->
         <div id="hasilVerifikasi" class="hide" style="margin-top:20px; border-top:1px solid #ddd; padding-top:20px;">
@@ -100,7 +104,7 @@
             sessionStorage.setItem('adminLoggedIn', 'true');
             document.getElementById('loginArea').classList.add('hide');
             document.getElementById('dashboardArea').classList.remove('hide');
-            listen(); // Mulai listener realtime
+            listen();
         } else {
             document.getElementById('loginError').style.display = 'block';
         }
