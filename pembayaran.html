@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pilih Paket & Pembayaran SIMPeL</title>
+    <style>
+        body { font-family: sans-serif; background: #E9EBE6; padding: 20px; }
+        .container { max-width: 600px; margin: auto; }
+        .card { background: #fff; padding: 20px; border-radius: 8px; margin-bottom: 15px; text-align: center; }
+        h1, h2 { color: #10263E; }
+        
+        .paket { border: 2px solid #E9EBE6; border-radius: 8px; padding: 15px; margin-bottom: 15px; cursor: pointer; transition: all 0.3s; }
+        .paket:hover { border-color: #E8801C; }
+        .paket.selected { border-color: #E8801C; background: #FFF3DA; }
+        
+        .paket h3 { margin: 0 0 5px 0; color: #10263E; }
+        .paket .harga { font-size: 18px; font-weight: bold; color: #E8801C; }
+        .paket .fitur { font-size: 13px; color: #5B6675; margin-top: 8px; }
+        
+        #paymentSection { display: none; }
+        img#qris { width: 100%; max-width: 250px; border: 1px solid #ccc; border-radius: 8px; margin-bottom: 15px; }
+        .status { font-size: 14px; margin-top: 15px; }
+        .status.waiting { color: #5B6675; }
+        .status.paid { color: green; font-weight: bold; }
+        
+        button { width: 100%; padding: 12px; background: #25D366; color: white; border: none; border-radius: 6px; font-weight: bold; cursor: pointer; margin-top: 20px; }
+        button:hover { background: #1DA851; }
+        button.orange { background: #E8801C; }
+        button.orange:hover { background: #C56A12; }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- SECTION PILIH PAKET -->
+    <div id="pilihPaketSection" class="card">
+        <h1 style="text-align:center;">Pilih Paket Anda</h1>
+        
+        <div class="paket" onclick="pilihPaket('basic')">
+            <h3>Paket Basic</h3>
+            <div class="harga">Rp 60.000 / bulan</div>
+            <div class="fitur">✔️ 1 Proyek</div>
+            <div class="fitur">⚠️ View-Only</div>
+        </div>
+        
+        <div class="paket" onclick="pilihPaket('premium')">
+            <h3>Paket Premium</h3>
+            <div class="harga">Rp 299.000 / bulan</div>
+            <div class="fitur">✔️ 2 Proyek + Add-on</div>
+            <div class="fitur">✔️ Full Access</div>
+        </div>
+        
+        <div class="paket" onclick="pilihPaket('pro_max')">
+            <h3>Paket Pro Max</h3>
+            <div class="harga">Rp 499.000 / bulan</div>
+            <div class="fitur">✔️ 5 Proyek + Add-on</div>
+            <div class="fitur">✔️ Full Access</div>
+            <div class="fitur">✔️ Modul SiCerMat</div>
+        </div>
+        
+        <button class="orange" id="btnLanjut" onclick="lanjutKePembayaran()" style="display:none;">Lanjut ke Pembayaran</button>
+    </div>
+
+    <!-- SECTION PEMBAYARAN -->
+    <div id="paymentSection" class="card">
+        <h2>Scan untuk Membayar</h2>
+        <img id="qris" src="" alt="QRIS Pembayaran" style="display:none;">
+        <div class="paket" id="paketInfo" style="border:none; padding:0; margin-top:10px;">-</div>
+        <div class="harga" id="hargaInfo" style="font-size:24px; font-weight:bold; color:#E8801C;">-</div>
+        
+        <p style="color:#5B6675;">Setelah membayar, kirim bukti transfer ke WhatsApp Admin. Status akan otomatis ter-update.</p>
+        <div class="status waiting" id="statusText">Menunggu pembayaran...</div>
+        
+        <button id="btnKirimWA" onclick="kirimKeWhatsApp()">Kirim Bukti ke WhatsApp Admin</button>
+        <button class="orange" onclick="kembaliPilihPaket()" style="background:#E9EBE6; color:#333; margin-top:10px;">Kembali Pilih Paket</button>
+    </div>
+
+</div>
+
+<!-- LIBRARY FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyAD3HHCS6nEf-K2RV2F-niPNmyoxlV49PE",
+        authDomain: "simpeldb.firebaseapp.com",
+        databaseURL: "https://simpeldb-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "simpeldb",
+        storageBucket: "simpeldb.firebasestorage.app",
+        messagingSenderId: "740760479162",
+        appId: "1:740760479162:web:a073dcbac184462b80e983"
+    };
+    
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // ===== DATA USER =====
+    // Ganti userId ini dengan User ID yang didapat dari admin
+    const userId = sessionStorage.getItem('userId') || 'DRN-ADMIN-001';
+    
+    // ===== HARGA PAKET =====
+    const paketHarga = {
+        basic: 60000,
+        premium: 299000,
+        pro_max: 499000
+    };
+
+    let paketTerpilih = null;
+
+    // ===== PILIH PAKET =====
+    function pilihPaket(paket) {
+        paketTerpilih = paket;
+        
+        // Highlight kartu yang dipilih
+        document.querySelectorAll('.paket').forEach(el => el.classList.remove('selected'));
+        event.currentTarget.classList.add('selected');
+        
+        // Tampilkan tombol lanjut
+        document.getElementById('btnLanjut').style.display = 'block';
+    }
+
+    // ===== LANJUT KE PEMBAYARAN =====
+    function lanjutKePembayaran() {
+        if (!paketTerpilih) return;
+        
+        // Simpan pilihan ke sessionStorage
+        sessionStorage.setItem('paket', paketTerpilih);
+        
+        // Sembunyikan pilihan paket, tampilkan pembayaran
+        document.getElementById('pilihPaketSection').classList.add('hide');
+        document.getElementById('paymentSection').style.display = 'block';
+        
+        // Tampilkan QRIS
+        const qrisImg = document.getElementById('qris');
+        qrisImg.style.display = 'block';
+        qrisImg.src = 'data:image/png;base64, TEMPELKAN_KODE_BASE64_QRIS_ANDA_DI_SINI'; // <-- GANTI DENGAN BASE64 QRIS ANDA
+        
+        // Tampilkan harga
+        const namaPaket = paketTerpilih.charAt(0).toUpperCase() + paketTerpilih.slice(1);
+        document.getElementById('paketInfo').textContent = 'Paket: ' + namaPaket;
+        document.getElementById('hargaInfo').textContent = 'Rp ' + paketHarga[paketTerpilih].toLocaleString('id-ID');
+        
+        // Tulis ke Firebase
+        tulisKeFirebase();
+        cekStatus();
+    }
+
+    // ===== KEMBALI PILIH PAKET =====
+    function kembaliPilihPaket() {
+        sessionStorage.removeItem('paket');
+        document.getElementById('paymentSection').style.display = 'none';
+        document.getElementById('pilihPaketSection').classList.remove('hide');
+        document.getElementById('btnLanjut').style.display = 'none';
+    }
+
+    // ===== TULIS KE FIREBASE =====
+    async function tulisKeFirebase() {
+        const orderId = 'SIM-' + Date.now();
+        
+        try {
+            await db.ref('transactions/' + orderId).set({
+                order_id: orderId,
+                paket: paketTerpilih,
+                amount: paketHarga[paketTerpilih],
+                status: 'WAITING',
+                user_id: userId,
+                created_at: Date.now()
+            });
+            
+            sessionStorage.setItem('orderId', orderId);
+            
+            document.getElementById('statusText').textContent = 'Menunggu verifikasi admin...';
+            document.getElementById('statusText').classList.add('waiting');
+        } catch (err) {
+            alert('Gagal menulis ke Firebase: ' + err.message);
+        }
+    }
+
+    // ===== KIRIM KE WHATSAPP =====
+    function kirimKeWhatsApp() {
+        const orderId = sessionStorage.getItem('orderId');
+        const nomorAdmin = '6282145111853';
+        
+        const pesan = `Halo Admin SIMPeL!\n\nSaya sudah membayar paket ${paketTerpilih}.\nOrder ID: ${orderId}\n\nBerikut bukti transfer saya (dilampirkan).\nMohon diaktifkan. Terima kasih!`;
+        
+        window.open(`https://wa.me/${nomorAdmin}?text=${encodeURIComponent(pesan)}`, '_blank');
+    }
+
+    // ===== CEK STATUS =====
+    function cekStatus() {
+        const orderId = sessionStorage.getItem('orderId');
+        if (!orderId) return;
+        
+        const statusRef = db.ref('transactions/' + orderId + '/status');
+        statusRef.on('value', (snap) => {
+            const val = snap.val();
+            if (val === 'PAID') {
+                document.getElementById('statusText').textContent = '✅ Pembayaran Diterima! User ID: ' + userId;
+                document.getElementById('statusText').classList.remove('waiting');
+                document.getElementById('statusText').classList.add('paid');
+            }
+        });
+    }
+    
+    // Tampilkan halaman pilih paket terlebih dahulu
+    document.getElementById('pilihPaketSection').classList.remove('hide');
+    document.getElementById('paymentSection').style.display = 'none';
+</script>
+</body>
+</html>
