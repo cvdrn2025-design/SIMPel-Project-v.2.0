@@ -314,5 +314,18 @@
     document.getElementById('pilihPaketSection').style.display = 'block';
     document.getElementById('paymentSection').style.display = 'none';
 </script>
+    <script>
+    if ('serviceWorker' in navigator) {
+        window.addEventListener('load', function() {
+            navigator.serviceWorker.register('./sw.js')
+                .then(function(registration) {
+                    console.log('Service Worker terdaftar:', registration.scope);
+                })
+                .catch(function(error) {
+                    console.log('Gagal mendaftarkan Service Worker:', error);
+                });
+        });
+    }
+    </script>
 </body>
 </html>
