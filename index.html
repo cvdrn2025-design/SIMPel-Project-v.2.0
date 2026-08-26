@@ -868,6 +868,81 @@ function renderPic(){
     });
 }
 
+// ===== KELOLA STAFF (KHUSUS MANAGEMENT) =====
+let daftarUserFirebase = [];
+
+function loadStaffUsers() {
+    db.ref('users').once('value', (snap) => {
+        const data = snap.val();
+        daftarUserFirebase = data ? Object.entries(data).map(([key, val]) => ({ id: key, ...val })) : [];
+        renderKelolaStaff();
+    });
+}
+
+function renderKelolaStaff() {
+    const tbody = document.querySelector('#tblKelolaStaff tbody');
+    if(!tbody) return;
+    tbody.innerHTML = '';
+
+    if(daftarUserFirebase.length === 0){
+        tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Belum ada User ID yang terdaftar.</td></tr>';
+        return;
+    }
+
+    daftarUserFirebase.forEach(user => {
+        const userAccessRef = db.ref('staff_access/' + user.id);
+        userAccessRef.once('value', (snap) => {
+            const accessData = snap.val() || {};
+            const projectIds = Object.keys(accessData);
+            
+            let projectNames = '-';
+            if(projectIds.length > 0){
+                projectNames = projectIds.map(pid => {
+                    const proyek = projects.find(p => p.id === pid);
+                    return proyek ? proyek.nama : pid;
+                }).join(', ');
+            }
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><b>${user.id}</b></td>
+                <td>${user.paket || '-'}</td>
+                <td>${user.status === 'Aktif' ? '<span class="tag ok">Aktif</span>' : '<span class="tag warn">' + (user.status || '-') + '</span>'}</td>
+                <td>${projectNames}</td>
+                <td>
+                    <button class="btn small gold" onclick="bukaModalAkses('${user.id}')">Beri Akses</button>
+                    <button class="btn small danger" onclick="cabutAkses('${user.id}')">Cabut Semua</button>
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    });
+}
+
+function bukaModalAkses(userId) {
+    const proyekId = prompt(`Pilih Proyek untuk User ID: ${userId}\n\nKetik ID Proyek`, projects[0]?.id || '');
+    if(!proyekId) return;
+    
+    db.ref('staff_access/' + userId + '/' + proyekId).set(true)
+        .then(() => {
+            alert('✅ Akses proyek diberikan!');
+            loadStaffUsers();
+        })
+        .catch(err => alert('Gagal: ' + err.message));
+}
+
+async function cabutAkses(userId) {
+    if(!confirm(`Cabut semua akses proyek untuk ${userId}?`)) return;
+    
+    try {
+        await db.ref('staff_access/' + userId).remove();
+        alert('Semua akses dicabut!');
+        loadStaffUsers();
+    } catch (err) {
+        alert('Gagal: ' + err.message);
+    }
+}
+
 // Fungsi untuk menambahkan PIC (sudah ada, jangan diubah)
 async function addPic(e){
     // ... kode yang sudah ada ...
