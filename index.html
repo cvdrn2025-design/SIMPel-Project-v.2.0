@@ -759,8 +759,8 @@ function login(e){
             return false;
         }
     }
-    
-        if(role === 'staff'){
+
+    if(role === 'staff'){
     const userIdInput = document.getElementById('loginKode').value.trim().toUpperCase();
     
     // CEK USER ID DI FIREBASE
@@ -783,7 +783,6 @@ function login(e){
         }
         
         // ===== CEK IZIN AKSES KE FIREBASE =====
-        // Ambil daftar proyek yang diizinkan management
         db.ref('staff_access/' + userIdInput).once('value', (snap) => {
             const accessData = snap.val() || {};
             const projectIds = Object.keys(accessData);
@@ -799,11 +798,11 @@ function login(e){
                 alert('Proyek tidak ditemukan di database. Hubungi Management.');
                 return;
             }
-            
             // ===== SUKSES LOGIN =====
             sessionStorage.setItem('drn_role', 'staff');
             sessionStorage.setItem('drn_project', proyek.id);
             sessionStorage.setItem('drn_user_id', userIdInput);
+            sessionStorage.setItem('drn_kode_unik', userData.kode_unik || '');
             localStorage.setItem(KEYS.current, proyek.id);
             currentProjectId = proyek.id;
             
@@ -813,23 +812,8 @@ function login(e){
     });
     
     return false;
-        }
-        
-        // ===== SUKSES LOGIN =====
-        sessionStorage.setItem('drn_role', 'staff');
-        sessionStorage.setItem('drn_project', userIdInput);
-        sessionStorage.setItem('drn_user_id', userIdInput);
-        sessionStorage.setItem('drn_kode_unik', userData.kode_unik || '');
-        localStorage.setItem(KEYS.current, userIdInput);
-        currentProjectId = userIdInput;
-        
-        alert('✅ Login Staff berhasil! User ID: ' + userIdInput);
-        location.reload();
-    });
-    
-    return false;
     }
-
+            
 function logout(){
     sessionStorage.removeItem('drn_role');
     sessionStorage.removeItem('drn_project');
