@@ -1,0 +1,208 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin SIMPeL - Firebase Realtime</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #E9EBE6; padding: 20px; }
+        .container { max-width: 800px; margin: 0 auto; }
+        .card { background: #fff; border-radius: 8px; padding: 20px; margin-bottom: 20px; box-shadow: 0 2px 10px rgba(0,0,0,0.1); }
+        h1, h2 { color: #10263E; margin: 0 0 10px 0; }
+        input, select { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #C9D3DC; border-radius: 6px; font-size: 16px; }
+        button { padding: 12px; background: #E8801C; color: #fff; border: none; border-radius: 6px; font-size: 16px; font-weight: bold; cursor: pointer; }
+        button:hover { background: #C56A12; }
+        .hide { display: none !important; }
+        .tag { display: inline-block; padding: 4px 10px; border-radius: 10px; font-size: 12px; font-weight: 600; }
+        .ok { background: #E4F3EA; color: #2F7D5A; }
+        .warn { background: #FBE9E7; color: #B23A2E; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; font-size: 14px; }
+        .kode-unik { background: #F6F7F5; border: 2px dashed #E8801C; text-align: center; padding: 15px; font-size: 24px; font-family: monospace; font-weight: bold; margin: 15px 0; border-radius: 6px; }
+        #loginArea { display: block; }
+        #dashboardArea { display: none; }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- LOGIN ADMIN -->
+    <div id="loginArea" class="card">
+        <h1>Admin SIMPeL</h1>
+        <p style="color:#5B6675;">Masuk untuk memverifikasi transaksi user.</p>
+        <input type="password" id="adminPass" placeholder="Password Admin">
+        <button onclick="loginAdmin()">Masuk</button>
+        <p style="color:red; display:none;" id="loginError">Password salah!</p>
+    </div>
+
+    <!-- DASHBOARD ADMIN -->
+    <div id="dashboardArea" class="hide">
+        <div class="card">
+            <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+                <h2>Daftar Transaksi</h2>
+                <button onclick="logoutAdmin()" style="background:#B23A2E;">Keluar</button>
+            </div>
+            
+            <p style="color:#5B6675;">Transaksi yang sudah <b style="color:green;">PAID</b> otomatis muncul di sini via Firebase Realtime Database.</p>
+            
+            <!-- Tabel Transaksi -->
+            <table>
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Paket</th>
+                        <th>Jumlah</th>
+                        <th>Status</th>
+                        <th>Realtime</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="tblTransactions">
+                    <!-- Data diisi oleh Firebase Listener -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Hasil Verifikasi -->
+        <div id="hasilVerifikasi" class="hide card">
+            <h3>Hasil Verifikasi</h3>
+            <div class="kode-unik" id="hasilKode">-</div>
+            <p><b>User ID:</b> <span id="hasilUserId" style="font-size:18px; font-weight:bold; color:#E8801C;"></span></p>
+            <p style="color:#5B6675;">Kirim User ID ini ke User melalui WhatsApp agar mereka bisa login.</p>
+            <button onclick="kirimKeWhatsApp()" style="background:#25D366;">Kirim ke WhatsApp User</button>
+        </div>
+    </div>
+
+</div>
+
+<!-- LIBRARY FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+<script>
+    // ===== KONFIGURASI FIREBASE =====
+    // GANTI dengan config Firebase Anda
+    const firebaseConfig = {
+        apiKey: "API_KEY_ANDA",
+        authDomain: "PROJECT_ID.firebaseapp.com",
+        databaseURL: "https://PROJECT_ID-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "PROJECT_ID",
+        storageBucket: "PROJECT_ID.appspot.com",
+        messagingSenderId: "SENDER_ID",
+        appId: "APP_ID"
+    };
+    
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    // ===== LOGIN =====
+    function loginAdmin() {
+        const pass = document.getElementById('adminPass').value;
+        if (pass === 'admin123') { // Ganti dengan password admin Anda
+            document.getElementById('loginArea').classList.add('hide');
+            document.getElementById('dashboardArea').classList.remove('hide');
+            
+            // Mulai mendengarkan data realtime
+            listenToTransactions();
+        } else {
+            document.getElementById('loginError').style.display = 'block';
+        }
+    }
+
+    function logoutAdmin() {
+        document.getElementById('loginArea').classList.remove('hide');
+        document.getElementById('dashboardArea').classList.add('hide');
+    }
+
+    // ===== REALTIME LISTENER (Fungsi Utama) =====
+    function listenToTransactions() {
+        const transRef = db.ref('transactions');
+        
+        // Listener 'value' akan terpanggil setiap kali ada perubahan data
+        transRef.on('value', (snapshot) => {
+            const data = snapshot.val();
+            renderTransactions(data);
+        });
+    }
+
+    // ===== RENDER TABEL =====
+    function renderTransactions(data) {
+        const tbody = document.getElementById('tblTransactions');
+        tbody.innerHTML = '';
+
+        if (!data) {
+            tbody.innerHTML = '<tr><td colspan="6" style="text-align:center;">Belum ada transaksi.</td></tr>';
+            return;
+        }
+
+        // Konversi objek Firebase menjadi array
+        const transactions = Object.entries(data).map(([key, value]) => ({
+            id: key,
+            ...value
+        }));
+
+        transactions.forEach(t => {
+            const statusTag = t.status === 'PAID' ? '<span class="tag ok">PAID</span>' : '<span class="tag warn">' + (t.status || 'PENDING') + '</span>';
+            const harga = (t.amount || 0).toLocaleString('id-ID');
+            const realtimeBadge = t.status === 'PAID' ? '<span class="tag ok">Real-time ✓</span>' : '-';
+
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><b>${t.order_id}</b></td>
+                <td>${t.paket || 'Tidak diketahui'}</td>
+                <td>Rp ${harga}</td>
+                <td>${statusTag}</td>
+                <td>${realtimeBadge}</td>
+                <td>
+                    ${t.status === 'PAID' ? 
+                        `<button onclick="buatKodeUnik('${t.order_id}', '${t.paket}', '${t.id}')">Buat Kode Unik</button>` : 
+                        '-'}
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    // ===== AKSI ADMIN: BUAT KODE UNIK =====
+    async function buatKodeUnik(orderId, paket, transactionKey) {
+        const kodeUnik = 'SIM-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+        const userId = 'DRN-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+
+        try {
+            // Simpan ke Firebase Realtime Database
+            await db.ref('users/' + userId).set({
+                id: userId,
+                kode_unik: kodeUnik,
+                paket: paket,
+                status: 'Aktif',
+                order_id: orderId,
+                created_at: Date.now()
+            });
+            
+            // Tandai transaksi sebagai sudah diverifikasi
+            await db.ref('transactions/' + transactionKey + '/verified').set(true);
+
+            // Tampilkan hasil
+            document.getElementById('hasilVerifikasi').classList.remove('hide');
+            document.getElementById('hasilKode').textContent = kodeUnik;
+            document.getElementById('hasilUserId').textContent = userId;
+            
+            alert('✅ User ID berhasil dibuat!');
+        } catch (err) {
+            alert('Gagal menyimpan User ID: ' + err.message);
+        }
+    }
+
+    // ===== KIRIM KE WHATSAPP =====
+    function kirimKeWhatsApp() {
+        const userId = document.getElementById('hasilUserId').textContent;
+        const kode = document.getElementById('hasilKode').textContent;
+        const nomorAdmin = '6281234567890'; // Ganti dengan nomor WhatsApp Admin
+
+        const pesan = `Halo Admin SIMPeL!\n\nSaya sudah membayar.\nKode Unik: ${kode}\nUser ID: ${userId}\n\nMohon diaktifkan. Terima kasih!`;
+        
+        window.open(`https://wa.me/${nomorAdmin}?text=${encodeURIComponent(pesan)}`, '_blank');
+    }
+</script>
+</body>
+  </html>
