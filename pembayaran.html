@@ -1,0 +1,75 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Pembayaran SIMPeL</title>
+    <style>
+        body { font-family: sans-serif; background: #E9EBE6; padding: 20px; }
+        .card { background: #fff; padding: 20px; border-radius: 8px; max-width: 400px; margin: auto; }
+        img { width: 100%; border-radius: 8px; }
+        h2 { color: #10263E; }
+        .status { font-weight: bold; margin-top: 15px; }
+    </style>
+</head>
+<body>
+<div class="card">
+    <h2>Scan untuk Membayar</h2>
+    
+    <!-- QRIS ditampilkan dari API Pakasir (backend) -->
+    <img id="qrisImage" src="https://via.placeholder.com/300" alt="QRIS">
+    
+    <p style="color:#5B6675;">Setelah membayar, status akan otomatis terkirim ke admin.</p>
+    <div class="status" id="statusText">Menunggu pembayaran...</div>
+</div>
+
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script>
+    const firebaseConfig = { /* config Anda */ };
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    
+    const orderId = 'SIM-' + Date.now();
+    
+    async function startPayment() {
+        try {
+            const response = await fetch('https://backend-anda.com/create-payment', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ orderId, paket: 'premium' })
+            });
+            const data = await response.json();
+            
+            // Tampilkan QRIS
+            document.getElementById('qrisImage').src = data.qr_url;
+            
+            // Tulis data ke Firebase Realtime Database
+            await db.ref('transactions/' + orderId).set({
+                order_id: orderId,
+                paket: 'premium',
+                amount: 299000,
+                status: 'PENDING',
+                user_email: 'user@email.com'
+            });
+            
+        } catch (err) {
+            alert('Gagal memuat QRIS: ' + err.message);
+        }
+    }
+    
+    // Cek status pembayaran setiap 5 detik
+    setInterval(async () => {
+        const statusRef = db.ref('transactions/' + orderId + '/status');
+        statusRef.on('value', (snap) => {
+            const val = snap.val();
+            if (val === 'PAID') {
+                document.getElementById('statusText').innerHTML = '✅ <b style="color:green;">Pembayaran Diterima!</b>';
+            }
+        });
+    }, 5000);
+    
+    startPayment();
+</script>
+</body>
+</html>
