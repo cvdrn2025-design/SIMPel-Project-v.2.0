@@ -10,7 +10,7 @@
         h2 { color: #10263E; }
         .paket { font-size: 14px; color: #5B6675; margin-bottom: 10px; }
         .harga { font-size: 24px; font-weight: bold; color: #E8801C; margin-bottom: 20px; }
-        img#qris { width: 100%; max-width: 300px; border: 2px solid #E9EBE6; border-radius: 8px; margin-bottom: 20px; }
+        img#qris { width: 100%; max-width: 300px; border: 2px solid #E9EBE6; border-radius: 8px; margin-bottom: 20px; object-fit: contain; }
         .status { font-size: 14px; margin-top: 15px; }
         .status.waiting { color: #5B6675; }
         .status.paid { color: green; font-weight: bold; }
@@ -22,8 +22,8 @@
 <div class="card">
     <h2>Scan untuk Membayar</h2>
     
-    <!-- Tampilkan QRIS Statis (qris.png) -->
-    <img id="qris" src="qris.png" alt="QRIS Pembayaran">
+    <!-- Ganti src dengan data base64 QRIS Anda -->
+    <img id="qris" src="data:image/png;base64, iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAQAAAC1HAwCAAAAC0lEQVR42mNk+A8AAQUBAScY42YAAAAASUVORK5CYII=" alt="QRIS Pembayaran">
     
     <div class="paket" id="paketInfo">-</div>
     <div class="harga" id="hargaInfo">-</div>
@@ -40,10 +40,11 @@
 <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
 
 <script>
-    // ===== KONFIGURASI FIREBASE (SAMA DENGAN ADMIN.HTML) =====
+    // ===== KONFIGURASI FIREBASE (PASTIKAN databaseURL ADA) =====
     const firebaseConfig = {
         apiKey: "AIzaSyAD3HHCS6nEf-K2RV2F-niPNmyoxlV49PE",
         authDomain: "simpeldb.firebaseapp.com",
+        databaseURL: "https://simpeldb-default-rtdb.asia-southeast1.firebasedatabase.app", // <-- WAJIB ADA!
         projectId: "simpeldb",
         storageBucket: "simpeldb.firebasestorage.app",
         messagingSenderId: "740760479162",
@@ -53,10 +54,9 @@
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
 
-    // ===== DATA USER (GANTI SESUAI LOGIN ANDA) =====
-    // Asumsikan user sudah login, ambil dari sessionStorage atau variabel global
+    // ===== DATA USER =====
     const userId = sessionStorage.getItem('userId') || 'DEMO-USER-001';
-    const paket = sessionStorage.getItem('paket') || 'premium'; // basic, premium, pro_max
+    const paket = sessionStorage.getItem('paket') || 'premium';
     
     // ===== HARGA PAKET =====
     const paketHarga = {
@@ -72,8 +72,7 @@
         document.getElementById('hargaInfo').textContent = 'Rp ' + paketHarga[paket].toLocaleString('id-ID');
     }
 
-    // ===== TULIS STATUS KE FIREBASE =====
-    // Karena QRIS statis, user menulis status 'WAITING' dulu, lalu admin verifikasi manual
+    // ===== TULIS KE FIREBASE (HANYA JIKA KONEKSI BERHASIL) =====
     async function tulisKeFirebase() {
         const orderId = 'SIM-' + Date.now();
         
@@ -82,15 +81,13 @@
                 order_id: orderId,
                 paket: paket,
                 amount: paketHarga[paket],
-                status: 'WAITING', // Menunggu admin verifikasi
+                status: 'WAITING',
                 user_id: userId,
                 created_at: Date.now()
             });
             
-            // Simpan orderId di sessionStorage untuk dikirim ke WA
             sessionStorage.setItem('orderId', orderId);
             
-            // Reset status tampilan
             document.getElementById('statusText').textContent = 'Menunggu verifikasi admin...';
             document.getElementById('statusText').classList.add('waiting');
         } catch (err) {
@@ -101,16 +98,14 @@
     // ===== KIRIM KE WHATSAPP =====
     function kirimKeWhatsApp() {
         const orderId = sessionStorage.getItem('orderId');
-        const nomorAdmin = '6282145111853'; // <-- GANTI DENGAN NOMOR WHATSAPP ADMIN (TANPA 0 DI DEPAN)
+        const nomorAdmin = '6282145111853';
         
         const pesan = `Halo Admin SIMPeL!\n\nSaya sudah membayar paket ${paket}.\nOrder ID: ${orderId}\n\nBerikut bukti transfer saya (dilampirkan).\nMohon diaktifkan. Terima kasih!`;
         
-        // Buka WhatsApp dengan pesan terisi otomatis
         window.open(`https://wa.me/${nomorAdmin}?text=${encodeURIComponent(pesan)}`, '_blank');
     }
 
-    // ===== POLLING STATUS (Cek apakah admin sudah verifikasi) =====
-    // Halaman akan otomatis update jika admin menandai status 'PAID'
+    // ===== CEK STATUS =====
     function cekStatus() {
         const orderId = sessionStorage.getItem('orderId');
         if (!orderId) return;
