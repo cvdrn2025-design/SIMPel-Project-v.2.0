@@ -664,6 +664,21 @@ td {
 <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
 <!-- SEMUA JAVASCRIPT DALAM SATU SCRIPT -->
 <script>
+
+// ===== FIREBASE CONFIG =====
+const firebaseConfig = {
+    apiKey: "AIzaSyAD3HHCS6nEf-K2RV2F-niPNmyoxlV49PE",
+    authDomain: "simpeldb.firebaseapp.com",
+    databaseURL: "https://simpeldb-default-rtdb.asia-southeast1.firebasedatabase.app",
+    projectId: "simpeldb",
+    storageBucket: "simpeldb.firebasestorage.app",
+    messagingSenderId: "740760479162",
+    appId: "1:740760479162:web:a073dcbac184462b80e983"
+};
+
+firebase.initializeApp(firebaseConfig);
+const db = firebase.database();
+
 // ===== KONFIGURASI =====
 const SUPABASE_URL = 'https://ufxmcjlyfounpqasqftw.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVmeG1jamx5Zm91bnBxYXNxZnR3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU3Mjc3OTcsImV4cCI6MjEwMTMwMzc5N30.jTW0UlLOAkd6umY_wWRQscl32xT6DMmGhAwFcm81_zI';
