@@ -24,10 +24,10 @@
             z-index: 0;
         }
 
-        /* KARTU PILIH PAKET - DIPERKECIL & DINAIKKAN */
+        /* KARTU PILIH PAKET */
         .container {
             max-width: 360px;
-            margin: 10px auto 0; /* Ubah dari 100px ke 10px agar kartu naik ke garis merah! */
+            margin: 10px auto 0;
             background: transparent;
             border-radius: 14px 14px 0 0;
             padding: 15px;
@@ -230,10 +230,12 @@
         pro_max: 499000
     };
 
-    let paketTerpilih = null;
+    // Simpan paket yang dipilih agar tidak reset saat refresh
+    let paketTerpilih = sessionStorage.getItem('paket') || null;
 
     function pilihPaket(paket) {
         paketTerpilih = paket;
+        sessionStorage.setItem('paket', paket);
         document.querySelectorAll('.paket').forEach(el => el.classList.remove('selected'));
         event.currentTarget.classList.add('selected');
         document.getElementById('btnLanjut').style.display = 'block';
@@ -243,7 +245,7 @@
         if (!paketTerpilih) return;
         const existingOrderId = sessionStorage.getItem('orderId');
         if (existingOrderId) {
-            alert('⚠️ Transaksi sudah dibuat. Menunggu verifikasi admin...');
+            // Jika sudah ada order ID, langsung tampilkan halaman pembayaran
             document.getElementById('pilihPaketSection').style.display = 'none';
             document.getElementById('heroSection').style.display = 'none';
             document.getElementById('paymentSection').style.display = 'block';
@@ -319,8 +321,29 @@
         });
     }
     
-    document.getElementById('pilihPaketSection').style.display = 'block';
-    document.getElementById('paymentSection').style.display = 'none';
+    // ===== CEK KEADAAN SAAT HALAMAN DIMUAT (ANTI-RESET) =====
+    window.onload = function() {
+        const savedOrderId = sessionStorage.getItem('orderId');
+        const savedPaket = sessionStorage.getItem('paket');
+        
+        if (savedOrderId && savedPaket) {
+            // Jika sudah ada transaksi, langsung tampilkan halaman pembayaran
+            paketTerpilih = savedPaket;
+            document.getElementById('pilihPaketSection').style.display = 'none';
+            document.getElementById('heroSection').style.display = 'none';
+            document.getElementById('paymentSection').style.display = 'block';
+            
+            const namaPaket = paketTerpilih.charAt(0).toUpperCase() + paketTerpilih.slice(1);
+            document.getElementById('paketInfo').textContent = 'Paket: ' + namaPaket;
+            document.getElementById('hargaInfo').textContent = 'Rp ' + paketHarga[paketTerpilih].toLocaleString('id-ID');
+            document.getElementById('qris').style.display = 'block';
+            cekStatus();
+        } else {
+            // Jika belum ada, tampilkan halaman pilih paket
+            document.getElementById('pilihPaketSection').style.display = 'block';
+            document.getElementById('paymentSection').style.display = 'none';
+        }
+    };
 </script>
     <script>
     if ('serviceWorker' in navigator) {
