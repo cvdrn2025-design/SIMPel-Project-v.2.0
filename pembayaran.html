@@ -13,33 +13,35 @@
             padding-bottom: 80px;
         }
 
+        /* HEADER */
         .hero {
             background-image: url('https://cvdrn2025-design.github.io/SIMPel-Project-v.2.0/pembayaran.png');
             background-size: cover;
             background-position: top center;
-            height: 220px;
+            height: 190px;
             width: 100%;
             position: relative;
             z-index: 0;
         }
 
+        /* KARTU PILIH PAKET (DIKECILKAN & TURUNKAN) */
         .container {
-            max-width: 400px;
-            margin: -30px auto 0;
+            max-width: 360px;
+            margin: -20px auto 0; /* Turunkan sedikit agar tidak menabrak */
             background: #fff;
-            border-radius: 20px 20px 0 0;
-            padding: 20px;
-            box-shadow: 0 -5px 15px rgba(0,0,0,0.1);
+            border-radius: 14px 14px 0 0; /* Kurangi lengkungan agar lebih rapi */
+            padding: 15px;
+            box-shadow: 0 -3px 10px rgba(0,0,0,0.1);
             position: relative;
             z-index: 1;
-            min-height: 400px;
+            min-height: 350px;
         }
 
         .paket {
-            border: 2px solid #E9EBE6;
-            border-radius: 12px;
-            padding: 15px;
-            margin-bottom: 15px;
+            border: 1.5px solid #E9EBE6;
+            border-radius: 10px;
+            padding: 12px;
+            margin-bottom: 12px;
             cursor: pointer;
             transition: all 0.3s;
         }
@@ -48,23 +50,24 @@
         .paket.selected { border-color: #E8801C; background: #FFF3DA; }
 
         .paket h3 {
-            margin: 0 0 5px 0;
+            margin: 0 0 4px 0;
             color: #10263E;
-            font-size: 16px;
+            font-size: 15px;
         }
 
         .paket .harga {
-            font-size: 18px;
+            font-size: 16px;
             font-weight: 700;
             color: #E8801C;
         }
 
         .paket .fitur {
-            font-size: 12px;
+            font-size: 11px;
             color: #5B6675;
-            margin-top: 8px;
+            margin-top: 6px;
         }
 
+        /* TOMBOL LANJUT */
         #btnLanjut {
             position: fixed;
             bottom: 20px;
@@ -85,6 +88,7 @@
             z-index: 100;
         }
 
+        /* HALAMAN PEMBAYARAN */
         #paymentSection {
             display: none;
             background: #fff;
@@ -179,7 +183,7 @@
 
     <div id="paymentSection">
         <h2>Scan untuk Membayar</h2>
-        <img id="qris" src="qris.png" alt="QRIS Pembayaran" style="display:none;">
+        <img id="qris" src="https://cvdrn2025-design.github.io/SIMPel-Project-v.2.0/qris.png" alt="QRIS Pembayaran" style="display:none;">
         <div class="paket" id="paketInfo" style="border:none; padding:0; margin-top:10px;">-</div>
         <div class="harga" id="hargaInfo" style="font-size:24px; font-weight:bold; color:#E8801C;">-</div>
         
@@ -246,7 +250,6 @@
         document.getElementById('heroSection').style.display = 'none';
         document.getElementById('paymentSection').style.display = 'block';
         
-        // Tampilkan QRIS
         document.getElementById('qris').style.display = 'block';
         
         const namaPaket = paketTerpilih.charAt(0).toUpperCase() + paketTerpilih.slice(1);
