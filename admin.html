@@ -21,7 +21,7 @@
         .warn { background: #FBE9E7; color: #B23A2E; }
         
         .table-wrapper { overflow-x: auto; }
-        table { width: 100%; border-collapse: collapse; margin-top: 15px; min-width: 600px; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; min-width: 500px; }
         th, td { border: 1px solid #ddd; padding: 8px; text-align: left; font-size: 14px; }
         td.amount { text-align: right; }
         
@@ -70,8 +70,7 @@
             <h3>Hasil Verifikasi</h3>
             <div class="hasil-verifikasi" id="hasilKode">-</div>
             <p><b>User ID:</b> <span id="hasilUserId" style="font-size:18px; font-weight:bold; color:#E8801C;"></span></p>
-            <p style="color:#5B6675;">Kirim User ID ini ke User melalui WhatsApp agar mereka bisa login.</p>
-            <button class="wa" onclick="kirimKeWhatsApp()">Kirim ke WhatsApp User</button>
+            <p style="color:#5B6675;">Link aplikasi akan otomatis muncul di halaman pembayaran user saat status PAID.</p>
         </div>
     </div>
 
@@ -193,17 +192,6 @@
         } catch (err) {
             alert('Gagal menyimpan User ID: ' + err.message);
         }
-    }
-
-    // ===== KIRIM KE WHATSAPP =====
-    function kirimKeWhatsApp() {
-        const userId = sessionStorage.getItem('currentUserId');
-        const kode = document.getElementById('hasilKode').textContent;
-        const nomorAdmin = '6282145111853'; // Ganti dengan nomor WhatsApp yang dituju
-        
-        const pesan = `Halo! User ID Anda: ${userId}\nKode Unik: ${kode}\n\nSilakan login di aplikasi SIMPeL. Terima kasih!`;
-        
-        window.open(`https://wa.me/${nomorAdmin}?text=${encodeURIComponent(pesan)}`, '_blank');
     }
 
     // ===== CEK STATUS LOGIN SAAT HALAMAN DIMUAT =====
