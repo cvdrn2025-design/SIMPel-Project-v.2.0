@@ -944,6 +944,24 @@ function renderRoleBadge(){
     }
 }
 
+// ===== PIC =====
+function renderPic(){
+    const rows = picList.filter(x => x.projectId === currentProjectId);
+    const tbody = document.querySelector('#tblPic tbody');
+    if(!tbody) return;
+    tbody.innerHTML = '';
+    
+    rows.forEach(r => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = '<td>' + esc(r.kategori) + '</td>' + 
+                       '<td>' + esc(r.jabatan) + '</td>' + 
+                       '<td>' + esc(r.nama) + '</td>' + 
+                       '<td><input type="checkbox" ' + (r.ceklis ? 'checked' : '') + ' onchange="togglePic(\'' + r.id + '\',this.checked)"></td>' + 
+                       '<td><button class="btn small danger" onclick="deleteEntry(\'pic\',\'' + r.id + '\')">Hapus</button></td>';
+        tbody.appendChild(tr);
+    });
+}   
+    
 // ===== DATA SAAT INI =====
 const currentData = type => {
     const map = { progress:progressLog, material:materialLog, timesheet:timesheetLog, alloc:allocations, cashflow:cashflowLog, plan:planLog, rab:rabList };
