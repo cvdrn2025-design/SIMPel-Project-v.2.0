@@ -2,7 +2,6 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <link rel="manifest" href="./manifest.json">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Pembayaran SIMPeL</title>
     <style>
@@ -197,6 +196,9 @@
         <p style="color:#5B6675;">Setelah membayar, kirim bukti transfer ke WhatsApp Admin. Status akan otomatis ter-update.</p>
         <div class="status waiting" id="statusText">Menunggu pembayaran...</div>
         
+        <!-- Tampilkan User ID Otomatis -->
+        <div id="hasilUserId" style="display:none; font-size:18px; font-weight:bold; color:#E8801C; margin-top:10px;"></div>
+        
         <div id="linkAplikasiBox" style="display:none;">
             <a href="https://cvdrn2025-design.github.io/SIMPel-Project-v.2.0/" class="btn-link">🔗 Masuk ke Aplikasi SIMPeL</a>
         </div>
@@ -231,7 +233,6 @@
         pro_max: 499000
     };
 
-    // Simpan paket yang dipilih agar tidak reset saat refresh
     let paketTerpilih = sessionStorage.getItem('paket') || null;
 
     function pilihPaket(paket) {
@@ -246,11 +247,10 @@
         if (!paketTerpilih) return;
         const existingOrderId = sessionStorage.getItem('orderId');
         if (existingOrderId) {
-            // Jika sudah ada order ID, langsung tampilkan halaman pembayaran
+            alert('⚠️ Transaksi sudah dibuat. Menunggu verifikasi admin...');
             document.getElementById('pilihPaketSection').style.display = 'none';
             document.getElementById('heroSection').style.display = 'none';
             document.getElementById('paymentSection').style.display = 'block';
-            document.getElementById('btnLanjut').style.display = 'none';
             cekStatus();
             return;
         }
@@ -318,6 +318,15 @@
                 document.getElementById('statusText').classList.add('paid');
                 document.getElementById('linkAplikasiBox').style.display = 'block';
                 document.getElementById('btnKirimWA').style.display = 'none';
+                
+                // ===== BACA USER ID OTOMATIS =====
+                db.ref('transactions/' + orderId).once('value', (snap) => {
+                    const transData = snap.val();
+                    if (transData && transData.user_id) {
+                        document.getElementById('hasilUserId').textContent = 'User ID Anda: ' + transData.user_id;
+                        document.getElementById('hasilUserId').style.display = 'block';
+                    }
+                });
             }
         });
     }
@@ -328,7 +337,6 @@
         const savedPaket = sessionStorage.getItem('paket');
         
         if (savedOrderId && savedPaket) {
-            // Jika sudah ada transaksi, langsung tampilkan halaman pembayaran
             paketTerpilih = savedPaket;
             document.getElementById('pilihPaketSection').style.display = 'none';
             document.getElementById('heroSection').style.display = 'none';
@@ -340,7 +348,6 @@
             document.getElementById('qris').style.display = 'block';
             cekStatus();
         } else {
-            // Jika belum ada, tampilkan halaman pilih paket
             document.getElementById('pilihPaketSection').style.display = 'block';
             document.getElementById('paymentSection').style.display = 'none';
         }
