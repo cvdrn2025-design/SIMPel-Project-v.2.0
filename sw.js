@@ -2,7 +2,7 @@
    SIMPeL - Service Worker (Offline & Cache)
    ============================================ */
 
-const CACHE_NAME = 'simpel-v2.0.0';
+const CACHE_NAME = 'simpel-v2.0.0'; // <-- GANTI DARI v1.0.0 KE v2.0.0
 const APP_SHELL = [
     './',
     './index.html',
