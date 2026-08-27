@@ -323,7 +323,7 @@
                 db.ref('transactions/' + orderId).once('value', (snap) => {
                     const transData = snap.val();
                     if (transData && transData.user_id) {
-                        document.getElementById('hasilUserId').textContent = 'User ID Anda: ' + transData.user_id;
+                        document.getElementById('hasilUserId').textContent = 'User ID Anda (Management): ' + transData.user_id;
                         document.getElementById('hasilUserId').style.display = 'block';
                     }
                 });
