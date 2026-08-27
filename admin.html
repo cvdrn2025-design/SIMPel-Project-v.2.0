@@ -2,7 +2,6 @@
 <html lang="id">
 <head>
     <meta charset="UTF-8">
-    <link rel="manifest" href="./manifest.json">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Admin SIMPeL - Verifikasi Pembayaran</title>
     <style>
@@ -48,7 +47,6 @@
         
         <p style="color:#5B6675;">Data transaksi akan otomatis muncul dan ter-update secara real-time.</p>
         
-        <!-- Table Wrapper untuk responsive HP -->
         <div class="table-wrapper">
             <table>
                 <thead>
@@ -159,6 +157,7 @@
         const userId = 'DRN-' + Math.random().toString(36).substring(2, 8).toUpperCase();
         
         try {
+            // Simpan User ID ke Firebase Realtime Database
             await db.ref('users/' + userId).set({
                 id: userId,
                 kode_unik: kodeUnik,
@@ -168,8 +167,13 @@
                 created_at: Date.now()
             });
             
+            // UPDATE TRANSAKSI DENGAN USER ID BARU
+            await db.ref('transactions/' + key + '/user_id').set(userId);
+            
+            // Tandai transaksi sebagai sudah diproses
             await db.ref('transactions/' + key + '/verified').set(true);
             
+            // Tampilkan hasil
             document.getElementById('hasilVerifikasi').classList.remove('hide');
             document.getElementById('hasilKode').textContent = kodeUnik;
             document.getElementById('hasilUserId').textContent = userId;
