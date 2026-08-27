@@ -960,7 +960,13 @@ function renderPic(){
                        '<td><button class="btn small danger" onclick="deleteEntry(\'pic\',\'' + r.id + '\')">Hapus</button></td>';
         tbody.appendChild(tr);
     });
-}   
+}
+
+// ===== TAMBAHKAN FUNGSI INI DI BAWAH =====
+async function togglePic(id, checked){
+    await sb.from('pic_proyek').update({ ceklis: checked }).eq('id', id);
+}
+// ==========================================   
     
 // ===== DATA SAAT INI =====
 const currentData = type => {
