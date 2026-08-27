@@ -1,8 +1,10 @@
-[{
-      "relation": ["delegate_permission/common.handle_all_urls"],
-      "target": {
-        "namespace": "android_app",
-        "package_name": "io.github.cvdrn2025_design.twa",
-        "sha256_cert_fingerprints": ["E3:B7:20:FB:31:BF:46:DD:38:BD:01:E8:85:AE:BF:32:1E:F0:D6:63:4F:2D:6B:E7:44:CE:02:56:AD:1C:79:27"]
-      }
-    }]
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.cvdrn.simpel.v3",
+      "sha256_cert_fingerprints": ["E3:B7:20:FB:31:BF:46:DD:38:BD:01:E8:85:AE:BF:32:1E:F0:D6:63:4F:2D:6B:E7:44:CE:02:56:AD:1C:79:27"]
+    }
+  }
+]
