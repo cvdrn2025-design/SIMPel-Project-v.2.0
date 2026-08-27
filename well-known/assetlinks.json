@@ -1,0 +1,12 @@
+[
+  {
+    "relation": ["delegate_permission/common.handle_all_urls"],
+    "target": {
+      "namespace": "android_app",
+      "package_name": "com.cvdrn.simpel",
+      "sha256_cert_fingerprints": [
+        "REPLACE_DENGAN_SHA256_FINGERPRINT_ANDA"
+      ]
+    }
+  }
+]
