@@ -1,0 +1,202 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="https://cvdrn2025-design.github.io/SIMPel-Project-v.2.0/manifest.json">
+    <title>Admin SIMPeL - Verifikasi Pembayaran</title>
+    <style>
+        /* ... (Style asli Anda tetap dipertahankan) ... */
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #E9EBE6; padding: 20px; }
+        .container { max-width: 800px; margin: auto; }
+        .card { background: #fff; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+        h1, h2 { color: #10263E; margin: 0 0 10px 0; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #C9D3DC; border-radius: 6px; font-size: 16px; }
+        button { padding: 10px; background: #E8801C; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
+        button:hover { background: #C56A12; }
+        
+        .hide { display: none !important; }
+        .tag { display: inline-block; padding: 4px 10px; border-radius: 10px; font-size: 12px; font-weight: bold; }
+        .ok { background: #E4F3EA; color: #2F7D5A; }
+        .warn { background: #FBE9E7; color: #B23A2E; }
+        
+        .table-wrapper { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; font-size: 14px; }
+        td.amount { text-align: right; }
+        
+        .hasil-verifikasi { background: #F6F7F5; border: 2px dashed #E8801C; text-align: center; padding: 15px; font-size: 24px; font-family: monospace; font-weight: bold; margin: 15px 0; border-radius: 6px; }
+    </style>
+</head>
+<body>
+<div class="container">
+
+    <!-- LOGIN -->
+    <div id="loginArea" class="card">
+        <h1>Admin SIMPeL</h1>
+        <p style="color:#5B6675;">Masuk untuk memverifikasi transaksi user.</p>
+        <input type="password" id="adminPass" placeholder="Password Admin">
+        <button onclick="loginAdmin()">Masuk</button>
+        <p style="color:red; display:none;" id="loginError">Password salah!</p>
+    </div>
+
+    <!-- DASHBOARD -->
+    <div id="dashboardArea" class="hide card">
+        <div style="display:flex; justify-content: space-between; align-items: center; margin-bottom: 15px;">
+            <h2>Daftar Transaksi</h2>
+            <button onclick="logoutAdmin()" style="background:#B23A2E;">Keluar</button>
+        </div>
+        
+        <p style="color:#5B6675;">Data transaksi akan otomatis muncul dan ter-update secara real-time.</p>
+        
+        <div class="table-wrapper">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Order ID</th>
+                        <th>Paket</th>
+                        <th>Jumlah</th>
+                        <th>Status</th>
+                        <th>Aksi</th>
+                    </tr>
+                </thead>
+                <tbody id="tblTransactions"></tbody>
+            </table>
+        </div>
+        
+        <!-- Hasil Verifikasi -->
+        <div id="hasilVerifikasi" class="hide" style="margin-top:20px; border-top:1px solid #ddd; padding-top:20px;">
+            <h3>Hasil Verifikasi</h3>
+            <div class="hasil-verifikasi" id="hasilKode">-</div>
+            <p><b>User ID:</b> <span id="hasilUserId" style="font-size:18px; font-weight:bold; color:#E8801C;"></span></p>
+            <p style="color:#5B6675;">Link aplikasi akan otomatis muncul di halaman pembayaran user saat status PAID.</p>
+        </div>
+    </div>
+
+</div>
+
+<!-- LIBRARY FIREBASE -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyAD3HHCS6nEf-K2RV2F-niPNmyoxlV49PE",
+        authDomain: "simpeldb.firebaseapp.com",
+        databaseURL: "https://simpeldb-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "simpeldb",
+        storageBucket: "simpeldb.firebasestorage.app",
+        messagingSenderId: "740760479162",
+        appId: "1:740760479162:web:a073dcbac184462b80e983"
+    };
+    
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+
+    function loginAdmin() {
+        const pass = document.getElementById('adminPass').value;
+        if (pass === 'admin123') {
+            sessionStorage.setItem('adminLoggedIn', 'true');
+            document.getElementById('loginArea').classList.add('hide');
+            document.getElementById('dashboardArea').classList.remove('hide');
+            listen();
+        } else {
+            document.getElementById('loginError').style.display = 'block';
+        }
+    }
+
+    function logoutAdmin() {
+        sessionStorage.removeItem('adminLoggedIn');
+        document.getElementById('loginArea').classList.remove('hide');
+        document.getElementById('dashboardArea').classList.add('hide');
+    }
+
+    function listen() {
+        db.ref('transactions').on('value', (snap) => {
+            const data = snap.val();
+            renderTable(data);
+        });
+    }
+
+    function renderTable(data) {
+        const tbody = document.getElementById('tblTransactions');
+        tbody.innerHTML = '';
+        
+        if (!data) {
+            tbody.innerHTML = '<tr><td colspan="5" style="text-align:center;">Belum ada transaksi.</td></tr>';
+            return;
+        }
+        
+        Object.entries(data).forEach(([key, val]) => {
+            const status = val.status === 'PAID' ? '<span class="tag ok">PAID</span>' : '<span class="tag warn">WAITING</span>';
+            const amount = (val.amount || 0).toLocaleString('id-ID');
+            
+            const tr = document.createElement('tr');
+            tr.innerHTML = `
+                <td><b>${val.order_id}</b></td>
+                <td>${val.paket}</td>
+                <td class="amount">Rp ${amount}</td>
+                <td>${status}</td>
+                <td>
+                    ${val.status === 'WAITING' ? 
+                        `<button onclick="verifikasiPembayaran('${key}')">Tandai Sudah Bayar</button>` : 
+                        (val.status === 'PAID' ? 
+                            `<button onclick="buatUserID('${val.order_id}', '${val.paket}', '${key}')">Buat User ID</button>` : 
+                            '-')}
+                </td>
+            `;
+            tbody.appendChild(tr);
+        });
+    }
+
+    async function verifikasiPembayaran(key) {
+        await db.ref('transactions/' + key + '/status').set('PAID');
+        alert('Status diubah menjadi PAID!');
+    }
+
+    async function buatUserID(orderId, paket, key) {
+        // Format User ID harus sesuai dengan validasi di index.html (DRN-XXXXXX)
+        const userId = 'DRN-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+        const kodeUnik = 'SIM-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+        
+        try {
+            await db.ref('users/' + userId).set({
+                id: userId,
+                kode_unik: kodeUnik,
+                paket: paket,
+                role: 'management', // Sesuai alur, role adalah management
+                status: 'Aktif',
+                order_id: orderId,
+                created_at: Date.now()
+            });
+            
+            await db.ref('transactions/' + key + '/user_id').set(userId);
+            await db.ref('transactions/' + key + '/verified').set(true);
+            
+            document.getElementById('hasilVerifikasi').classList.remove('hide');
+            document.getElementById('hasilKode').textContent = kodeUnik;
+            document.getElementById('hasilUserId').textContent = userId;
+            
+            sessionStorage.setItem('currentUserId', userId);
+            sessionStorage.setItem('currentOrderId', orderId);
+            
+            alert('✅ User ID (Management) berhasil dibuat!');
+        } catch (err) {
+            alert('Gagal menyimpan User ID: ' + err.message);
+        }
+    }
+
+    window.onload = function() {
+        const isLoggedIn = sessionStorage.getItem('adminLoggedIn');
+        if (isLoggedIn === 'true') {
+            document.getElementById('loginArea').classList.add('hide');
+            document.getElementById('dashboardArea').classList.remove('hide');
+            listen();
+        } else {
+            document.getElementById('loginArea').classList.remove('hide');
+            document.getElementById('dashboardArea').classList.add('hide');
+        }
+    };
+</script>
+</body>
+</html>
