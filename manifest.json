@@ -2,7 +2,7 @@
   "name": "SIMPeL - Sistem Pemantauan Lapangan",
   "short_name": "SIMPeL",
   "description": "Aplikasi Sistem Pemantauan Lapangan untuk CV. Dinamika Rekonstruksi Nusantara",
-  "start_url": "./index.html",
+  "start_url": "./pembayaran.html",
   "scope": "./",
   "display": "standalone",
   "orientation": "portrait",
@@ -10,7 +10,7 @@
   "theme_color": "#10263E",
   "lang": "id",
   "dir": "ltr",
-  "id": "com.cvdrn.simpel.v3",
+  "id": "./",
   "icons": [
     {
       "src": "https://cvdrn2025-design.github.io/SIMPel-Project-v.2.0/icon-192.png",
