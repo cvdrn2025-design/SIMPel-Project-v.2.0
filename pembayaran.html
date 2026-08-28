@@ -3,7 +3,6 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="manifest" href="https://cvdrn2025-design.github.io/SIMPel-Project-v.2.0/manifest.json">
     <title>Pembayaran SIMPeL</title>
     <style>
         body {
@@ -201,7 +200,7 @@
         <div id="hasilUserId" style="display:none; font-size:18px; font-weight:bold; color:#E8801C; margin-top:10px;"></div>
         
         <div id="linkAplikasiBox" style="display:none;">
-            <a href="https://cvdrn2025-design.github.io/SIMPel-Project-v.2.0/" class="btn-link">🔗 Masuk ke Aplikasi SIMPeL</a>
+            <button class="btn-link" onclick="masukKeAplikasi()">🔗 Masuk ke Aplikasi SIMPeL</button>
         </div>
         
         <button id="btnKirimWA" onclick="kirimKeWhatsApp()">Kirim Bukti ke WhatsApp Admin</button>
@@ -330,6 +329,16 @@
                 });
             }
         });
+    }
+    
+    // ===== FUNGSI BARU: MASUK KE APLIKASI & MENUTUP HALAMAN PEMBAYARAN =====
+    function masukKeAplikasi() {
+        // Hapus session agar bisa login sebagai Management
+        sessionStorage.removeItem('orderId');
+        sessionStorage.removeItem('paket');
+        
+        // Redirect ke index.html
+        window.location.href = './index.html';
     }
     
     // ===== CEK KEADAAN SAAT HALAMAN DIMUAT (ANTI-RESET) =====
