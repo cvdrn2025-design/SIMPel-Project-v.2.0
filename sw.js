@@ -2,7 +2,7 @@
    SIMPeL - Service Worker (Offline & Cache)
    ============================================ */
 
-const CACHE_NAME = 'simpel-v3.0.0'; // <-- GANTI KE v3.0.0 (Versi terbaru)
+const CACHE_NAME = 'simpel-v4.0.0'; // <-- GANTI KE v4.0.0 (Versi terbaru)
 const APP_SHELL = [
     './',
     './index.html',
@@ -67,7 +67,7 @@ self.addEventListener('fetch', (event) => {
                 }
                 return networkResponse;
             }).catch(() => {
-                return caches.match('./index.html');
+                return caches.match('./pembayaran.html');
             });
         })
     );
