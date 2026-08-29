@@ -1,9 +1,10 @@
-const CACHE_NAME = 'simpel-v4.0.0'; // Ganti versi agar cache lama terhapus
+const CACHE_NAME = 'simpel-v6.0.0'; // Ganti versi agar cache lama terhapus
 const urlsToCache = [
     './',
     './index.html',
     './pembayaran.html',
     './admin.html',
+    './addon-basic.html',
     './manifest.json',
     './icon-192.png',
     './icon-512.png',
