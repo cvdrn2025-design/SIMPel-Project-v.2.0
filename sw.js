@@ -1,74 +1,160 @@
-/* ============================================
-   SIMPeL - Service Worker (Offline & Cache)
-   ============================================ */
-
-const CACHE_NAME = 'simpel-v4.0.0'; // <-- GANTI KE v4.0.0 (Versi terbaru)
-const APP_SHELL = [
+const CACHE_NAME = 'simpel-v2.0.0';
+const urlsToCache = [
     './',
     './index.html',
-    './admin.html',
     './pembayaran.html',
-    './pembayaran.png',
-    './qris.png',
+    './admin.html',
+    './manifest.json',
+    './icons/icon-192.png',
+    './icons/icon-512.png',
     'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2',
-    'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js',
-    'https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js',
-    'https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js'
+    'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'
 ];
 
-/* ===== INSTALL: Simpan cache awal ===== */
+// ===== 1. INSTALL SERVICE WORKER =====
 self.addEventListener('install', (event) => {
     event.waitUntil(
-        caches.open(CACHE_NAME).then((cache) => {
-            return cache.addAll(APP_SHELL);
-        })
+        caches.open(CACHE_NAME)
+            .then((cache) => {
+                console.log('Service Worker: Meng-cache file statis');
+                return cache.addAll(urlsToCache);
+            })
+            .then(() => self.skipWaiting())
     );
-    self.skipWaiting();
 });
 
-/* ===== ACTIVATE: Hapus cache lama ===== */
+// ===== 2. AKTIFKAN SERVICE WORKER =====
 self.addEventListener('activate', (event) => {
     event.waitUntil(
         caches.keys().then((cacheNames) => {
             return Promise.all(
                 cacheNames.map((cacheName) => {
                     if (cacheName !== CACHE_NAME) {
+                        console.log('Service Worker: Menghapus cache lama', cacheName);
                         return caches.delete(cacheName);
                     }
                 })
             );
-        })
+        }).then(() => self.clients.claim())
     );
-    self.clients.claim();
 });
 
-/* ===== FETCH: Strategi Cache First (Offline First) ===== */
+// ===== 3. FETCH EVENT (Strategi Cache) =====
 self.addEventListener('fetch', (event) => {
-    if (event.request.method !== 'GET') return;
+    const request = event.request;
+    const url = new URL(request.url);
 
-    // Abaikan request ke Firebase & Supabase agar data tetap real-time
-    if (event.request.url.includes('firebaseio.com') || 
-        event.request.url.includes('supabase.co')) {
+    // ===== JANGAN CACHE REQUEST KE SUPABASE / FIREBASE / API =====
+    if (
+        url.hostname.includes('supabase.co') ||
+        url.hostname.includes('firebaseio.com') ||
+        url.hostname.includes('firebase.google.com') ||
+        url.hostname.includes('gstatic.com') ||
+        url.pathname.includes('/api/') ||
+        url.pathname.includes('/auth/')
+    ) {
+        // Gunakan Network-Only untuk data real-time
         return;
     }
 
+    // ===== STRATEGI: CACHE-FIRST UNTUK ASET STATIS =====
+    if (request.method === 'GET' && (request.destination === 'style' || request.destination === 'script' || request.destination === 'image' || request.destination === 'font')) {
+        event.respondWith(
+            caches.match(request).then((cachedResponse) => {
+                if (cachedResponse) {
+                    return cachedResponse;
+                }
+                return fetch(request).then((response) => {
+                    // Simpan ke cache jika response valid
+                    if (response.status === 200) {
+                        const responseToCache = response.clone();
+                        caches.open(CACHE_NAME).then((cache) => {
+                            cache.put(request, responseToCache);
+                        });
+                    }
+                    return response;
+                });
+            })
+        );
+        return;
+    }
+
+    // ===== STRATEGI: NETWORK-FIRST UNTUK HALAMAN UTAMA =====
+    if (request.mode === 'navigate') {
+        event.respondWith(
+            fetch(request)
+                .then((response) => {
+                    const responseToCache = response.clone();
+                    caches.open(CACHE_NAME).then((cache) => {
+                        cache.put(request, responseToCache);
+                    });
+                    return response;
+                })
+                .catch(() => {
+                    return caches.match(request).then((cachedResponse) => {
+                        if (cachedResponse) {
+                            return cachedResponse;
+                        }
+                        // Fallback ke index.html jika offline
+                        return caches.match('./index.html');
+                    });
+                })
+        );
+        return;
+    }
+
+    // ===== STRATEGI: CACHE-FIRST UNTUK FILE LAINNYA =====
     event.respondWith(
-        caches.match(event.request).then((cachedResponse) => {
+        caches.match(request).then((cachedResponse) => {
             if (cachedResponse) {
                 return cachedResponse;
             }
-
-            return fetch(event.request).then((networkResponse) => {
-                if (networkResponse && networkResponse.status === 200 && networkResponse.type === 'basic') {
-                    const responseToCache = networkResponse.clone();
+            return fetch(request).then((response) => {
+                if (response.status === 200 && url.origin === self.location.origin) {
+                    const responseToCache = response.clone();
                     caches.open(CACHE_NAME).then((cache) => {
-                        cache.put(event.request, responseToCache);
+                        cache.put(request, responseToCache);
                     });
                 }
-                return networkResponse;
-            }).catch(() => {
-                return caches.match('./pembayaran.html');
+                return response;
             });
+        })
+    );
+});
+
+// ===== 4. PUSH NOTIFICATION (Opsional - Bisa Dihapus Jika Tidak Dipakai) =====
+self.addEventListener('push', (event) => {
+    const data = event.data.json();
+    
+    const options = {
+        body: data.body,
+        icon: './icons/icon-192.png',
+        badge: './icons/icon-192.png',
+        vibrate: [100, 50, 100],
+        data: {
+            dateOfArrival: Date.now(),
+            primaryKey: '1'
+        }
+    };
+
+    event.waitUntil(
+        self.registration.showNotification(data.title, options)
+    );
+});
+
+// ===== 5. NOTIFICATION CLICK =====
+self.addEventListener('notificationclick', (event) => {
+    event.notification.close();
+    event.waitUntil(
+        clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
+            for (const client of clientList) {
+                if (client.url.includes('/index.html') && 'focus' in client) {
+                    return client.focus();
+                }
+            }
+            if (clients.openWindow) {
+                return clients.openWindow('./index.html');
+            }
         })
     );
 });
