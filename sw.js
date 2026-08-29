@@ -1,12 +1,12 @@
-const CACHE_NAME = 'simpel-v2.0.0';
+const CACHE_NAME = 'simpel-v3.0.0'; // Ganti versi agar cache lama terhapus
 const urlsToCache = [
     './',
     './index.html',
     './pembayaran.html',
     './admin.html',
     './manifest.json',
-    './icons/icon-192.png',
-    './icons/icon-512.png',
+    './icon-192.png',
+    './icon-512.png',
     'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2',
     'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'
 ];
@@ -53,30 +53,7 @@ self.addEventListener('fetch', (event) => {
         url.pathname.includes('/api/') ||
         url.pathname.includes('/auth/')
     ) {
-        // Gunakan Network-Only untuk data real-time
-        return;
-    }
-
-    // ===== STRATEGI: CACHE-FIRST UNTUK ASET STATIS =====
-    if (request.method === 'GET' && (request.destination === 'style' || request.destination === 'script' || request.destination === 'image' || request.destination === 'font')) {
-        event.respondWith(
-            caches.match(request).then((cachedResponse) => {
-                if (cachedResponse) {
-                    return cachedResponse;
-                }
-                return fetch(request).then((response) => {
-                    // Simpan ke cache jika response valid
-                    if (response.status === 200) {
-                        const responseToCache = response.clone();
-                        caches.open(CACHE_NAME).then((cache) => {
-                            cache.put(request, responseToCache);
-                        });
-                    }
-                    return response;
-                });
-            })
-        );
-        return;
+        return; // Network-only untuk data real-time
     }
 
     // ===== STRATEGI: NETWORK-FIRST UNTUK HALAMAN UTAMA =====
@@ -91,11 +68,12 @@ self.addEventListener('fetch', (event) => {
                     return response;
                 })
                 .catch(() => {
+                    // Jika offline, fallback ke cache
                     return caches.match(request).then((cachedResponse) => {
                         if (cachedResponse) {
                             return cachedResponse;
                         }
-                        // Fallback ke index.html jika offline
+                        // Fallback ke index.html
                         return caches.match('./index.html');
                     });
                 })
@@ -103,7 +81,7 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
-    // ===== STRATEGI: CACHE-FIRST UNTUK FILE LAINNYA =====
+    // ===== STRATEGI: CACHE-FIRST UNTUK ASET STATIS =====
     event.respondWith(
         caches.match(request).then((cachedResponse) => {
             if (cachedResponse) {
@@ -122,14 +100,14 @@ self.addEventListener('fetch', (event) => {
     );
 });
 
-// ===== 4. PUSH NOTIFICATION (Opsional - Bisa Dihapus Jika Tidak Dipakai) =====
+// ===== 4. PUSH NOTIFICATION (Opsional) =====
 self.addEventListener('push', (event) => {
     const data = event.data.json();
     
     const options = {
         body: data.body,
-        icon: './icons/icon-192.png',
-        badge: './icons/icon-192.png',
+        icon: './icon-192.png',
+        badge: './icon-192.png',
         vibrate: [100, 50, 100],
         data: {
             dateOfArrival: Date.now(),
