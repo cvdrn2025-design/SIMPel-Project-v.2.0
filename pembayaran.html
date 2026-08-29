@@ -3,155 +3,27 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="manifest" href="https://cvdrn2025-design.github.io/SIMPel-Project-v.2.0/manifest.json">
     <title>Pembayaran SIMPeL</title>
     <style>
         /* ... (Style asli Anda tetap dipertahankan) ... */
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            margin: 0;
-            padding: 0;
-            background: transparent;
-            padding-bottom: 80px;
-        }
-
-        .hero {
-            background-image: url('https://cvdrn2025-design.github.io/SIMPel-Project-v.2.0/pembayaran.png');
-            background-size: cover;
-            background-position: top center;
-            height: 320px;
-            width: 100%;
-            position: relative;
-            z-index: 0;
-        }
-
-        .container {
-            max-width: 360px;
-            margin: 10px auto 0;
-            background: transparent;
-            border-radius: 14px 14px 0 0;
-            padding: 15px;
-            position: relative;
-            z-index: 1;
-            min-height: 350px;
-        }
-
-        .paket {
-            border: 1.5px solid #E9EBE6;
-            border-radius: 10px;
-            padding: 12px;
-            margin-bottom: 12px;
-            cursor: pointer;
-            transition: all 0.3s;
-            background: #fff;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 0; background: transparent; padding-bottom: 80px; }
+        .hero { background-image: url('https://cvdrn2025-design.github.io/SIMPel-Project-v.2.0/pembayaran.png'); background-size: cover; background-position: top center; height: 320px; width: 100%; position: relative; z-index: 0; }
+        .container { max-width: 360px; margin: 10px auto 0; background: transparent; border-radius: 14px 14px 0 0; padding: 15px; position: relative; z-index: 1; min-height: 350px; }
+        .paket { border: 1.5px solid #E9EBE6; border-radius: 10px; padding: 12px; margin-bottom: 12px; cursor: pointer; transition: all 0.3s; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         .paket:hover { border-color: #E8801C; }
         .paket.selected { border-color: #E8801C; background: #FFF3DA; }
-
-        .paket h3 {
-            margin: 0 0 4px 0;
-            color: #10263E;
-            font-size: 15px;
-        }
-
-        .paket .harga {
-            font-size: 16px;
-            font-weight: 700;
-            color: #E8801C;
-        }
-
-        .paket .fitur {
-            font-size: 11px;
-            color: #5B6675;
-            margin-top: 6px;
-        }
-
-        #btnLanjut {
-            position: fixed;
-            bottom: 20px;
-            left: 20px;
-            right: 20px;
-            max-width: 360px;
-            margin: 0 auto;
-            padding: 14px;
-            background: #E8801C;
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            display: none;
-            box-shadow: 0 4px 10px rgba(232, 128, 28, 0.5);
-            z-index: 100;
-        }
-
-        #paymentSection {
-            display: none;
-            background: #fff;
-            padding: 20px;
-            max-width: 360px;
-            margin: 20px auto 0;
-            border-radius: 8px;
-            text-align: center;
-            position: relative;
-            z-index: 1;
-        }
-
-        img#qris {
-            width: 100%;
-            max-width: 300px;
-            margin: 0 auto;
-            display: block;
-            border: 1px solid #ccc;
-            border-radius: 8px;
-            margin-bottom: 15px;
-        }
-
+        .paket h3 { margin: 0 0 4px 0; color: #10263E; font-size: 15px; }
+        .paket .harga { font-size: 16px; font-weight: 700; color: #E8801C; }
+        .paket .fitur { font-size: 11px; color: #5B6675; margin-top: 6px; }
+        #btnLanjut { position: fixed; bottom: 20px; left: 20px; right: 20px; max-width: 360px; margin: 0 auto; padding: 14px; background: #E8801C; color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; display: none; box-shadow: 0 4px 10px rgba(232, 128, 28, 0.5); z-index: 100; }
+        #paymentSection { display: none; background: #fff; padding: 20px; max-width: 360px; margin: 20px auto 0; border-radius: 8px; text-align: center; position: relative; z-index: 1; }
+        img#qris { width: 100%; max-width: 300px; margin: 0 auto; display: block; border: 1px solid #ccc; border-radius: 8px; margin-bottom: 15px; }
         .status { font-size: 14px; margin-top: 15px; }
         .status.waiting { color: #5B6675; }
         .status.paid { color: green; font-weight: bold; }
-
-        button#btnKirimWA {
-            width: 100%;
-            padding: 14px;
-            background: #25D366;
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 700;
-            cursor: pointer;
-            margin-top: 20px;
-        }
-
-        a.btn-link {
-            width: 100%;
-            padding: 14px;
-            background: #10263E;
-            color: white;
-            border: none;
-            border-radius: 12px;
-            font-size: 16px;
-            font-weight: 700;
-            text-decoration: none;
-            display: inline-block;
-            margin-top: 10px;
-        }
-
-        button.orange {
-            width: 100%;
-            padding: 14px;
-            background: #E9EBE6;
-            color: #333;
-            border: none;
-            border-radius: 12px;
-            font-size: 14px;
-            cursor: pointer;
-            margin-top: 10px;
-        }
+        button#btnKirimWA { width: 100%; padding: 14px; background: #25D366; color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; margin-top: 20px; }
+        a.btn-link { width: 100%; padding: 14px; background: #10263E; color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; text-decoration: none; display: inline-block; margin-top: 10px; }
+        button.orange { width: 100%; padding: 14px; background: #E9EBE6; color: #333; border: none; border-radius: 12px; font-size: 14px; cursor: pointer; margin-top: 10px; }
     </style>
 </head>
 <body>
@@ -205,9 +77,10 @@
         <button class="orange" onclick="kembaliPilihPaket()">Kembali Pilih Paket</button>
     </div>
 
-    <!-- LIBRARY FIREBASE -->
+    <!-- LIBRARY FIREBASE & SUPABASE -->
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
     <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
     <script>
         const firebaseConfig = {
@@ -222,13 +95,9 @@
         
         firebase.initializeApp(firebaseConfig);
         const db = firebase.database();
+        const sb = window.supabase.createClient('https://ufxmcjlyfounpqasqftw.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVmeG1jamx5Zm91bnBxYXNxZnR3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU3Mjc3OTcsImV4cCI6MjEwMTMwMzc5N30.jTW0UlLOAkd6umY_wWRQscl32xT6DMmGhAwFcm81_zI');
 
-        const userId = sessionStorage.getItem('userId') || 'DRN-ADMIN-001';
-        const paketHarga = {
-            basic: 60000,
-            premium: 299000,
-            pro_max: 499000
-        };
+        const paketHarga = { basic: 60000, premium: 299000, pro_max: 499000 };
 
         let paketTerpilih = sessionStorage.getItem('paket') || null;
 
@@ -271,7 +140,6 @@
         function kembaliPilihPaket() {
             sessionStorage.removeItem('paket');
             sessionStorage.removeItem('orderId');
-            sessionStorage.removeItem('drn_user_id'); // Reset ID jika kembali
             document.getElementById('paymentSection').style.display = 'none';
             document.getElementById('pilihPaketSection').style.display = 'block';
             document.getElementById('heroSection').style.display = 'block';
@@ -286,7 +154,6 @@
                     paket: paketTerpilih,
                     amount: paketHarga[paketTerpilih],
                     status: 'WAITING',
-                    user_id: userId,
                     created_at: Date.now()
                 });
                 sessionStorage.setItem('orderId', orderId);
@@ -317,13 +184,41 @@
                     document.getElementById('linkAplikasiBox').style.display = 'block';
                     document.getElementById('btnKirimWA').style.display = 'none';
                     
-                    // ===== BACA USER ID OTOMATIS =====
-                    db.ref('transactions/' + orderId).once('value', (snap) => {
+                    // ===== BACA USER ID OTOMATIS DARI FIREBASE =====
+                    db.ref('transactions/' + orderId).once('value', async (snap) => {
                         const transData = snap.val();
                         if (transData && transData.user_id) {
                             // Simpan ke session agar bisa langsung digunakan login
                             sessionStorage.setItem('drn_user_id', transData.user_id);
+                            // Simpan paket yang dibeli
+                            sessionStorage.setItem('drn_paket', transData.paket);
+
+                            // ===== SINKRONKAN KE SUPABASE =====
+                            // Cek apakah user sudah ada di Supabase
+                            const { data: existingUser } = await sb.from('users').select('*').eq('id', transData.user_id).single();
                             
+                            if (!existingUser) {
+                                // Insert User Baru ke Supabase
+                                const { data, error } = await sb.from('users').insert({
+                                    id: transData.user_id,
+                                    paket: transData.paket,
+                                    role: 'management',
+                                    status: 'Aktif'
+                                }).select().single();
+                                if (error) {
+                                    console.error("Gagal insert ke Supabase:", error);
+                                } else {
+                                    console.log("User berhasil disinkronkan ke Supabase:", data);
+                                }
+                            } else {
+                                // Update paket jika sudah ada
+                                const { error } = await sb.from('users').update({
+                                    paket: transData.paket,
+                                    status: 'Aktif'
+                                }).eq('id', transData.user_id);
+                                if (error) console.error("Gagal update di Supabase:", error);
+                            }
+
                             document.getElementById('hasilUserId').textContent = 'User ID Anda (Management): ' + transData.user_id;
                             document.getElementById('hasilUserId').style.display = 'block';
                         }
@@ -363,19 +258,6 @@
                 document.getElementById('paymentSection').style.display = 'none';
             }
         };
-    </script>
-    <script>
-    if ('serviceWorker' in navigator) {
-        window.addEventListener('load', function() {
-            navigator.serviceWorker.register('./sw.js')
-                .then(function(registration) {
-                    console.log('Service Worker terdaftar:', registration.scope);
-                })
-                .catch(function(error) {
-                    console.log('Gagal mendaftarkan Service Worker:', error);
-                });
-        });
-    }
     </script>
 </body>
 </html>
