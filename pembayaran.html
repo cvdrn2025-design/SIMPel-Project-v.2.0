@@ -25,19 +25,30 @@
         a.btn-link { width: 100%; padding: 14px; background: #10263E; color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; text-decoration: none; display: inline-block; margin-top: 10px; }
         button.orange { width: 100%; padding: 14px; background: #E9EBE6; color: #333; border: none; border-radius: 12px; font-size: 14px; cursor: pointer; margin-top: 10px; }
         
-        /* Tombol Login untuk user yang sudah punya User ID */
-        .login-btn-wrapper { text-align: center; margin-top: -30px; position: relative; z-index: 2; }
-        .login-btn { background: #10263E; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
-        .login-btn:hover { background: #0A1B2E; }
+        /* FORM LOGIN LANGSUNG DI HALAMAN PEMBAYARAN */
+        .login-section { max-width: 360px; margin: 20px auto; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .login-section h2 { color: #10263E; font-size: 18px; margin-bottom: 15px; text-align: center; }
+        .login-section label { display: block; font-size: 12px; font-weight: bold; color: #5B6675; margin-bottom: 5px; }
+        .login-section input { width: 100%; padding: 10px; border: 1px solid #C9D3DC; border-radius: 6px; font-size: 14px; margin-bottom: 15px; }
+        .login-section button { width: 100%; padding: 12px; background: #10263E; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; }
     </style>
 </head>
 <body>
 
     <div class="hero" id="heroSection"></div>
 
-    <!-- Tombol untuk user yang sudah punya User ID -->
-    <div class="login-btn-wrapper">
-        <button class="login-btn" onclick="window.location.href='./index.html'">🔑 Sudah Punya User ID? Login di sini</button>
+    <!-- FORM LOGIN LANGSUNG -->
+    <div class="login-section">
+        <h2>🔑 Login Management</h2>
+        <form onsubmit="return loginUser(event)">
+            <label>User ID (DRN-XXXXXX)</label>
+            <input type="text" id="inputUserId" placeholder="Contoh: DRN-AHEK37" required>
+            
+            <label>Password</label>
+            <input type="password" id="inputPassword" placeholder="Masukkan password" required>
+            
+            <button type="submit">Login</button>
+        </form>
     </div>
 
     <div class="container" id="pilihPaketSection">
@@ -110,6 +121,49 @@
 
         let paketTerpilih = sessionStorage.getItem('paket') || null;
 
+        // ===== LOGIN LANGSUNG DARI HALAMAN PEMBAYARAN =====
+        async function loginUser(e) {
+            e.preventDefault();
+            
+            const userIdInput = document.getElementById('inputUserId').value.trim().toUpperCase();
+            const passwordInput = document.getElementById('inputPassword').value;
+            
+            // Validasi password
+            if (passwordInput !== 'admin01') {
+                alert('❌ Password Management salah!');
+                return false;
+            }
+            
+            // Cek User ID di Supabase
+            try {
+                const { data: user, error } = await sb.from('users').select('*').eq('id', userIdInput).single();
+                
+                if (error || !user) {
+                    alert('❌ User ID tidak ditemukan! Silakan lakukan pembayaran terlebih dahulu.');
+                    return false;
+                }
+                
+                if (user.status !== 'Aktif') {
+                    alert('❌ Akun Anda non-aktif. Hubungi Admin!');
+                    return false;
+                }
+                
+                // Simpan ke sessionStorage
+                sessionStorage.setItem('drn_user_id', userIdInput);
+                sessionStorage.setItem('drn_role', 'management');
+                sessionStorage.setItem('drn_paket', user.paket || 'basic');
+                sessionStorage.setItem('drn_addon_print', user.addon_print ? 'true' : 'false');
+                
+                alert('✅ Login Management berhasil! Paket: ' + (user.paket || 'basic') + (user.addon_print ? ' + Add-On Print' : ''));
+                window.location.href = './index.html';
+                
+            } catch (err) {
+                alert('❌ Gagal terhubung ke server: ' + err.message);
+            }
+            
+            return false;
+        }
+
         function pilihPaket(paket) {
             paketTerpilih = paket;
             sessionStorage.setItem('paket', paket);
@@ -180,7 +234,6 @@
             window.open(`https://wa.me/${nomorAdmin}?text=${encodeURIComponent(pesan)}`, '_blank');
         }
 
-        // ===== CEK STATUS PEMBAYARAN & SINKRON KE SUPABASE =====
         function cekStatus() {
             const orderId = sessionStorage.getItem('orderId');
             if (!orderId) return;
@@ -204,7 +257,6 @@
                             const { data: existingUser } = await sb.from('users').select('*').eq('id', transData.user_id).single();
                             
                             if (!existingUser) {
-                                // Simpan user baru ke Supabase
                                 const { data, error } = await sb.from('users').insert({
                                     id: transData.user_id,
                                     paket: transData.paket,
@@ -220,7 +272,6 @@
                                     console.log('User berhasil disinkronkan ke Supabase:', data);
                                 }
                             } else {
-                                // Update paket jika sudah ada
                                 await sb.from('users').update({
                                     paket: transData.paket,
                                     status: 'Aktif'
