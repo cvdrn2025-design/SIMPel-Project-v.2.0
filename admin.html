@@ -366,9 +366,19 @@
 
     // ===== BUAT USER ID DENGAN ADD-ON =====
     async function buatUserID(orderId, paket, key) {
-        // ===== 1. TANYAKAN ADD-ON PRINT =====
-        const tanyaAddon = confirm('Apakah user ini membeli Add-On Print (Rp 100.000)?\n\nKlik OK jika Ya, Cancel jika Tidak');
-        const addonPrint = tanyaAddon ? true : false;
+        // ===== HANYA TANYAKAN ADD-ON JIKA PAKET BASIC =====
+        let addonPrint = false;
+        
+        if (paket === 'basic') {
+            const tanyaAddon = confirm(
+                'Apakah user ini membeli Add-On Print (Rp 100.000)?\n\n' +
+                'Klik OK jika Ya, Cancel jika Tidak'
+            );
+            addonPrint = tanyaAddon ? true : false;
+        } else {
+            // Premium & Pro Max otomatis punya akses print
+            addonPrint = true;
+        }
         
         // ===== 2. GENERATE USER ID UNIK =====
         const userId = generateUniqueUserID();
@@ -576,4 +586,4 @@
     };
 </script>
 </body>
-  </html>
+    </html>
