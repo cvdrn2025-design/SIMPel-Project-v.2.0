@@ -26,7 +26,7 @@
         button.orange { width: 100%; padding: 14px; background: #E9EBE6; color: #333; border: none; border-radius: 12px; font-size: 14px; cursor: pointer; margin-top: 10px; }
         
         /* Tombol Login untuk user yang sudah punya User ID */
-        .login-btn-wrapper { text-align: center; margin-top: -30px; position: relative; z-index: 2; }
+        .login-btn-wrapper { text-align: center; margin-top: -50px; position: relative; z-index: 2; }
         .login-btn { background: #10263E; color: white; border: none; padding: 12px 20px; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; box-shadow: 0 2px 8px rgba(0,0,0,0.2); }
         .login-btn:hover { background: #0A1B2E; }
     </style>
@@ -227,6 +227,9 @@
                                 }).eq('id', transData.user_id);
                                 console.log('User sudah ada, paket diperbarui.');
                             }
+                            
+                            // ===== SIMPAN ADD-ON KE SESSION =====
+                            sessionStorage.setItem('drn_addon_print', transData.paket === 'basic' ? 'false' : 'true');
                             
                             document.getElementById('hasilUserId').textContent = 'User ID Anda (Management): ' + transData.user_id;
                             document.getElementById('hasilUserId').style.display = 'block';
