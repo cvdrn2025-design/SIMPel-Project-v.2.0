@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>SIMPeL — CV. Dinamika Rekonstruksi Nusantara</title>
+    <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAADz0lEQVR4nO2XO0hcWxSGv30eM874ilFURMjFyiBKFBUUbARLRWdExELUSkQUrERQESzsxMrGRiy0E2y0sfLRDgraiI3giDqCj8GZ8TzWLZI5GXOTQOCGXLj+zeHstdfa/9n/enAUIPxBaH/y8DcCbwTeCPwnCBgASimUUr/sLCKeXzqG4ziICJqm4bouuq7jOM4rv8zzFL+hEyqlEPkaNk3mezAAfD4fq6urFBUV4boumvZzZUQEEUHXdQAsy+L6+prDw0PW1tZIJBJMT0/T09PD0tISKysr6LqOUgrbtgmFQoyNjXF3dweBQEC2trbk38LBwYGUlJRILBbz1ubm5gQQ0zRFKSUTExMiIvL09CSGYRhsbGywurqKz+fDNM1XX/vy8kI8HgcgPz+fYDCI67o4juNpqWkabW1thEIhmpub6e/v5+rqioKCAgBmZmYoLi5mZGQEEcFxHBzH4eHhAePjx480NTUBMD8/z/X19SsCNTU1hEIhHMdheXmZWCz2XVkikQjd3d24rktRUZGn/c3NDcXFxQwPD1NWVkZXVxfPz8+eJEZNTQ2jo6MA7OzssLu76xkTiQSVlZXMzs4CsL+/T319PS0tLdi2ja7riAh+v5+6ujovd7a3twmHwwCMj4/T0tLCyMgIHR0dbG5uEolEvjLv6+sTy7LEsiypq6sTPleFAKLruqyvr0symZT7+3spLCyUs7OzH+p/dHQkTU1NAsjl5aWIiITDYQFkaWnJ22dZloiIXF1diZGuURFhamqKaDSKpmkYhkFjYyO1tbUATE5OUlFRgYjQ1dWFruu4rkteXh6Li4vk5+cjIrS3tzM4OEggEMC2bQzDQCnF+Pg40WiUhYUFNE3zbAwMDPw0qxOJhCwsLEh5ebk8PDzI8fHxq1sCpLOz84f+/f39opSSrKwsAWRoaEhs2xYRkWg0Kqqqqkp6enq82k43DKUUFxcX7O3tcX5+TjgcpqGhgZOTE9bW1v7RbLq7u6muriaVSmEYBpqmoes66+vrnJ6evkrY1tZWent72djYQOXk5Ei6zNIwTROlNF5eUgCUlpYSj8eJx+OYpkl2dvaX5MtC1z9f5+3trZf5mV0vGAzi9/vRNA0RIRAIeDIrpVCfPtVKXl4ulmURj8fJzc0lEAiQTCZ5enoiFovx4cNfKMWX+nUxTRPbtnAcB78/CxAeHx95964AEZebmxvevy8klUphmgaJRBK/34dhGLiuSyqVIjs7G9u2f88s+BUY6W6WqWd6UqXXMt8z92ZO0My1zFjfIm33nrz9F7wReCPwfyfwN+7Vh1DW3MetAAAAAElFTkSuQmCC">
+    <!-- ===== LIBRARY FIREBASE & SUPABASE ===== -->
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+    <script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+</head>
+<style>
+/* ... (Style asli Anda tetap dipertahankan) ... */
+:root { --navy: #10263E; --navy-deep: #0A1B2E; --safety: #E8801C; --safety-dark: #C56A12; --paper: #F6F7F5; --paper-dim: #E9EBE6; --ink: #1B2431; --ink-soft: #5B6675; --hairline: #C9D3DC; --ok: #2F7D5A; --warn: #B23A2E; }
+* { margin: 0; padding: 0; box-sizing: border-box; }
+body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif; background: var(--paper-dim); color: var(--ink); font-size: 14px; line-height: 1.5; }
+.header { background: var(--navy); color: #EAF1F8; padding: 15px 20px; border-bottom: 3px solid var(--safety); }
+.header h1 { font-size: 18px; font-weight: 700; text-transform: uppercase; letter-spacing: 0.5px; }
+.header .sub { font-size: 11px; color: #8FB6D9; margin-top: 2px; }
+.proj-bar { display: flex; gap: 8px; margin-top: 12px; flex-wrap: wrap; }
+.proj-bar select, .proj-bar button { padding: 7px 12px; border: 1px solid rgba(255,255,255,0.3); border-radius: 4px; background: rgba(255,255,255,0.1); color: #EAF1F8; font-size: 13px; cursor: pointer; }
+.proj-bar button { background: var(--safety); border-color: var(--safety); color: #1B1000; font-weight: 600; }
+.proj-bar button.ghost { background: transparent; border-color: rgba(255,255,255,0.3); color: #EAF1F8; }
+.tabs { display: flex; background: var(--navy-deep); overflow-x: auto; }
+.tabs button { padding: 10px 15px; background: none; border: none; color: #9FB3C6; font-size: 13px; font-weight: 600; cursor: pointer; border-bottom: 2px solid transparent; white-space: nowrap; }
+.tabs button.active { color: #fff; border-bottom-color: var(--safety); }
+.container { max-width: 960px; margin: 0 auto; padding: 20px 15px 50px; }
+.card { background: var(--paper); border: 1px solid var(--hairline); border-radius: 6px; padding: 16px; margin-bottom: 15px; }
+.card h2 { font-size: 15px; font-weight: 700; text-transform: uppercase; color: var(--navy); margin-bottom: 4px; }
+.card .hint { font-size: 12px; color: var(--ink-soft); margin-bottom: 12px; }
+.stats { display: grid; grid-template-columns: repeat(auto-fit, minmax(120px, 1fr)); gap: 10px; margin-top: 10px; }
+.stat { background: #fff; border: 1px solid var(--hairline); border-left: 4px solid var(--safety); padding: 10px 12px; border-radius: 4px; }
+.stat.warn { border-left-color: var(--warn); }
+.stat .num { font-size: 20px; font-weight: 700; color: var(--navy); font-family: monospace; }
+.stat .lbl { font-size: 10px; color: var(--ink-soft); text-transform: uppercase; letter-spacing: 0.5px; margin-top: 2px; }
+.form-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(130px, 1fr)); gap: 10px; align-items: end; }
+label { display: block; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: 0.5px; color: var(--ink-soft); margin-bottom: 3px; }
+input, select, textarea { width: 100%; padding: 8px 10px; border: 1px solid var(--hairline); border-radius: 4px; font-size: 13px; background: #fff; color: var(--ink); }
+.btn { background: var(--navy); color: #fff; border: none; padding: 8px 14px; border-radius: 4px; font-size: 13px; font-weight: 600; cursor: pointer; }
+.btn.small { padding: 5px 10px; font-size: 12px; }
+.btn.danger { background: var(--warn); }
+.btn.gold { background: var(--safety); color: #1B1000; }
+.btn.outline { background: transparent; border: 1px solid var(--navy); color: var(--navy); }
+table { width: 100%; border-collapse: collapse; margin-top: 10px; font-size: 13px; }
+th { text-align: left; padding: 6px 8px; border-bottom: 2px solid var(--navy); font-size: 11px; text-transform: uppercase; color: var(--ink-soft); }
+td { padding: 7px 8px; border-bottom: 1px solid var(--hairline); font-size: 12.5px; }
+.tag { display: inline-block; padding: 2px 8px; border-radius: 10px; font-size: 11px; font-weight: 600; }
+.tag.ok { background: #E4F3EA; color: var(--ok); }
+.tag.warn { background: #FBE9E7; color: var(--warn); }
+.tag.info { background: #FFF3DA; color: #8A5A00; }
+.progress { background: var(--paper-dim); border-radius: 10px; height: 8px; overflow: hidden; margin-top: 6px; }
+.progress-fill { background: var(--safety); height: 100%; }
+.empty { text-align: center; padding: 20px; color: var(--ink-soft); font-size: 13px; }
+.modal { position: fixed; inset: 0; background: rgba(10,27,46,0.7); display: flex; align-items: center; justify-content: center; z-index: 100; padding: 15px; }
+.modal-box { background: var(--paper); border-radius: 6px; padding: 20px; max-width: 400px; width: 100%; border-top: 4px solid var(--safety); }
+.modal-box h2 { font-size: 16px; margin-top: 0; color: var(--navy); }
+.hide { display: none !important; }
+.toolbar { display: flex; justify-content: space-between; align-items: center; gap: 8px; margin-bottom: 10px; flex-wrap: wrap; }
+.toolbar h2 { margin: 0; }
+.lightbox { position: fixed; inset: 0; background: rgba(10,27,46,0.9); display: flex; align-items: center; justify-content: center; z-index: 200; padding: 20px; }
+.lightbox img { max-width: 100%; max-height: 90vh; border-radius: 4px; }
+#printArea { display: none; }
+@media print { body > *:not(#printArea) { display: none !important; } #printArea { display: block !important; } #printArea table { border-collapse: collapse; width: 100%; } #printArea th, #printArea td { border: 1px solid #333; padding: 6px; font-size: 11px; } }
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+    <h1>Sistem Pemantauan Lapangan</h1>
+    <div class="sub">CV. DINAMIKA REKONSTRUKSI NUSANTARA</div>
+    <div class="proj-bar">
+        <select id="projectSelect"></select>
+        <button onclick="openProjectModal()">+ Proyek</button>
+        <button class="ghost" onclick="exportBackup()">💾 Backup</button>
+        <button class="ghost" onclick="deleteProject()">Hapus</button>
+        <span id="roleBadge" style="margin-left:auto;font-size:11px;color:#8FB6D9;align-self:center;"></span>
+        <button class="ghost" onclick="changePassword()">🔑 Ganti Password</button>
+        <button class="ghost" onclick="logout()">Keluar</button>
+    </div>
+</div>
+
+<!-- NAVIGATION -->
+<div class="tabs" id="mainTabs">
+    <button class="active" data-tab="dashboard" onclick="switchTab('dashboard')">Ringkasan</button>
+    <button data-tab="progress" onclick="switchTab('progress')">Progres</button>
+    <button data-tab="material" onclick="switchTab('material')">Material</button>
+    <button data-tab="pekerja" onclick="switchTab('pekerja')">Pekerja</button>
+    <button data-tab="rab" onclick="switchTab('rab')">RAB/BoQ</button>
+    <button data-tab="cost" onclick="switchTab('cost')">Cost</button>
+    <button data-tab="pic" onclick="switchTab('pic')">PIC</button>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="container">
+
+    <!-- DASHBOARD -->
+    <div id="tab-dashboard">
+        <div class="card">
+            <div class="toolbar">
+                <div>
+                    <h2 id="dashName">Belum ada proyek</h2>
+                    <div class="hint" id="dashMeta"></div>
+                </div>
+                <button class="btn gold small" onclick="printProgressReport()">🖨️ Cetak Laporan</button>
+            </div>
+            <div class="progress"><div class="progress-fill" id="dashProgress" style="width:0%"></div></div>
+            <div class="hint" id="dashProgressLabel">Progres: 0%</div>
+        </div>
+        
+        <div class="card">
+            <h2>Ringkasan Hari Ini</h2>
+            <div class="stats">
+                <div class="stat"><div class="num" id="statHadir">0</div><div class="lbl">Hadir</div></div>
+                <div class="stat"><div class="num" id="statMaterial">0</div><div class="lbl">Material</div></div>
+                <div class="stat"><div class="num" id="statDurasi">-</div><div class="lbl">Durasi</div></div>
+                <div class="stat"><div class="num" id="statBerjalan">-</div><div class="lbl">Berjalan</div></div>
+                <div class="stat" id="statSisaBox"><div class="num" id="statSisa">-</div><div class="lbl">Sisa</div></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Kurva S</h2>
+            <div class="toolbar">
+                <div class="hint">Rencana vs Realisasi</div>
+                <button class="btn gold small" onclick="printSCurve()">🖨️ Cetak</button>
+            </div>
+            <form class="form-grid" onsubmit="return addPlan(event)">
+                <div><label>Tanggal</label><input type="date" id="rpTanggal" required></div>
+                <div><label>Target (%)</label><input type="number" id="rpPersen" min="0" max="100" required></div>
+                <div><button class="btn small">+ Titik</button></div>
+            </form>
+            <svg id="sCurve" viewBox="0 0 600 200" style="width:100%;height:auto;margin-top:10px;background:#fff;border:1px solid #C9D3DC;border-radius:4px;"></svg>
+            <table id="tblPlan"><thead><tr><th>Tanggal</th><th>Rencana</th><th>Realisasi</th><th>Deviasi</th><th></th></tr></thead><tbody></tbody></table>
+        </div>
+    </div>
+
+    <!-- PROGRES -->
+    <div id="tab-progress" class="hide">
+        <div class="card">
+            <h2>Catat Progres Harian</h2>
+            <form class="form-grid" onsubmit="return addProgress(event)">
+                <div><label>Tanggal</label><input type="date" id="pTanggal" required></div>
+                <div><label>Deskripsi Pekerjaan</label><input type="text" id="pDeskripsi" list="uraianList" required></div>
+                <div>
+                    <label>Progres (%)</label>
+                    <input type="number" id="pPersen" min="0" max="100" required>
+                </div>
+                
+                <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 130px;">
+                        <label>Foto</label>
+                        <input type="file" id="pFotoKamera" accept="image/*" capture="environment" style="display:none;" onchange="handleFotoKamera(this)">
+                        <button type="button" class="btn small gold" onclick="document.getElementById('pFotoKamera').click()" style="width:100%;">📷 Ambil Foto</button>
+                        
+                        <input type="file" id="pFotoGaleri" accept="image/*" style="display:none;" onchange="handleFotoGaleri(this)">
+                        <button type="button" class="btn small outline" onclick="document.getElementById('pFotoGaleri').click()" style="width:100%; margin-top:6px;">🖼️ Pilih Galeri</button>
+                    </div>
+                    
+                    <img id="pFotoPreview" style="display:none; width:80px; height:80px; object-fit:cover; border-radius:6px;">
+                </div>
+
+                <div style="display: flex; align-items: flex-end;">
+                    <button class="btn" style="width: 100%;">Simpan</button>
+                </div>
+            </form>
+            <datalist id="uraianList"></datalist>
+        </div>
+
+        <div class="card">
+            <h2>Riwayat Progres</h2>
+            <div class="toolbar">
+                <div class="hint">Centang foto yang ingin dicetak</div>
+                <button class="btn gold small" onclick="printProgressPhotos()">🖼️ Cetak Foto</button>
+                <button class="btn small outline" onclick="toggleAllPhotoChecks(this)">Pilih Semua</button>
+            </div>
+            <table id="tblProgress"><thead><tr><th>Tanggal</th><th>Deskripsi</th><th>Progres</th><th>Sisa Progres</th><th>Prestasi</th><th>Foto</th><th>Cetak</th><th></th></tr></thead><tbody></tbody></table>
+            <div class="empty hide" id="emptyProgress">Belum ada data.</div>
+        </div>
+    </div>
+
+    <!-- MATERIAL -->
+    <div id="tab-material" class="hide">
+        <div class="card">
+            <h2>Kebutuhan Material</h2>
+            <form class="form-grid" onsubmit="return addAlloc(event)">
+                <div><label>Nama</label><input type="text" id="aNama" required></div>
+                <div><label>Kebutuhan</label><input type="number" id="aJatah" step="0.01" required></div>
+                <div><label>Satuan</label><input type="text" id="aSatuan" required></div>
+                <div><button class="btn">Simpan</button></div>
+            </form>
+            <table id="tblAlloc"><thead><tr><th>Material</th><th>Kebutuhan</th><th>Masuk</th><th>Status</th><th></th></tr></thead><tbody></tbody></table>
+        </div>
+        <div class="card">
+            <h2>Catat Material</h2>
+            <form class="form-grid" onsubmit="return addMaterial(event)">
+                <div><label>Tanggal</label><input type="date" id="mTanggal" required></div>
+                <div><label>Tipe</label><select id="mTipe"><option value="masuk">Masuk</option><option value="keluar">Keluar</option></select></div>
+                <div><label>Nama</label><input type="text" id="mNama" required></div>
+                <div><label>Jumlah</label><input type="number" id="mJumlah" step="0.01" required></div>
+                <div><label>Satuan</label><input type="text" id="mSatuan" required></div>
+                <div><button class="btn">Simpan</button></div>
+            </form>
+            <table id="tblMaterial"><thead><tr><th>Tanggal</th><th>Tipe</th><th>Nama</th><th>Jumlah</th><th>Stok</th><th></th></tr></thead><tbody></tbody></table>
+        </div>
+    </div>
+
+    <!-- PEKERJA -->
+    <div id="tab-pekerja" class="hide">
+        <div class="card">
+            <h2>Data Pekerja</h2>
+            <form class="form-grid" onsubmit="return addTimesheet(event)">
+                <div><label>Tanggal</label><input type="date" id="tTanggal" required></div>
+                <div><label>Nama</label><input type="text" id="tNama" required></div>
+                <div><label>Kategori</label><select id="tKategori"><option>Mandor</option><option>Kepala Tukang</option><option>Tukang</option><option>Buruh</option></select></div>
+                <div><label>Status</label><select id="tStatus"><option value="hadir">Hadir</option><option value="izin">Izin</option><option value="sakit">Sakit</option><option value="alpa">Alpa</option></select></div>
+                <div><label>Masuk</label><input type="time" id="tJamMasuk"></div>
+                <div><label>Keluar</label><input type="time" id="tJamKeluar"></div>
+                <div><button class="btn">Simpan</button></div>
+            </form>
+            <table id="tblTimesheet"><thead><tr><th>Tanggal</th><th>Nama</th><th>Kategori</th><th>Status</th><th>Rekap</th><th></th></tr></thead><tbody></tbody></table>
+        </div>
+        <div class="card">
+            <h2>Pembayaran Upah</h2>
+            
+            <form class="form-grid" onsubmit="return printWage(event)">
+                <div><label>Dari</label><input type="date" id="wageAwal" required></div>
+                <div><label>Sampai</label><input type="date" id="wageAkhir" required></div>
+                <div><button class="btn gold">🖨️ Cetak</button></div>
+            </form>
+            
+            <div class="hint" style="margin-top:10px;">Upah per kategori:</div>
+            <table><thead><tr><th>Kategori</th><th>Harian</th><th>Lembur/Jam</th></tr></thead><tbody id="tblWage"></tbody></table>
+            
+            <form class="form-grid" onsubmit="return saveWage(event)" style="margin-top:10px;">
+                <div><label>Kategori</label><select id="wageKategori"><option>Mandor</option><option>Kepala Tukang</option><option>Tukang</option><option>Buruh</option></select></div>
+                <div><label>Harian (Rp)</label><input type="number" id="wageHarian" step="1000"></div>
+                <div><label>Lembur/Jam (Rp)</label><input type="number" id="wageLembur" step="1000"></div>
+                <div><button class="btn small">Simpan</button></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- RAB -->
+<div id="tab-rab" class="hide">
+    <div class="card">
+        <div class="toolbar">
+            <h2>RAB/BoQ</h2>
+            <button class="btn gold small" onclick="printRabBoQ()">🖨️ Cetak RAB</button>
+            <button class="btn gold small" onclick="document.getElementById('rabFileInput').click()">📥 Import Excel</button>
+            <input type="file" id="rabFileInput" accept=".xlsx,.xls" style="display:none;" onchange="handleExistingRabFile(event)">
+        </div>
+        
+        <div class="stats">
+            <div class="stat"><div class="num" id="rabTotal">Rp 0</div><div class="lbl">Total RAB</div></div>
+            <div class="stat"><div class="num" id="rabPpn">Rp 0</div><div class="lbl">PPN 11%</div></div>
+            <div class="stat"><div class="num" id="rabKontrak">Rp 0</div><div class="lbl">Nilai Kontrak</div></div>
+        </div>
+        
+        <div style="border-top:2px solid var(--safety); margin-top:15px; padding-top:10px;">
+            <h3 style="font-family:Oswald,sans-serif; text-transform:uppercase; color:var(--navy); margin-bottom:10px; font-size:14px;">🔧 ADDENDUM TAMBAH/KURANG</h3>
+        </div>
+        
+        <form class="form-grid" onsubmit="return addRabItem(event)" style="margin-top:10px;">
+            <div><label>Kategori</label><select id="rabKategoriAddendum"><option value="tambah">Tambah</option><option value="kurang">Kurang</option></select></div>
+            <div style="grid-column:span 2;"><label>Uraian</label><input type="text" id="rabUraian" required></div>
+            <div><label>Volume</label><input type="number" id="rabVolume" step="0.01" required></div>
+            <div><label>Satuan</label><input type="text" id="rabSatuan" required></div>
+            <div><label>Harga</label><input type="number" id="rabHarga" step="100" required></div>
+            <div><button class="btn">Tambah</button></div>
+        </form>
+        
+        <table id="tblRab"><thead><tr><th>No</th><th>Uraian</th><th>Vol</th><th>Sat</th><th>Harga</th><th>Jumlah</th><th>Bobot (%)</th><th></th></tr></thead><tbody></tbody></table>
+    </div>
+</div>
+
+    <!-- COST CONTROL -->
+<div id="tab-cost" class="hide">
+    <div class="card">
+        <h2>Arus Kas</h2>
+        <div class="stats">
+            <div class="stat"><div class="num" id="costIn">Rp 0</div><div class="lbl">Cash In</div></div>
+            <div class="stat"><div class="num" id="costOut">Rp 0</div><div class="lbl">Cash Out</div></div>
+            <div class="stat"><div class="num" id="costSaldo">Rp 0</div><div class="lbl">Saldo</div></div>
+        </div>
+        
+        <form class="form-grid" onsubmit="return addCashflow(event)" style="margin-top:12px;">
+            <div><label>Tanggal</label><input type="date" id="cfTanggal" required></div>
+            <div><label>Jenis</label><select id="cfJenis" onchange="updateKategoriOptions()"><option value="in">Cash in</option><option value="out">Cash out</option></select></div>
+            <div><label>Kategori</label><select id="cfKategori"></select></div>
+            <div><label>Jumlah</label><input type="number" id="cfJumlah" step="0.01" required></div>
+            <div><label>Keterangan</label><input type="text" id="cfKeterangan"></div>
+            <div><button class="btn">Simpan</button></div>
+        </form>
+        
+        <table id="tblCashflow"><thead><tr><th>Tanggal</th><th>Jenis</th><th>Keterangan</th><th>Jumlah</th><th></th></tr></thead><tbody></tbody></table>
+    </div>
+</div>
+
+    <!-- PIC -->
+    <div id="tab-pic" class="hide">
+        <div class="card">
+            <h2>PIC Proyek</h2>
+            <form class="form-grid" id="picForm" onsubmit="return addPic(event)">
+                <div><label>Kategori</label><select id="picKategori"><option value="Direksi">Direksi</option><option value="Site Management">Site</option></select></div>
+                <div><label>Jabatan</label><input type="text" id="picJabatan" required></div>
+                <div><label>Nama</label><input type="text" id="picNama" required></div>
+                <div><button class="btn">Tambah</button></div>
+            </form>
+            <table id="tblPic"><thead><tr><th>Kategori</th><th>Jabatan</th><th>Nama</th><th>TTD</th><th></th></tr></thead><tbody></tbody></table>
+        </div>
+    </div>
+
+</div>
+
+<!-- LOGIN MODAL -->
+<div class="modal" id="loginModal">
+    <div class="modal-box">
+        <h2>Masuk</h2>
+        <form onsubmit="return login(event)">
+            <label>Peran</label>
+            <select id="loginRole" onchange="toggleKodeProyek()">
+                <option value="management">Management</option>
+                <option value="staff">Staff Umum</option>
+            </select>
+            <div style="height:10px"></div>
+            <label>Password</label>
+            <input type="password" id="loginPass" required>
+            <div id="loginKodeWrap" style="display:block;">
+                <div style="height:10px"></div>
+                <label>User ID / Kode Proyek</label>
+                <input type="text" id="loginKode" maxlength="20" placeholder="DRN-XXXXXX / 0001">
+            </div>
+            <div style="height:15px"></div>
+            <button class="btn" style="width:100%">Masuk</button>
+        </form>
+        <div style="text-align:center;margin-top:10px;font-size:12px;color:#5B6675;">
+            <span>Password default: Management = <b>admin01</b> | Staff = <b>admin02</b></span>
+        </div>
+    </div>
+</div>
+
+<!-- PROJECT MODAL -->
+<div class="modal" id="projectModal" style="display:none;">
+    <div class="modal-box">
+        <h2>Proyek Baru</h2>
+        <form onsubmit="return saveProject(event)">
+            <label>Nama</label>
+            <input type="text" id="npNama" required>
+            <div style="height:8px"></div>
+            <label>Lokasi</label>
+            <input type="text" id="npLokasi">
+            <div style="height:8px"></div>
+            <label>No. Kontrak</label>
+            <input type="text" id="npKontrak">
+            <div style="height:8px"></div>
+            <label>Nilai Kontrak</label>
+            <input type="number" id="npNilai" step="1000">
+            <div style="height:8px"></div>
+            <label>Mulai</label>
+            <input type="date" id="npMulai">
+            <div style="height:8px"></div>
+            <label>Selesai</label>
+            <input type="date" id="npSelesai">
+            
+            <div style="border-top:1px solid #C9D3DC; margin-top:12px; padding-top:12px;">
+                <label style="font-weight:700; color:#10263E; font-size:12px;">Import RAB/BoQ dari Excel (Opsional)</label>
+                <div style="height:8px"></div>
+                <input type="file" id="npRabFile" accept=".xlsx,.xls" onchange="handleRabFile(event)">
+                <div style="height:6px"></div>
+                <div class="hint" id="npRabPreview" style="font-size:11px; color:#5B6675;">File harus punya kolom: "Uraian", "Volume", "Satuan", "Harga Satuan"</div>
+            </div>
+            
+            <div style="height:15px"></div>
+            <button class="btn" style="width:100%" id="btnSimpanProyek">Simpan Proyek</button>
+        </form>
+    </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" style="display:none;" onclick="this.style.display='none'">
+    <img id="lightboxImg">
+</div>
+
+<!-- PRINT AREA -->
+<div id="printArea"></div>
+
+<script>
+// ===== KONFIGURASI SUPABASE =====
+const SUPABASE_URL = 'https://ufxmcjlyfounpqasqftw.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVmeG1jamx5Zm91bnBxYXNxZnR3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU3Mjc3OTcsImV4cCI6MjEwMTMwMzc5N30.jTW0UlLOAkd6umY_wWRQscl32xT6DMmGhAwFcm81_zI';
+const KEYS = {
+    current: 'drn_current_project',
+    role: 'drn_role',
+    userId: 'drn_user_id',
+    paket: 'drn_paket'
+};
+
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ===== DATABASE STATE =====
+let projects = [], progressLog = [], materialLog = [], timesheetLog = [];
+let allocations = [], cashflowLog = [], planLog = [], rabList = [], wageRates = [], picList = [];
+let currentProjectId = localStorage.getItem(KEYS.current) || null;
+let pendingRabItems = [];
+let fotoFile = null;
+
+// ===== HELPER =====
+const todayStr = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); };
+const formatRp = n => 'Rp ' + Number(n||0).toLocaleString('id-ID');
+const esc = s => { const d = document.createElement('div'); d.textContent = s == null ? '' : s; return d.innerHTML; };
+
+// ===== AUTH =====
+const currentRole = () => sessionStorage.getItem(KEYS.role);
+
+function toggleKodeProyek(){
+    document.getElementById('loginKodeWrap').style.display = 'block';
+    document.getElementById('loginKode').required = true;
+}
+
+// ===== LOGIN LOGIK (Menggunakan Supabase sebagai Sumber Utama) =====
+function login(e){
+    e.preventDefault();
+    const role = document.getElementById('loginRole').value;
+    const pass = document.getElementById('loginPass').value;
+    const idInput = document.getElementById('loginKode').value.trim().toUpperCase();
+    
+    if(role === 'management'){
+        // Validasi Password Management
+        if(pass !== 'admin01'){ alert('Password Management salah!'); return false; }
+        if(!idInput){ alert('Masukkan User ID Anda!'); return false; }
+        
+        // === CEK KE SUPABASE: Validasi apakah User ID valid dan Paket Aktif ===
+        sb.from('users').select('*').eq('id', idInput).single()
+            .then(({ data: user, error }) => {
+                if(error || !user){
+                    alert('User ID tidak ditemukan! Silakan lakukan pembayaran di halaman Pembayaran terlebih dahulu.');
+                    window.location.href = './pembayaran.html';
+                    return;
+                }
+                
+                if(user.status !== 'Aktif'){
+                    alert('Akun Anda non-aktif. Hubungi Admin!');
+                    return;
+                }
+                
+                // Simpan Session
+                sessionStorage.setItem(KEYS.userId, user.id);
+                sessionStorage.setItem(KEYS.role, 'management');
+                sessionStorage.setItem(KEYS.paket, user.paket); // Simpan Paket dari Supabase
+                
+                alert('Login Management berhasil! Paket: ' + user.paket);
+                location.reload();
+            })
+            .catch(err => alert('Gagal terhubung ke Server: ' + err.message));
+        
+        return false;
+    }
+
+    if(role === 'staff'){
+        // Staff login tanpa User ID, cukup Kode Proyek
+        if(!idInput){ alert('Masukkan Kode Proyek!'); return false; }
+        
+        // Cek apakah proyek dengan kode tersebut ada
+        const proyek = projects.find(p => getKode(p.nomorKontrak) === idInput);
+        if(!proyek){
+            alert('Kode proyek tidak ditemukan. Hubungi Management Anda.');
+            return false;
+        }
+        if(pass !== 'admin02'){ alert('Password Staff salah!'); return false; }
+        
+        // Login Staff Sukses
+        sessionStorage.setItem(KEYS.role, 'staff');
+        sessionStorage.setItem('drn_project', proyek.id);
+        localStorage.setItem(KEYS.current, proyek.id);
+        currentProjectId = proyek.id;
+        
+        alert('Login Staff berhasil!');
+        location.reload();
+        return false;
+    }
+    
+    return false;
+}
+
+function logout(){
+    sessionStorage.removeItem(KEYS.role);
+    sessionStorage.removeItem(KEYS.userId);
+    sessionStorage.removeItem(KEYS.paket);
+    sessionStorage.removeItem('drn_project');
+    location.reload();
+}
+
+// ===== LOAD DATA DARI SUPABASE =====
+async function loadAll(){
+    try{
+        const role = currentRole();
+        const userId = sessionStorage.getItem(KEYS.userId);
+        
+        // Ambil data dari Supabase
+        const tables = ['projects','progress_log','material_log','material_alloc','timesheet_log','cashflow_log','plan_progress','rab_items','wage_rates','pic_proyek'];
+        const results = await Promise.all(tables.map(t => sb.from(t).select('*')));
+        
+        // Map Data
+        projects = (results[0].data || []).map(r => ({ id: r.id, nama: r.nama, lokasi: r.lokasi, nomorKontrak: r.nomor_kontrak, nilaiKontrak: r.nilai_kontrak, tanggalMulai: r.tanggal_mulai, tanggalSelesai: r.tanggal_selesai, managementId: r.management_id }));
+        progressLog = (results[1].data || []).map(r => ({ id: r.id, projectId: r.project_id, tanggal: r.tanggal, deskripsi: r.deskripsi, persen: r.persen, foto: r.foto_url }));
+        materialLog = (results[2].data || []).map(r => ({ id: r.id, projectId: r.project_id, tanggal: r.tanggal, tipe: r.tipe, nama: r.nama, jumlah: r.jumlah, satuan: r.satuan }));
+        allocations = (results[3].data || []).map(r => ({ id: r.id, projectId: r.project_id, nama: r.nama, jatah: r.jatah, satuan: r.satuan }));
+        timesheetLog = (results[4].data || []).map(r => ({ id: r.id, projectId: r.project_id, tanggal: r.tanggal, nama: r.nama, kategori: r.kategori, status: r.status, jamMasuk: r.jam_masuk, jamKeluar: r.jam_keluar }));
+        cashflowLog = (results[5].data || []).map(r => ({ id: r.id, projectId: r.project_id, tanggal: r.tanggal, jenis: r.jenis, keterangan: r.keterangan, jumlah: r.jumlah }));
+        planLog = (results[6].data || []).map(r => ({ id: r.id, projectId: r.project_id, tanggal: r.tanggal, persen: r.persen }));
+        rabList = (results[7].data || []).map(r => ({ id: r.id, projectId: r.project_id, noUrut: r.no_urut, uraian: r.uraian, volume: r.volume, satuan: r.satuan, hargaSatuan: r.harga_satuan, jumlahHarga: r.jumlah_harga }));
+        wageRates = (results[8].data || []).map(r => ({ id: r.id, projectId: r.project_id, kategori: r.kategori, upahHarian: r.upah_harian, upahLembur: r.upah_lembur_per_jam }));
+        picList = (results[9].data || []).map(r => ({ id: r.id, projectId: r.project_id, kategori: r.kategori, jabatan: r.jabatan, nama: r.nama, wewenang: r.wewenang, ceklis: r.ceklis }));
+        
+        // ===== FILTER MANAGEMENT HANYA LIHAT PROYEK MILIKNYA SENDIRI =====
+        // PENTING: Management hanya boleh melihat proyek yang dibuat oleh dirinya sendiri
+        if(role === 'management' && userId){
+            const myProjectIds = projects.filter(p => p.managementId === userId).map(p => p.id);
+            
+            projects = projects.filter(p => p.managementId === userId);
+            progressLog = progressLog.filter(x => myProjectIds.includes(x.projectId));
+            materialLog = materialLog.filter(x => myProjectIds.includes(x.projectId));
+            allocations = allocations.filter(x => myProjectIds.includes(x.projectId));
+            timesheetLog = timesheetLog.filter(x => myProjectIds.includes(x.projectId));
+            cashflowLog = cashflowLog.filter(x => myProjectIds.includes(x.projectId));
+            planLog = planLog.filter(x => myProjectIds.includes(x.projectId));
+            rabList = rabList.filter(x => myProjectIds.includes(x.projectId));
+            wageRates = wageRates.filter(x => myProjectIds.includes(x.projectId));
+            picList = picList.filter(x => myProjectIds.includes(x.projectId));
+        }
+        
+        // ===== FILTER STAFF HANYA LIHAT PROYEK YANG DITUGASKAN =====
+        if(role === 'staff'){
+            const assignedProjectId = sessionStorage.getItem('drn_project');
+            projects = projects.filter(p => p.id === assignedProjectId);
+            // Lakukan filter data lain berdasarkan assignedProjectId...
+        }
+
+        // Set Project Aktif
+        const saved = localStorage.getItem(KEYS.current);
+        if(saved && projects.find(p => p.id === saved)) currentProjectId = saved;
+        else if(projects.length){ currentProjectId = projects[0].id; localStorage.setItem(KEYS.current, projects[0].id); }
+        else currentProjectId = null;
+        
+    }catch(err){
+        alert('Gagal memuat data: ' + err.message);
+    }
+}
+
+// ===== KONTROL AKSES TIER PAKET =====
+const getCurrentPaket = () => sessionStorage.getItem(KEYS.paket) || 'basic';
+const getProjectCountForUser = (managementId) => projects.filter(p => p.managementId === managementId).length;
+
+// Logika untuk mencegah pembuatan proyek melebihi kuota
+async function openProjectModal(){
+    if(currentRole() !== 'management'){ alert('Khusus Management.'); return; }
+    
+    const userId = sessionStorage.getItem(KEYS.userId);
+    const paket = getCurrentPaket();
+    const currentCount = getProjectCountForUser(userId);
+    
+    let maxProjects = 1;
+    if(paket === 'premium') maxProjects = 2;
+    else if(paket === 'pro_max') maxProjects = 5;
+    
+    if(currentCount >= maxProjects){
+        alert(`❌ Kuota paket ${paket} Anda sudah habis! Maksimal ${maxProjects} proyek. Silakan upgrade paket.`);
+        return;
+    }
+    
+    // Tampilkan modal jika belum habis
+    document.getElementById('projectModal').style.display = 'flex';
+}
+
+// ===== TAB & FUNGSI LAINNYA =====
+// Tulis ulang fungsi switchTab untuk membatasi akses Staff
+function switchTab(name){
+    const role = currentRole();
+    
+    // ==== AKSES STAFF ====
+    if(role === 'staff'){
+        // Staff TIDAK BOLEH akses RAB
+        if(name === 'rab'){
+            alert('Akses ditolak. RAB hanya dapat diakses oleh Management.');
+            return;
+        }
+        // Staff TIDAK BOLEH akses Cost Control
+        if(name === 'cost'){
+            alert('Akses ditolak. Cost Control hanya dapat diakses oleh Management.');
+            return;
+        }
+        // Staff HANYA BISA Input di Progres, Material, Pekerja, PIC (Read-Only)
+        if(name === 'pic'){
+            document.getElementById('picForm').style.display = 'none'; // Read-only
+        } else {
+            document.getElementById('picForm').style.display = 'grid'; // Default
+        }
+    }
+    
+    // ==== AKSES MANAGEMENT ====
+    if(role === 'management' && name === 'pic'){
+        document.getElementById('picForm').style.display = 'grid'; // Full Access
+    }
+
+    document.querySelectorAll('#mainTabs button').forEach(b => b.classList.remove('active'));
+    document.querySelector('#mainTabs button[data-tab="' + name + '"]').classList.add('active');
+    document.querySelectorAll('.container > div[id^="tab-"]').forEach(d => d.classList.add('hide'));
+    document.getElementById('tab-' + name).classList.remove('hide');
+}
+
+// ===== RENDER SEMUA (Fungsi yang sudah ada tetap dipertahankan) =====
+// renderProjectSelect, renderDashboard, renderMaterial, dsb...
+// (Salin semua fungsi render dan fungsi CRUD seperti addProgress, addMaterial, dsb dari kode asli Anda)
+// ... [Sisipkan semua fungsi render dan CRUD yang sudah Anda punya di sini] ...
+
+// ===== INIT APP =====
+async function initApp(){
+    const today = todayStr();
+    document.getElementById('pTanggal').value = today;
+    document.getElementById('mTanggal').value = today;
+    document.getElementById('tTanggal').value = today;
+    document.getElementById('cfTanggal').value = today;
+    document.getElementById('rpTanggal').value = today;
+    
+    // Cek Role
+    const role = currentRole();
+    
+    if(role){
+        // Sembunyikan Login Modal
+        document.getElementById('loginModal').style.display = 'none';
+        
+        // Jika Staff, set proyek pilihan
+        if(role === 'staff' && sessionStorage.getItem('drn_project')){
+            currentProjectId = sessionStorage.getItem('drn_project');
+        }
+        
+        // Load Data
+        await loadAll();
+        renderAll();
+        
+        // ==== KONTROL AKSES MENU BERDASARKAN ROLE ====
+        if(role === 'staff'){
+            // Sembunyikan tombol khusus Management
+            document.querySelector('.proj-bar button[onclick="openProjectModal()"]').style.display = 'none';
+            document.querySelector('.proj-bar button[onclick="exportBackup()"]').style.display = 'none';
+            document.querySelector('.proj-bar button[onclick="deleteProject()"]').style.display = 'none';
+            
+            // Kunci tab yang tidak boleh diakses
+            document.querySelector('#mainTabs button[data-tab="cost"]').style.display = 'none'; // Sembunyikan Cost
+            document.querySelector('#mainTabs button[data-tab="rab"]').style.display = 'none'; // Sembunyikan RAB
+        }
+    } else {
+        // TIDAK ADA ROLE -> Periksa apakah User ID tersimpan di session
+        const userId = sessionStorage.getItem(KEYS.userId);
+        if(userId){
+            // Jika ada User ID dari pembayaran, tampilkan Login Modal
+            document.getElementById('loginModal').style.display = 'flex';
+            alert('Silakan login menggunakan User ID Anda: ' + userId);
+        } else {
+            // Jika TIDAK ada User ID, redirect ke Pembayaran
+            alert('Anda belum memiliki akses. Silakan pilih paket terlebih dahulu.');
+            window.location.href = './pembayaran.html';
+        }
+    }
+}
+
+initApp();
+</script>
+</body>
+                       </html>
