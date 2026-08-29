@@ -1,0 +1,127 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="manifest" href="https://cvdrn2025-design.github.io/SIMPel-Project-v.2.0/manifest.json">
+    <title>Beli Add-On Print - SIMPeL</title>
+    <style>
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 20px; background: #E9EBE6; }
+        .container { max-width: 400px; margin: auto; background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        h1 { color: #10263E; font-size: 22px; margin-bottom: 5px; }
+        .harga { font-size: 32px; font-weight: bold; color: #E8801C; margin: 15px 0; }
+        .fitur { background: #F6F7F5; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
+        .fitur li { margin: 8px 0; font-size: 14px; color: #333; }
+        button { width: 100%; padding: 15px; background: #E8801C; border: none; color: white; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 15px; }
+        button:hover { background: #C56A12; }
+        .status { text-align: center; margin-top: 15px; font-size: 14px; }
+        .paid { color: #2F7D5A; font-weight: bold; }
+        .waiting { color: #5B6675; }
+        a { display: block; text-align: center; margin-top: 15px; color: #10263E; font-weight: bold; text-decoration: none; }
+    </style>
+</head>
+<body>
+<div class="container">
+    <h1>🔓 Add-On Print</h1>
+    <p style="color:#5B6675;">Buka fitur cetak untuk Paket Basic Anda.</p>
+    
+    <div class="harga">Rp 100.000 <span style="font-size:14px; color:#5B6675;">/ sekali bayar</span></div>
+    
+    <div class="fitur">
+        <strong>Yang Anda Dapatkan:</strong>
+        <ul>
+            <li>✅ Cetak Laporan Progres</li>
+            <li>✅ Cetak RAB/BoQ</li>
+            <li>✅ Cetak Kurva S</li>
+            <li>✅ Cetak Rekap Upah</li>
+            <li>✅ Export Backup Excel</li>
+        </ul>
+    </div>
+    
+    <div id="paymentArea">
+        <button onclick="mulaiPembayaran()">💳 Bayar Sekarang</button>
+        <div class="status waiting" id="statusText">Menunggu pembayaran...</div>
+    </div>
+    
+    <div id="successArea" style="display:none;">
+        <div class="status paid">✅ Pembayaran Diterima!</div>
+        <p style="text-align:center;">Add-On Print Anda sudah aktif. Silakan kembali ke aplikasi.</p>
+        <a href="./index.html">🔗 Kembali ke Aplikasi SIMPeL</a>
+    </div>
+    
+    <a href="./index.html">⬅️ Kembali</a>
+</div>
+
+<!-- LIBRARY FIREBASE & SUPABASE -->
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
+<script>
+    const firebaseConfig = {
+        apiKey: "AIzaSyAD3HHCS6nEf-K2RV2F-niPNmyoxlV49PE",
+        authDomain: "simpeldb.firebaseapp.com",
+        databaseURL: "https://simpeldb-default-rtdb.asia-southeast1.firebasedatabase.app",
+        projectId: "simpeldb",
+        storageBucket: "simpeldb.firebasestorage.app",
+        messagingSenderId: "740760479162",
+        appId: "1:740760479162:web:a073dcbac184462b80e983"
+    };
+    
+    firebase.initializeApp(firebaseConfig);
+    const db = firebase.database();
+    const sb = window.supabase.createClient('https://ufxmcjlyfounpqasqftw.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVmeG1jamx5Zm91bnBxYXNxZnR3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU3Mjc3OTcsImV4cCI6MjEwMTMwMzc5N30.jTW0UlLOAkd6umY_wWRQscl32xT6DMmGhAwFcm81_zI');
+    
+    // ===== AMBIL USER ID DARI SESSION =====
+    const userId = sessionStorage.getItem('drn_user_id');
+    
+    function mulaiPembayaran() {
+        if(!userId){
+            alert('Silakan login terlebih dahulu!');
+            window.location.href = './index.html';
+            return;
+        }
+        
+        const orderId = 'ADDON-' + Date.now();
+        
+        db.ref('transactions/' + orderId).set({
+            order_id: orderId,
+            user_id: userId,
+            type: 'addon_print',
+            amount: 100000,
+            status: 'WAITING',
+            created_at: Date.now()
+        }).then(() => {
+            document.getElementById('statusText').textContent = 'Order ID: ' + orderId + ' | Menunggu verifikasi admin...';
+            cekStatus(orderId);
+        }).catch(err => {
+            alert('Gagal: ' + err.message);
+        });
+    }
+    
+    function cekStatus(orderId) {
+        db.ref('transactions/' + orderId).on('value', (snap) => {
+            const data = snap.val();
+            if(data && data.status === 'PAID'){
+                // ===== AKTIFKAN ADD-ON DI SUPABASE =====
+                sb.from('users').update({ addon_print: true }).eq('id', userId)
+                    .then(() => {
+                        document.getElementById('paymentArea').style.display = 'none';
+                        document.getElementById('successArea').style.display = 'block';
+                        alert('✅ Add-On Print berhasil diaktifkan!');
+                    })
+                    .catch(err => alert('Gagal mengaktifkan di Supabase: ' + err.message));
+            }
+        });
+    }
+    
+    // Cek status jika sudah ada order
+    window.onload = function() {
+        if(!userId){
+            alert('Silakan login terlebih dahulu!');
+            window.location.href = './index.html';
+        }
+    };
+</script>
+</body>
+</html>
