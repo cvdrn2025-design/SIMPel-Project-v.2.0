@@ -1,0 +1,2584 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<link rel="manifest" href="https://cvdrn2025-design.github.io/SIMPel-Project-v.2.0/manifest.json">
+<title>SIMPeL — CV. Dinamika Rekonstruksi Nusantara</title>
+<link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAADz0lEQVR4nO2XO0hcWxSGv30eM874ilFURMjFyiBKFBUUbARLRWdExELUSkQUrERQESzsxMrGRiy0E2y0sfLRDgraiI3giDqCj8GZ8TzWLZI5GXOTQOCGXLj+zeHstdfa/9n/enAUIPxBaH/y8DcCbwTeCPwnCBgASimUUr/sLCKeXzqG4ziICJqm4bouuq7jOM4rv8zzFL+hEyqlEPkaNk3mezAAfD4fq6urFBUV4boumvZzZUQEEUHXdQAsy+L6+prDw0PW1tZIJBJMT0/T09PD0tISKysr6LqOUgrbtgmFQoyNjXF3dweBQEC2trbk38LBwYGUlJRILBbz1ubm5gQQ0zRFKSUTExMiIvL09CSGYRhsbGywurqKz+fDNM1XX/vy8kI8HgcgPz+fYDCI67o4juNpqWkabW1thEIhmpub6e/v5+rqioKCAgBmZmYoLi5mZGQEEcFxHBzH4eHhAePjx480NTUBMD8/z/X19SsCNTU1hEIhHMdheXmZWCz2XVkikQjd3d24rktRUZGn/c3NDcXFxQwPD1NWVkZXVxfPz8+eJEZNTQ2jo6MA7OzssLu76xkTiQSVlZXMzs4CsL+/T319PS0tLdi2ja7riAh+v5+6ujovd7a3twmHwwCMj4/T0tLCyMgIHR0dbG5uEolEvjLv6+sTy7LEsiypq6sTPleFAKLruqyvr0symZT7+3spLCyUs7OzH+p/dHQkTU1NAsjl5aWIiITDYQFkaWnJ22dZloiIXF1diZGuURFhamqKaDSKpmkYhkFjYyO1tbUATE5OUlFRgYjQ1dWFruu4rkteXh6Li4vk5+cjIrS3tzM4OEggEMC2bQzDQCnF+Pg40WiUhYUFNE3zbAwMDPw0qxOJhCwsLEh5ebk8PDzI8fHxq1sCpLOz84f+/f39opSSrKwsAWRoaEhs2xYRkWg0Kqqqqkp6enq82k43DKUUFxcX7O3tcX5+TjgcpqGhgZOTE9bW1v7RbLq7u6muriaVSmEYBpqmoes66+vrnJ6evkrY1tZWent72djYQOXk5Ei6zNIwTROlNF5eUgCUlpYSj8eJx+OYpkl2dvaX5MtC1z9f5+3trZf5mV0vGAzi9/vRNA0RIRAIeDIrpVCfPtVKXl4ulmURj8fJzc0lEAiQTCZ5enoiFovx4cNfKMWX+nUxTRPbtnAcB78/CxAeHx95964AEZebmxvevy8klUphmgaJRBK/34dhGLiuSyqVIjs7G9u2f88s+BUY6W6WqWd6UqXXMt8z92ZO0My1zFjfIm33nrz9F7wReCPwfyfwN+7Vh1DW3MetAAAAAElFTkSuQmCC">
+
+<!-- ===== LIBRARY SUPABASE & XLSX ===== -->
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+
+<style>
+:root {
+    --navy: #10263E;
+    --navy-deep: #0A1B2E;
+    --safety: #E8801C;
+    --safety-dark: #C56A12;
+    --paper: #F6F7F5;
+    --paper-dim: #E9EBE6;
+    --ink: #1B2431;
+    --ink-soft: #5B6675;
+    --hairline: #C9D3DC;
+    --ok: #2F7D5A;
+    --warn: #B23A2E;
+}
+
+* { margin: 0; padding: 0; box-sizing: border-box; }
+
+body {
+    font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+    background: var(--paper-dim);
+    color: var(--ink);
+    font-size: 14px;
+    line-height: 1.5;
+}
+
+.header {
+    background: var(--navy);
+    color: #EAF1F8;
+    padding: 15px 20px;
+    border-bottom: 3px solid var(--safety);
+}
+
+.header h1 {
+    font-size: 18px;
+    font-weight: 700;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.header .sub {
+    font-size: 11px;
+    color: #8FB6D9;
+    margin-top: 2px;
+}
+
+.proj-bar {
+    display: flex;
+    gap: 8px;
+    margin-top: 12px;
+    flex-wrap: wrap;
+}
+
+.proj-bar select,
+.proj-bar button {
+    padding: 7px 12px;
+    border: 1px solid rgba(255,255,255,0.3);
+    border-radius: 4px;
+    background: rgba(255,255,255,0.1);
+    color: #EAF1F8;
+    font-size: 13px;
+    cursor: pointer;
+}
+
+.proj-bar button {
+    background: var(--safety);
+    border-color: var(--safety);
+    color: #1B1000;
+    font-weight: 600;
+}
+
+.proj-bar button.ghost {
+    background: transparent;
+    border-color: rgba(255,255,255,0.3);
+    color: #EAF1F8;
+}
+
+.tabs {
+    display: flex;
+    background: var(--navy-deep);
+    overflow-x: auto;
+}
+
+.tabs button {
+    padding: 10px 15px;
+    background: none;
+    border: none;
+    color: #9FB3C6;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    border-bottom: 2px solid transparent;
+    white-space: nowrap;
+}
+
+.tabs button.active {
+    color: #fff;
+    border-bottom-color: var(--safety);
+}
+
+.container {
+    max-width: 960px;
+    margin: 0 auto;
+    padding: 20px 15px 50px;
+}
+
+.card {
+    background: var(--paper);
+    border: 1px solid var(--hairline);
+    border-radius: 6px;
+    padding: 16px;
+    margin-bottom: 15px;
+}
+
+.card h2 {
+    font-size: 15px;
+    font-weight: 700;
+    text-transform: uppercase;
+    color: var(--navy);
+    margin-bottom: 4px;
+}
+
+.card .hint {
+    font-size: 12px;
+    color: var(--ink-soft);
+    margin-bottom: 12px;
+}
+
+.stats {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(120px, 1fr));
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.stat {
+    background: #fff;
+    border: 1px solid var(--hairline);
+    border-left: 4px solid var(--safety);
+    padding: 10px 12px;
+    border-radius: 4px;
+}
+
+.stat.warn { border-left-color: var(--warn); }
+
+.stat .num {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--navy);
+    font-family: monospace;
+}
+
+.stat .lbl {
+    font-size: 10px;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-top: 2px;
+}
+
+.form-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+    gap: 10px;
+    align-items: end;
+}
+
+label {
+    display: block;
+    font-size: 10px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    color: var(--ink-soft);
+    margin-bottom: 3px;
+}
+
+input,
+select,
+textarea {
+    width: 100%;
+    padding: 8px 10px;
+    border: 1px solid var(--hairline);
+    border-radius: 4px;
+    font-size: 13px;
+    background: #fff;
+    color: var(--ink);
+}
+
+.btn {
+    background: var(--navy);
+    color: #fff;
+    border: none;
+    padding: 8px 14px;
+    border-radius: 4px;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+}
+
+.btn.small { padding: 5px 10px; font-size: 12px; }
+.btn.danger { background: var(--warn); }
+.btn.gold { background: var(--safety); color: #1B1000; }
+.btn.outline { background: transparent; border: 1px solid var(--navy); color: var(--navy); }
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+    margin-top: 10px;
+    font-size: 13px;
+}
+
+th {
+    text-align: left;
+    padding: 6px 8px;
+    border-bottom: 2px solid var(--navy);
+    font-size: 11px;
+    text-transform: uppercase;
+    color: var(--ink-soft);
+}
+
+td {
+    padding: 7px 8px;
+    border-bottom: 1px solid var(--hairline);
+    font-size: 12.5px;
+}
+
+.tag {
+    display: inline-block;
+    padding: 2px 8px;
+    border-radius: 10px;
+    font-size: 11px;
+    font-weight: 600;
+}
+
+.tag.ok { background: #E4F3EA; color: var(--ok); }
+.tag.warn { background: #FBE9E7; color: var(--warn); }
+.tag.info { background: #FFF3DA; color: #8A5A00; }
+
+.progress {
+    background: var(--paper-dim);
+    border-radius: 10px;
+    height: 8px;
+    overflow: hidden;
+    margin-top: 6px;
+}
+
+.progress-fill { background: var(--safety); height: 100%; }
+
+.empty {
+    text-align: center;
+    padding: 20px;
+    color: var(--ink-soft);
+    font-size: 13px;
+}
+
+.modal {
+    position: fixed;
+    inset: 0;
+    background: rgba(10,27,46,0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 100;
+    padding: 15px;
+}
+
+.modal-box {
+    background: var(--paper);
+    border-radius: 6px;
+    padding: 20px;
+    max-width: 400px;
+    width: 100%;
+    border-top: 4px solid var(--safety);
+}
+
+.modal-box h2 {
+    font-size: 16px;
+    margin-top: 0;
+    color: var(--navy);
+}
+
+.hide { display: none !important; }
+
+.toolbar {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    gap: 8px;
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+}
+
+.toolbar h2 { margin: 0; }
+
+.lightbox {
+    position: fixed;
+    inset: 0;
+    background: rgba(10,27,46,0.9);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 200;
+    padding: 20px;
+}
+
+.lightbox img {
+    max-width: 100%;
+    max-height: 90vh;
+    border-radius: 4px;
+}
+
+#printArea { display: none; }
+
+@media print {
+    body > *:not(#printArea) { display: none !important; }
+    #printArea { display: block !important; }
+    #printArea table { border-collapse: collapse; width: 100%; }
+    #printArea th, #printArea td {
+        border: 1px solid #333;
+        padding: 6px;
+        font-size: 11px;
+    }
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<div class="header">
+    <h1>Sistem Pemantauan Lapangan</h1>
+    <div class="sub">CV. DINAMIKA REKONSTRUKSI NUSANTARA</div>
+    <div class="proj-bar">
+        <select id="projectSelect"></select>
+        <button onclick="openProjectModal()">+ Proyek</button>
+        <button class="ghost" onclick="exportBackup()">💾 Backup</button>
+        <button class="ghost" onclick="deleteProject()">Hapus</button>
+        <span id="roleBadge" style="margin-left:auto;font-size:11px;color:#8FB6D9;align-self:center;"></span>
+        <button class="ghost" onclick="changePassword()">🔑 Ganti Password</button>
+        <button class="ghost" onclick="logout()">Keluar</button>
+    </div>
+</div>
+
+<!-- NAVIGATION -->
+<div class="tabs" id="mainTabs">
+    <button class="active" data-tab="dashboard" onclick="switchTab('dashboard')">Ringkasan</button>
+    <button data-tab="progress" onclick="switchTab('progress')">Progres</button>
+    <button data-tab="material" onclick="switchTab('material')">Material</button>
+    <button data-tab="pekerja" onclick="switchTab('pekerja')">Pekerja</button>
+    <button data-tab="rab" onclick="switchTab('rab')">RAB/BoQ</button>
+    <button data-tab="cost" onclick="switchTab('cost')">Cost</button>
+    <button data-tab="pic" onclick="switchTab('pic')">PIC</button>
+</div>
+
+<!-- MAIN CONTENT -->
+<div class="container">
+
+    <!-- DASHBOARD -->
+    <div id="tab-dashboard">
+        <div class="card">
+            <div class="toolbar">
+                <div>
+                    <h2 id="dashName">Belum ada proyek</h2>
+                    <div class="hint" id="dashMeta"></div>
+                </div>
+                <button class="btn gold small" onclick="printProgressReport()">🖨️ Cetak Laporan</button>
+            </div>
+            <div class="progress"><div class="progress-fill" id="dashProgress" style="width:0%"></div></div>
+            <div class="hint" id="dashProgressLabel">Progres: 0%</div>
+        </div>
+        
+        <div class="card">
+            <h2>Ringkasan Hari Ini</h2>
+            <div class="stats">
+                <div class="stat"><div class="num" id="statHadir">0</div><div class="lbl">Hadir</div></div>
+                <div class="stat"><div class="num" id="statMaterial">0</div><div class="lbl">Material</div></div>
+                <div class="stat"><div class="num" id="statDurasi">-</div><div class="lbl">Durasi</div></div>
+                <div class="stat"><div class="num" id="statBerjalan">-</div><div class="lbl">Berjalan</div></div>
+                <div class="stat" id="statSisaBox"><div class="num" id="statSisa">-</div><div class="lbl">Sisa</div></div>
+            </div>
+        </div>
+
+        <div class="card">
+            <h2>Kurva S</h2>
+            <div class="toolbar">
+                <div class="hint">Rencana vs Realisasi</div>
+                <button class="btn gold small" onclick="printSCurve()">🖨️ Cetak</button>
+            </div>
+            <form class="form-grid" onsubmit="return addPlan(event)">
+                <div><label>Tanggal</label><input type="date" id="rpTanggal" required></div>
+                <div><label>Target (%)</label><input type="number" id="rpPersen" min="0" max="100" required></div>
+                <div><button class="btn small">+ Titik</button></div>
+            </form>
+            <svg id="sCurve" viewBox="0 0 600 200" style="width:100%;height:auto;margin-top:10px;background:#fff;border:1px solid #C9D3DC;border-radius:4px;"></svg>
+            <table id="tblPlan"><thead><tr><th>Tanggal</th><th>Rencana</th><th>Realisasi</th><th>Deviasi</th><th></th></tr></thead><tbody></tbody></table>
+        </div>
+    </div>
+
+    <!-- PROGRES -->
+    <div id="tab-progress" class="hide">
+        <div class="card">
+            <h2>Catat Progres Harian</h2>
+            <form class="form-grid" onsubmit="return addProgress(event)">
+                <div><label>Tanggal</label><input type="date" id="pTanggal" required></div>
+                <div><label>Deskripsi Pekerjaan</label><input type="text" id="pDeskripsi" list="uraianList" required></div>
+                <div>
+                    <label>Progres (%)</label>
+                    <input type="number" id="pPersen" min="0" max="100" required>
+                </div>
+                
+                <div style="display: flex; align-items: center; gap: 10px; flex-wrap: wrap;">
+                    <div style="flex: 1; min-width: 130px;">
+                        <label>Foto</label>
+                        <input type="file" id="pFotoKamera" accept="image/*" capture="environment" style="display:none;" onchange="handleFotoKamera(this)">
+                        <button type="button" class="btn small gold" onclick="document.getElementById('pFotoKamera').click()" style="width:100%;">📷 Ambil Foto</button>
+                        
+                        <input type="file" id="pFotoGaleri" accept="image/*" style="display:none;" onchange="handleFotoGaleri(this)">
+                        <button type="button" class="btn small outline" onclick="document.getElementById('pFotoGaleri').click()" style="width:100%; margin-top:6px;">🖼️ Pilih Galeri</button>
+                    </div>
+                    
+                    <img id="pFotoPreview" style="display:none; width:80px; height:80px; object-fit:cover; border-radius:6px;">
+                </div>
+
+                <div style="display: flex; align-items: flex-end;">
+                    <button class="btn" style="width: 100%;">Simpan</button>
+                </div>
+            </form>
+            <datalist id="uraianList"></datalist>
+        </div>
+
+        <div class="card">
+            <h2>Riwayat Progres</h2>
+            <div class="toolbar">
+                <div class="hint">Centang foto yang ingin dicetak</div>
+                <button class="btn gold small" onclick="printProgressPhotos()">🖼️ Cetak Foto</button>
+                <button class="btn small outline" onclick="toggleAllPhotoChecks(this)">Pilih Semua</button>
+            </div>
+            <table id="tblProgress"><thead><tr><th>Tanggal</th><th>Deskripsi</th><th>Progres</th><th>Sisa Progres</th><th>Prestasi</th><th>Foto</th><th>Cetak</th><th></th></tr></thead><tbody></tbody></table>
+            <div class="empty hide" id="emptyProgress">Belum ada data.</div>
+        </div>
+    </div>
+
+    <!-- MATERIAL -->
+    <div id="tab-material" class="hide">
+        <div class="card">
+            <h2>Kebutuhan Material</h2>
+            <form class="form-grid" onsubmit="return addAlloc(event)">
+                <div><label>Nama</label><input type="text" id="aNama" required></div>
+                <div><label>Kebutuhan</label><input type="number" id="aJatah" step="0.01" required></div>
+                <div><label>Satuan</label><input type="text" id="aSatuan" required></div>
+                <div><button class="btn">Simpan</button></div>
+            </form>
+            <table id="tblAlloc"><thead><tr><th>Material</th><th>Kebutuhan</th><th>Masuk</th><th>Status</th><th></th></tr></thead><tbody></tbody></table>
+        </div>
+        <div class="card">
+            <h2>Catat Material</h2>
+            <form class="form-grid" onsubmit="return addMaterial(event)">
+                <div><label>Tanggal</label><input type="date" id="mTanggal" required></div>
+                <div><label>Tipe</label><select id="mTipe"><option value="masuk">Masuk</option><option value="keluar">Keluar</option></select></div>
+                <div><label>Nama</label><input type="text" id="mNama" required></div>
+                <div><label>Jumlah</label><input type="number" id="mJumlah" step="0.01" required></div>
+                <div><label>Satuan</label><input type="text" id="mSatuan" required></div>
+                <div><button class="btn">Simpan</button></div>
+            </form>
+            <table id="tblMaterial"><thead><tr><th>Tanggal</th><th>Tipe</th><th>Nama</th><th>Jumlah</th><th>Stok</th><th></th></tr></thead><tbody></tbody></table>
+        </div>
+    </div>
+
+    <!-- PEKERJA -->
+    <div id="tab-pekerja" class="hide">
+        <div class="card">
+            <h2>Data Pekerja</h2>
+            <form class="form-grid" onsubmit="return addTimesheet(event)">
+                <div><label>Tanggal</label><input type="date" id="tTanggal" required></div>
+                <div><label>Nama</label><input type="text" id="tNama" required></div>
+                <div><label>Kategori</label><select id="tKategori"><option>Mandor</option><option>Kepala Tukang</option><option>Tukang</option><option>Buruh</option></select></div>
+                <div><label>Status</label><select id="tStatus"><option value="hadir">Hadir</option><option value="izin">Izin</option><option value="sakit">Sakit</option><option value="alpa">Alpa</option></select></div>
+                <div><label>Masuk</label><input type="time" id="tJamMasuk"></div>
+                <div><label>Keluar</label><input type="time" id="tJamKeluar"></div>
+                <div><button class="btn">Simpan</button></div>
+            </form>
+            <table id="tblTimesheet"><thead><tr><th>Tanggal</th><th>Nama</th><th>Kategori</th><th>Status</th><th>Rekap</th><th></th></tr></thead><tbody></tbody></table>
+        </div>
+        <div class="card">
+            <h2>Pembayaran Upah</h2>
+            
+            <!-- Form periode cetak -->
+            <form class="form-grid" onsubmit="return printWage(event)">
+                <div><label>Dari</label><input type="date" id="wageAwal" required></div>
+                <div><label>Sampai</label><input type="date" id="wageAkhir" required></div>
+                <div><button class="btn gold">🖨️ Cetak</button></div>
+            </form>
+            
+            <div class="hint" style="margin-top:10px;">Upah per kategori:</div>
+            <table><thead><tr><th>Kategori</th><th>Harian</th><th>Lembur/Jam</th></tr></thead><tbody id="tblWage"></tbody></table>
+            
+            <!-- Form simpan upah -->
+            <form class="form-grid" onsubmit="return saveWage(event)" style="margin-top:10px;">
+                <div><label>Kategori</label><select id="wageKategori"><option>Mandor</option><option>Kepala Tukang</option><option>Tukang</option><option>Buruh</option></select></div>
+                <div><label>Harian (Rp)</label><input type="number" id="wageHarian" step="1000"></div>
+                <div><label>Lembur/Jam (Rp)</label><input type="number" id="wageLembur" step="1000"></div>
+                <div><button class="btn small">Simpan</button></div>
+            </form>
+        </div>
+    </div>
+
+    <!-- RAB -->
+    <div id="tab-rab" class="hide">
+        <div class="card">
+            <div class="toolbar">
+                <h2>RAB/BoQ</h2>
+                <button class="btn gold small" onclick="printRabBoQ()">🖨️ Cetak RAB</button>
+                <button class="btn gold small" onclick="document.getElementById('rabFileInput').click()">📥 Import Excel</button>
+                <input type="file" id="rabFileInput" accept=".xlsx,.xls" style="display:none;" onchange="handleExistingRabFile(event)">
+            </div>
+            
+            <div class="stats">
+                <div class="stat"><div class="num" id="rabTotal">Rp 0</div><div class="lbl">Total RAB</div></div>
+                <div class="stat"><div class="num" id="rabPpn">Rp 0</div><div class="lbl">PPN 11%</div></div>
+                <div class="stat"><div class="num" id="rabKontrak">Rp 0</div><div class="lbl">Nilai Kontrak</div></div>
+            </div>
+            
+            <!-- JUDUL ADDENDUM -->
+            <div style="border-top:2px solid var(--safety); margin-top:15px; padding-top:10px;">
+                <h3 style="font-family:Oswald,sans-serif; text-transform:uppercase; color:var(--navy); margin-bottom:10px; font-size:14px;">🔧 ADDENDUM TAMBAH/KURANG</h3>
+            </div>
+            
+            <form class="form-grid" onsubmit="return addRabItem(event)" style="margin-top:10px;">
+                <div><label>Kategori</label><select id="rabKategoriAddendum"><option value="tambah">Tambah</option><option value="kurang">Kurang</option></select></div>
+                <div style="grid-column:span 2;"><label>Uraian</label><input type="text" id="rabUraian" required></div>
+                <div><label>Volume</label><input type="number" id="rabVolume" step="0.01" required></div>
+                <div><label>Satuan</label><input type="text" id="rabSatuan" required></div>
+                <div><label>Harga</label><input type="number" id="rabHarga" step="100" required></div>
+                <div><button class="btn">Tambah</button></div>
+            </form>
+            
+            <table id="tblRab"><thead><tr><th>No</th><th>Uraian</th><th>Vol</th><th>Sat</th><th>Harga</th><th>Jumlah</th><th>Bobot (%)</th><th></th></tr></thead><tbody></tbody></table>
+        </div>
+    </div>
+
+    <!-- COST CONTROL -->
+    <div id="tab-cost" class="hide">
+        <div class="card">
+            <h2>Arus Kas</h2>
+            <div class="stats">
+                <div class="stat"><div class="num" id="costIn">Rp 0</div><div class="lbl">Cash In</div></div>
+                <div class="stat"><div class="num" id="costOut">Rp 0</div><div class="lbl">Cash Out</div></div>
+                <div class="stat"><div class="num" id="costSaldo">Rp 0</div><div class="lbl">Saldo</div></div>
+            </div>
+            
+            <form class="form-grid" onsubmit="return addCashflow(event)" style="margin-top:12px;">
+                <div><label>Tanggal</label><input type="date" id="cfTanggal" required></div>
+                <div><label>Jenis</label><select id="cfJenis" onchange="updateKategoriOptions()"><option value="in">Cash in</option><option value="out">Cash out</option></select></div>
+                <div><label>Kategori</label><select id="cfKategori"></select></div>
+                <div><label>Jumlah</label><input type="number" id="cfJumlah" step="0.01" required></div>
+                <div><label>Keterangan</label><input type="text" id="cfKeterangan"></div>
+                <div><button class="btn">Simpan</button></div>
+            </form>
+            
+            <table id="tblCashflow"><thead><tr><th>Tanggal</th><th>Jenis</th><th>Keterangan</th><th>Jumlah</th><th></th></tr></thead><tbody></tbody></table>
+        </div>
+    </div>
+
+    <!-- PIC -->
+    <div id="tab-pic" class="hide">
+        <div class="card">
+            <h2>PIC Proyek</h2>
+            <form class="form-grid" id="picForm" onsubmit="return addPic(event)">
+                <div><label>Kategori</label><select id="picKategori"><option value="Direksi">Direksi</option><option value="Site Management">Site</option></select></div>
+                <div><label>Jabatan</label><input type="text" id="picJabatan" required></div>
+                <div><label>Nama</label><input type="text" id="picNama" required></div>
+                <div><button class="btn">Tambah</button></div>
+            </form>
+            <table id="tblPic"><thead><tr><th>Kategori</th><th>Jabatan</th><th>Nama</th><th>TTD</th><th></th></tr></thead><tbody></tbody></table>
+        </div>
+    </div>
+
+</div>
+
+<!-- LOGIN MODAL -->
+<div class="modal" id="loginModal">
+    <div class="modal-box">
+        <h2>Masuk</h2>
+        <form onsubmit="return login(event)">
+            <label>Peran</label>
+            <select id="loginRole" onchange="toggleKodeProyek()">
+                <option value="management">Management</option>
+                <option value="staff">Staff Umum</option>
+            </select>
+            <div style="height:10px"></div>
+            <label>Password</label>
+            <input type="password" id="loginPass" required>
+            <div id="loginKodeWrap" style="display:block;">
+                <div style="height:10px"></div>
+                <label>User ID / Kode Proyek</label>
+                <input type="text" id="loginKode" maxlength="20" placeholder="DRN-XXXXXX / 0001">
+            </div>
+            <div style="height:15px"></div>
+            <button class="btn" style="width:100%">Masuk</button>
+        </form>
+        <div style="text-align:center;margin-top:10px;font-size:12px;color:#5B6675;">
+            <span>Password default: Management = <b>admin01</b> | Staff = <b>admin02</b></span>
+        </div>
+    </div>
+</div>
+
+<!-- PROJECT MODAL -->
+<div class="modal" id="projectModal" style="display:none;">
+    <div class="modal-box">
+        <h2>Proyek Baru</h2>
+        <form onsubmit="return saveProject(event)">
+            <label>Nama</label>
+            <input type="text" id="npNama" required>
+            <div style="height:8px"></div>
+            <label>Lokasi</label>
+            <input type="text" id="npLokasi">
+            <div style="height:8px"></div>
+            <label>No. Kontrak</label>
+            <input type="text" id="npKontrak">
+            <div style="height:8px"></div>
+            <label>Nilai Kontrak</label>
+            <input type="number" id="npNilai" step="1000">
+            <div style="height:8px"></div>
+            <label>Mulai</label>
+            <input type="date" id="npMulai">
+            <div style="height:8px"></div>
+            <label>Selesai</label>
+            <input type="date" id="npSelesai">
+            
+            <div style="border-top:1px solid #C9D3DC; margin-top:12px; padding-top:12px;">
+                <label style="font-weight:700; color:#10263E; font-size:12px;">Import RAB/BoQ dari Excel (Opsional)</label>
+                <div style="height:8px"></div>
+                <input type="file" id="npRabFile" accept=".xlsx,.xls" onchange="handleRabFile(event)">
+                <div style="height:6px"></div>
+                <div class="hint" id="npRabPreview" style="font-size:11px; color:#5B6675;">File harus punya kolom: "Uraian", "Volume", "Satuan", "Harga Satuan"</div>
+            </div>
+            
+            <div style="height:15px"></div>
+            <button class="btn" style="width:100%" id="btnSimpanProyek">Simpan Proyek</button>
+        </form>
+    </div>
+</div>
+
+<!-- LIGHTBOX -->
+<div class="lightbox" id="lightbox" style="display:none;" onclick="this.style.display='none'">
+    <img id="lightboxImg">
+</div>
+
+<!-- PRINT AREA -->
+<div id="printArea"></div>
+
+<script>
+// ===== KONFIGURASI SUPABASE =====
+const SUPABASE_URL = 'https://ufxmcjlyfounpqasqftw.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVmeG1jamx5Zm91bnBxYXNxZnR3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU3Mjc3OTcsImV4cCI6MjEwMTMwMzc5N30.jTW0UlLOAkd6umY_wWRQscl32xT6DMmGhAwFcm81_zI';
+const KEYS = {
+    current: 'drn_current_project',
+    role: 'drn_role',
+    userId: 'drn_user_id',
+    paket: 'drn_paket',
+    addonPrint: 'drn_addon_print',
+    project: 'drn_project'
+};
+
+const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+
+// ===== DATABASE STATE =====
+let projects = [], progressLog = [], materialLog = [], timesheetLog = [];
+let allocations = [], cashflowLog = [], planLog = [], rabList = [], wageRates = [], picList = [];
+let currentProjectId = localStorage.getItem(KEYS.current) || null;
+let pendingRabItems = [];
+let fotoFile = null;
+
+// ===== HELPER =====
+const todayStr = () => { const d = new Date(); return d.getFullYear() + '-' + String(d.getMonth()+1).padStart(2,'0') + '-' + String(d.getDate()).padStart(2,'0'); };
+const formatRp = n => 'Rp ' + Number(n||0).toLocaleString('id-ID');
+const formatTgl = s => s ? s.split('-').reverse().join('/') : '-';
+const getKode = nomor => {
+    if(!nomor) return null;
+    const m = String(nomor).match(/^(\d+)/);
+    return m ? m[1].padStart(4,'0').substring(0,4) : null;
+};
+const esc = s => { const d = document.createElement('div'); d.textContent = s == null ? '' : s; return d.innerHTML; };
+
+// ===== AUTH =====
+const currentRole = () => sessionStorage.getItem(KEYS.role);
+
+function toggleKodeProyek(){
+    document.getElementById('loginKodeWrap').style.display = 'block';
+    document.getElementById('loginKode').required = true;
+}
+
+// ===== LOGIN LOGIK =====
+function login(e){
+    e.preventDefault();
+    const role = document.getElementById('loginRole').value;
+    const pass = document.getElementById('loginPass').value;
+    const idInput = document.getElementById('loginKode').value.trim().toUpperCase();
+    
+    if(role === 'management'){
+        if(pass !== 'admin01'){ alert('Password Management salah!'); return false; }
+        if(!idInput){ alert('Masukkan User ID Anda!'); return false; }
+        
+        sessionStorage.setItem(KEYS.userId, idInput);
+        sessionStorage.setItem(KEYS.role, 'management');
+        
+        // ===== AMBIL DATA USER DARI SUPABASE =====
+        sb.from('users').select('*').eq('id', idInput).single()
+            .then(({ data: user, error }) => {
+                if(error || !user){
+                    alert('User ID tidak ditemukan! Silakan lakukan pembayaran di halaman Pembayaran.');
+                    window.location.href = './pembayaran.html';
+                    return;
+                }
+                
+                if(user.status !== 'Aktif'){
+                    alert('Akun Anda non-aktif. Hubungi Admin!');
+                    return;
+                }
+                
+                // ===== SIMPAN PAKET & ADD-ON =====
+                sessionStorage.setItem(KEYS.paket, user.paket || 'basic');
+                sessionStorage.setItem(KEYS.addonPrint, user.addon_print ? 'true' : 'false');
+                
+                alert('Login Management berhasil! Paket: ' + (user.paket || 'basic') + (user.addon_print ? ' + Add-On Print' : ''));
+                location.reload();
+            })
+            .catch(err => alert('Gagal terhubung ke Server: ' + err.message));
+        
+        return false;
+    }
+
+    if(role === 'staff'){
+        if(!idInput){ alert('Masukkan Kode Proyek!'); return false; }
+        
+        sb.from('projects').select('*').then(({ data: allProjects, error }) => {
+            if(error) throw error;
+            
+            const proyek = (allProjects || []).find(p => getKode(p.nomor_kontrak) === idInput);
+            
+            if(!proyek){
+                alert('Kode proyek tidak ditemukan. Hubungi Management Anda.');
+                return;
+            }
+            if(pass !== 'admin02'){ alert('Password Staff salah!'); return false; }
+            
+            sessionStorage.setItem(KEYS.role, 'staff');
+            sessionStorage.setItem(KEYS.project, proyek.id);
+            localStorage.setItem(KEYS.current, proyek.id);
+            currentProjectId = proyek.id;
+            
+            alert('Login Staff berhasil!');
+            location.reload();
+        });
+        
+        return false;
+    }
+    
+    return false;
+}
+
+function logout(){
+    sessionStorage.removeItem(KEYS.role);
+    sessionStorage.removeItem(KEYS.userId);
+    sessionStorage.removeItem(KEYS.paket);
+    sessionStorage.removeItem(KEYS.addonPrint);
+    sessionStorage.removeItem(KEYS.project);
+    location.reload();
+}
+
+// ===== LOAD DATA & FILTER KETAT (ANTI BOCOR) =====
+async function loadAll(){
+    try{
+        const role = currentRole();
+        const userId = sessionStorage.getItem(KEYS.userId);
+        const staffProjectId = sessionStorage.getItem(KEYS.project);
+        
+        const tables = ['projects','progress_log','material_log','material_alloc','timesheet_log','cashflow_log','plan_progress','rab_items','wage_rates','pic_proyek'];
+        const results = await Promise.all(tables.map(t => sb.from(t).select('*')));
+        
+        projects = (results[0].data || []).map(r => ({ id: r.id, nama: r.nama, lokasi: r.lokasi, nomorKontrak: r.nomor_kontrak, nilaiKontrak: r.nilai_kontrak, tanggalMulai: r.tanggal_mulai, tanggalSelesai: r.tanggal_selesai, managementId: r.management_id }));
+        progressLog = (results[1].data || []).map(r => ({ id: r.id, projectId: r.project_id, tanggal: r.tanggal, deskripsi: r.deskripsi, persen: r.persen, foto: r.foto_url }));
+        materialLog = (results[2].data || []).map(r => ({ id: r.id, projectId: r.project_id, tanggal: r.tanggal, tipe: r.tipe, nama: r.nama, jumlah: r.jumlah, satuan: r.satuan }));
+        allocations = (results[3].data || []).map(r => ({ id: r.id, projectId: r.project_id, nama: r.nama, jatah: r.jatah, satuan: r.satuan }));
+        timesheetLog = (results[4].data || []).map(r => ({ id: r.id, projectId: r.project_id, tanggal: r.tanggal, nama: r.nama, kategori: r.kategori, status: r.status, jamMasuk: r.jam_masuk, jamKeluar: r.jam_keluar }));
+        cashflowLog = (results[5].data || []).map(r => ({ id: r.id, projectId: r.project_id, tanggal: r.tanggal, jenis: r.jenis, keterangan: r.keterangan, jumlah: r.jumlah }));
+        planLog = (results[6].data || []).map(r => ({ id: r.id, projectId: r.project_id, tanggal: r.tanggal, persen: r.persen }));
+        rabList = (results[7].data || []).map(r => ({ id: r.id, projectId: r.project_id, noUrut: r.no_urut, uraian: r.uraian, volume: r.volume, satuan: r.satuan, hargaSatuan: r.harga_satuan, jumlahHarga: r.jumlah_harga }));
+        wageRates = (results[8].data || []).map(r => ({ id: r.id, projectId: r.project_id, kategori: r.kategori, upahHarian: r.upah_harian, upahLembur: r.upah_lembur_per_jam }));
+        picList = (results[9].data || []).map(r => ({ id: r.id, projectId: r.project_id, kategori: r.kategori, jabatan: r.jabatan, nama: r.nama, wewenang: r.wewenang, ceklis: r.ceklis }));
+        
+        // ===== FILTER MANAGEMENT =====
+        if(role === 'management' && userId){
+            const myProjectIds = projects.filter(p => p.managementId === userId).map(p => p.id);
+            
+            projects = projects.filter(p => p.managementId === userId);
+            progressLog = progressLog.filter(x => myProjectIds.includes(x.projectId));
+            materialLog = materialLog.filter(x => myProjectIds.includes(x.projectId));
+            allocations = allocations.filter(x => myProjectIds.includes(x.projectId));
+            timesheetLog = timesheetLog.filter(x => myProjectIds.includes(x.projectId));
+            cashflowLog = cashflowLog.filter(x => myProjectIds.includes(x.projectId));
+            planLog = planLog.filter(x => myProjectIds.includes(x.projectId));
+            rabList = rabList.filter(x => myProjectIds.includes(x.projectId));
+            wageRates = wageRates.filter(x => myProjectIds.includes(x.projectId));
+            picList = picList.filter(x => myProjectIds.includes(x.projectId));
+        }
+        
+        // ===== FILTER STAFF =====
+        if(role === 'staff' && staffProjectId){
+            projects = projects.filter(p => p.id === staffProjectId);
+            progressLog = progressLog.filter(x => x.projectId === staffProjectId);
+            materialLog = materialLog.filter(x => x.projectId === staffProjectId);
+            allocations = allocations.filter(x => x.projectId === staffProjectId);
+            timesheetLog = timesheetLog.filter(x => x.projectId === staffProjectId);
+            cashflowLog = cashflowLog.filter(x => x.projectId === staffProjectId);
+            planLog = planLog.filter(x => x.projectId === staffProjectId);
+            rabList = rabList.filter(x => x.projectId === staffProjectId);
+            wageRates = wageRates.filter(x => x.projectId === staffProjectId);
+            picList = picList.filter(x => x.projectId === staffProjectId);
+        }
+
+        // Set Project Aktif
+        const saved = localStorage.getItem(KEYS.current);
+        if(saved && projects.find(p => p.id === saved)) currentProjectId = saved;
+        else if(projects.length){ currentProjectId = projects[0].id; localStorage.setItem(KEYS.current, projects[0].id); }
+        else currentProjectId = null;
+        
+    }catch(err){
+        alert('Gagal memuat data: ' + err.message);
+    }
+}
+
+// ===== KONTROL AKSES TIER PAKET =====
+const getCurrentPaket = () => sessionStorage.getItem(KEYS.paket) || 'basic';
+const getProjectCountForUser = (managementId) => projects.filter(p => p.managementId === managementId).length;
+
+// ===== CEK ADD-ON PRINT =====
+const isBasicPaket = () => {
+    const paket = getCurrentPaket();
+    return paket === 'basic';
+};
+
+const hasAddonPrint = () => {
+    const addon = sessionStorage.getItem(KEYS.addonPrint);
+    return addon === 'true';
+};
+
+// ===== POP-UP BELI ADD-ON PRINT =====
+function showAddonPopup() {
+    const confirmBeli = confirm(
+        '🔒 Fitur Cetak Terkunci!\n\n' +
+        'Paket Anda tidak termasuk fitur cetak.\n\n' +
+        'Apakah Anda ingin membeli Add-On Print (Rp 100.000) untuk membuka fitur cetak?'
+    );
+    
+    if(confirmBeli) {
+        // Arahkan ke halaman pembelian add-on
+        window.location.href = './addon-basic.html';
+    }
+}
+
+// ===== HANYA BLOKIR PRINT JIKA BASIC TANPA ADD-ON =====
+function blockPrintForBasic(){
+    // Jika bukan Basic, biarkan normal
+    if(!isBasicPaket()) return;
+    
+    // Jika Basic PUNYA Add-On Print, biarkan normal
+    if(hasAddonPrint()) return;
+    
+    // ===== JIKA BASIC TANPA ADD-ON, BLOKIR SEMUA TOMBOL PRINT =====
+    const allButtons = document.querySelectorAll('button');
+    allButtons.forEach(btn => {
+        const text = btn.textContent.toLowerCase();
+        // HANYA blokir tombol yang berkaitan dengan PRINT / CETAK
+        if (
+            text.includes('cetak') || 
+            text.includes('print') || 
+            text.includes('🖨️') || 
+            text.includes('laporan') ||
+            text.includes('rekap')
+        ) {
+            // Tambahkan ikon lock di depan teks tombol
+            btn.innerHTML = '🔒 ' + btn.innerHTML;
+            
+            // JANGAN gunakan disabled! Gunakan style agar tetap bisa diklik
+            btn.style.background = '#9E9E9E';
+            btn.style.cursor = 'pointer';
+            btn.style.opacity = '0.7';
+            btn.title = '🔒 Fitur Cetak hanya untuk Paket Premium, Pro Max, atau Basic + Add-On Print';
+            
+            // TAMBAHKAN EVENT KLIK agar muncul pop-up saat tombol diklik
+            btn.addEventListener('click', function(event) {
+                event.preventDefault();
+                event.stopPropagation();
+                showAddonPopup();
+            });
+        }
+    });
+    
+    // Blokir tombol Backup (Export)
+    const exportBtn = document.querySelector('.proj-bar button[onclick="exportBackup()"]');
+    if(exportBtn) {
+        exportBtn.innerHTML = '🔒 ' + exportBtn.innerHTML;
+        exportBtn.style.background = '#9E9E9E';
+        exportBtn.style.cursor = 'pointer';
+        exportBtn.style.opacity = '0.7';
+        exportBtn.title = '🔒 Fitur Backup hanya untuk Paket Premium, Pro Max, atau Basic + Add-On Print';
+        exportBtn.addEventListener('click', function(event) {
+            event.preventDefault();
+            event.stopPropagation();
+            showAddonPopup();
+        });
+    }
+}
+
+// ===== TAMPILKAN MODAL PROYEK BARU =====
+function openProjectModal(){
+    // HANYA Management yang bisa buka
+    if(currentRole() !== 'management'){ 
+        alert('Khusus Management.'); 
+        return; 
+    }
+    
+    // Ambil data user dari session
+    const userId = sessionStorage.getItem('drn_user_id');
+    const paket = getCurrentPaket();
+    
+    // Hitung jumlah proyek yang sudah dibuat
+    const currentCount = getProjectCountForUser(userId);
+    
+    // Tentukan kuota berdasarkan paket
+    let maxProjects = 1; // Default Basic
+    if(paket === 'premium') maxProjects = 2;
+    else if(paket === 'pro_max') maxProjects = 5;
+    
+    // Jika kuota sudah habis, tampilkan pesan
+    if(currentCount >= maxProjects){
+        alert(`❌ Kuota paket ${paket} Anda sudah habis! Maksimal ${maxProjects} proyek.`);
+        return;
+    }
+    
+    // Reset form
+    document.getElementById('npNama').value = '';
+    document.getElementById('npLokasi').value = '';
+    document.getElementById('npKontrak').value = '';
+    document.getElementById('npNilai').value = '';
+    document.getElementById('npMulai').value = '';
+    document.getElementById('npSelesai').value = '';
+    document.getElementById('npRabFile').value = '';
+    document.getElementById('npRabPreview').textContent = 'File harus punya kolom: "Uraian", "Volume", "Satuan", "Harga Satuan"';
+    pendingRabItems = [];
+    
+    // Tampilkan modal
+    document.getElementById('projectModal').style.display = 'flex';
+}
+
+// ===== TAB & AKSES ROLE =====
+function switchTab(name){
+    const role = currentRole();
+    
+    // ===== AKSES STAFF =====
+    if(role === 'staff'){
+        // Staff TIDAK BOLEH buka RAB & Cost Control
+        if(name === 'rab'){
+            const pin = prompt('Tab RAB dikunci. Masukkan PIN untuk membuka:');
+            if(pin !== '1234'){ alert('PIN salah! Akses ke RAB ditolak.'); return; }
+        }
+        
+        if(name === 'cost'){
+            const pin = prompt('Tab Cashflow dikunci. Masukkan PIN untuk membuka:');
+            if(pin !== '1234'){ alert('PIN salah! Akses ke Cashflow ditolak.'); return; }
+        }
+        
+        // Staff HANYA BISA LIHAT PIC (Read-Only) - Sembunyikan form
+        if(name === 'pic'){
+            document.getElementById('picForm').style.display = 'none';
+        } else {
+            document.getElementById('picForm').style.display = 'grid'; // Form tetap tampil untuk tab lain
+        }
+    }
+    
+    // ===== AKSES MANAGEMENT =====
+    if(role === 'management' && name === 'pic'){
+        document.getElementById('picForm').style.display = 'grid'; // Management BISA input PIC
+    }
+    
+    // Pindah tab
+    document.querySelectorAll('#mainTabs button').forEach(b => b.classList.remove('active'));
+    document.querySelector('#mainTabs button[data-tab="' + name + '"]').classList.add('active');
+    document.querySelectorAll('.container > div[id^="tab-"]').forEach(d => d.classList.add('hide'));
+    document.getElementById('tab-' + name).classList.remove('hide');
+}
+
+// ===== RENDER =====
+function renderProjectSelect(){
+    const sel = document.getElementById('projectSelect');
+    if(!sel) return;
+    sel.innerHTML = '';
+    const role = currentRole();
+    const lockId = sessionStorage.getItem(KEYS.project);
+    const visible = role === 'staff' && lockId ? projects.filter(p => p.id === lockId) : projects;
+    visible.forEach(p => {
+        const opt = document.createElement('option');
+        const kode = getKode(p.nomorKontrak);
+        opt.value = p.id;
+        opt.textContent = kode ? '[' + kode + '] ' + p.nama : p.nama;
+        if(p.id === currentProjectId) opt.selected = true;
+        sel.appendChild(opt);
+    });
+    sel.disabled = role === 'staff' && !!lockId;
+}
+
+function renderAll(){
+    renderProjectSelect();
+    renderDashboard();
+    renderSCurve();
+    renderPlanTable();
+    renderProgress();
+    renderMaterial();
+    renderTimesheet();
+    renderRab();
+    renderCashflow();
+    renderPic();
+    renderWage();
+    renderRoleBadge();
+    renderUraianOptions();
+    
+    // ===== CEK PRINT UNTUK BASIC + ADD-ON =====
+    blockPrintForBasic();
+}
+
+function renderRoleBadge(){
+    const role = currentRole();
+    const badge = document.getElementById('roleBadge');
+    if(badge){
+        if(role === 'management') badge.textContent = 'Management (' + getCurrentPaket() + (hasAddonPrint() ? ' + Add-On Print' : '') + ')';
+        else if(role === 'staff') badge.textContent = 'Staff';
+        else badge.textContent = '';
+    }
+}
+
+// ===== DATA SAAT INI =====
+const currentData = type => {
+    const map = { progress:progressLog, material:materialLog, timesheet:timesheetLog, alloc:allocations, cashflow:cashflowLog, plan:planLog, rab:rabList };
+    return (map[type] || []).filter(x => x.projectId === currentProjectId).sort((a,b) => (a.tanggal || '') < (b.tanggal || '') ? 1 : -1);
+};
+
+// ===== DASHBOARD =====
+function renderDashboard(){
+    const p = projects.find(x => x.id === currentProjectId);
+    document.getElementById('dashName').textContent = p ? p.nama : 'Belum ada proyek';
+    document.getElementById('dashMeta').textContent = p ? [p.lokasi, p.nomorKontrak].filter(Boolean).join(' | ') : '';
+    const prog = computeProgress();
+    document.getElementById('dashProgress').style.width = Math.min(100, prog) + '%';
+    document.getElementById('dashProgressLabel').textContent = 'Progres: ' + prog.toFixed(1) + '%';
+    const today = todayStr();
+    document.getElementById('statHadir').textContent = currentData('timesheet').filter(x => x.tanggal === today && x.status === 'hadir').length;
+    document.getElementById('statMaterial').textContent = currentData('material').filter(x => x.tanggal === today).length;
+}
+
+function computeProgress(asOfDate){
+    const prog = progressLog.filter(x => x.projectId === currentProjectId && (!asOfDate || x.tanggal <= asOfDate));
+    const latest = {};
+    prog.forEach(p => { latest[p.deskripsi] = p; });
+    return Object.values(latest).reduce((sum, p) => sum + getBobot(p.deskripsi) * Number(p.persen || 0) / 100, 0);
+}
+
+function getTotalRab(){
+    return currentData('rab').reduce((s, r) => s + Number(r.jumlahHarga || 0), 0);
+}
+
+function getBobot(uraian){
+    const total = getTotalRab();
+    if(total <= 0) return 0;
+    const nilai = currentData('rab').filter(r => r.uraian === uraian).reduce((s, r) => s + Number(r.jumlahHarga || 0), 0);
+    return (nilai / total) * 100;
+}
+
+// ===== KURVA S =====
+function renderSCurve(){
+    const plan = [...planLog].filter(x => x.projectId === currentProjectId).sort((a,b) => (a.tanggal || '') < (b.tanggal || '') ? -1 : 1);
+    const progDates = [...new Set(progressLog.filter(x => x.projectId === currentProjectId).map(x => x.tanggal))].filter(Boolean).sort();
+    const realisasi = progDates.map(d => ({ tanggal:d, persen:computeProgress(d) }));
+    
+    const svg = document.getElementById('sCurve');
+    if(!svg) return;
+    
+    if(plan.length === 0 && realisasi.length === 0){
+        svg.innerHTML = '';
+        return;
+    }
+    
+    const p = projects.find(x => x.id === currentProjectId);
+    let allDates = [...plan.map(x => x.tanggal), ...realisasi.map(x => x.tanggal)];
+    if(p && p.tanggalMulai) allDates.push(p.tanggalMulai);
+    if(p && p.tanggalSelesai) allDates.push(p.tanggalSelesai);
+    allDates = allDates.filter(Boolean);
+    
+    const minDate = allDates.reduce((a,b) => a < b ? a : b);
+    const maxDate = allDates.reduce((a,b) => a > b ? a : b);
+    const totalDays = Math.max(1, Math.round((new Date(maxDate) - new Date(minDate)) / 86400000));
+    
+    const W = 600, H = 200, padL = 30, padR = 10, padT = 10, padB = 10;
+    const chartW = W - padL - padR, chartH = H - padT - padB;
+    
+    const xPos = d => padL + (Math.round((new Date(d) - new Date(minDate)) / 86400000) / totalDays) * chartW;
+    const yPos = pct => padT + chartH - (Math.min(100, Math.max(0, pct)) / 100) * chartH;
+    const points = rows => rows.map(r => xPos(r.tanggal).toFixed(1) + ',' + yPos(r.persen).toFixed(1)).join(' ');
+    
+    let grid = '';
+    [0,25,50,75,100].forEach(v => {
+        const y = yPos(v);
+        grid += '<line x1="' + padL + '" y1="' + y + '" x2="' + (W - padR) + '" y2="' + y + '" stroke="#C9D3DC" stroke-width="1"/>';
+        grid += '<text x="' + (padL - 5) + '" y="' + (y + 3) + '" font-size="9" fill="#5B6675" text-anchor="end">' + v + '</text>';
+    });
+    
+    let planCircles = '';
+    plan.forEach(r => {
+        planCircles += '<circle cx="' + xPos(r.tanggal).toFixed(1) + '" cy="' + yPos(r.persen).toFixed(1) + '" r="4" fill="#10263E" stroke="#fff" stroke-width="2"/>';
+    });
+    
+    let realisasiCircles = '';
+    realisasi.forEach(r => {
+        realisasiCircles += '<circle cx="' + xPos(r.tanggal).toFixed(1) + '" cy="' + yPos(r.persen).toFixed(1) + '" r="4" fill="#E8801C" stroke="#fff" stroke-width="2"/>';
+    });
+    
+    svg.innerHTML = grid +
+        (plan.length > 1 ? '<polyline points="' + points(plan) + '" fill="none" stroke="#10263E" stroke-width="2" stroke-dasharray="5,4"/>' : '') +
+        (realisasi.length > 1 ? '<polyline points="' + points(realisasi) + '" fill="none" stroke="#E8801C" stroke-width="2.5"/>' : '') +
+        planCircles +
+        realisasiCircles;
+}
+
+// ===== RENDER TABEL RENCANA =====
+function renderPlanTable(){
+    const rows = [...planLog].filter(x => x.projectId === currentProjectId).sort((a,b) => (a.tanggal || '') > (b.tanggal || '') ? 1 : -1);
+    const tbody = document.querySelector('#tblPlan tbody');
+    if(!tbody) return;
+    tbody.innerHTML = '';
+    
+    rows.forEach(r => {
+        const realisasi = computeProgress(r.tanggal);
+        const deviasi = realisasi - r.persen;
+        const deviasiColor = deviasi < 0 ? '#B23A2E' : '#2F7D5A';
+        
+        const tr = document.createElement('tr');
+        tr.innerHTML = '<td>' + formatTgl(r.tanggal) + '</td><td>' + r.persen + '%</td><td>' + realisasi.toFixed(1) + '%</td><td style="color:' + deviasiColor + ';font-weight:600;">' + (deviasi >= 0 ? '+' : '') + deviasi.toFixed(1) + '%</td><td><button class="btn small danger" onclick="deleteEntry(\'plan\',\'' + r.id + '\')">Hapus</button></td>';
+        tbody.appendChild(tr);
+    });
+    
+    if(rows.length === 0){
+        const tr = document.createElement('tr');
+        tr.innerHTML = '<td colspan="5" style="text-align:center;color:#5B6675;">Belum ada titik rencana. Tambahkan di atas.</td>';
+        tbody.appendChild(tr);
+    }
+}
+
+// ===== PROGRES =====
+function renderUraianOptions(){
+    const datalist = document.getElementById('uraianList');
+    if(!datalist) return;
+    
+    const uraianList = [...new Set(currentData('rab').map(r => r.uraian))];
+    
+    datalist.innerHTML = '';
+    
+    uraianList.forEach(function(u){
+        var opt = document.createElement('option');
+        opt.value = u;
+        datalist.appendChild(opt);
+    });
+    
+    const inputDeskripsi = document.getElementById('pDeskripsi');
+    if(!inputDeskripsi) return;
+    
+    if(uraianList.length === 0){
+        inputDeskripsi.placeholder = '⚠️ Belum ada RAB, tambahkan dulu di menu RAB';
+        inputDeskripsi.disabled = true;
+    } else {
+        inputDeskripsi.placeholder = 'Ketik atau pilih dari daftar RAB...';
+        inputDeskripsi.disabled = false;
+        if(!inputDeskripsi.value){
+            inputDeskripsi.value = uraianList[0];
+        }
+    }
+}
+
+function renderProgress(){
+    const rows = currentData('progress');
+    const tbody = document.querySelector('#tblProgress tbody');
+    if(!tbody) return;
+    tbody.innerHTML = '';
+    
+    renderUraianOptions();
+    
+    rows.forEach(r => {
+        const sisaProgres = 100 - Number(r.persen || 0);
+        const bobot = getBobot(r.deskripsi);
+        const prestasi = (Number(r.persen || 0) / 100) * bobot;
+        
+        const tr = document.createElement('tr');
+        const foto = r.foto ? '<img src="' + r.foto + '" style="width:40px;height:40px;object-fit:cover;border-radius:4px;cursor:pointer;" onclick="showPhoto(\'' + r.foto.replace(/'/g, "\\'") + '\')">' : '-';
+        
+        const sisaText = sisaProgres === 0 ? '<span class="tag ok">Selesai</span>' : sisaProgres.toFixed(1) + '%';
+        
+        const checkCell = r.foto ? '<input type="checkbox" class="print-photo-check" value="' + r.id + '">' : '-';
+        
+        tr.innerHTML = '<td>' + formatTgl(r.tanggal) + '</td><td>' + esc(r.deskripsi) + '</td><td>' + r.persen + '%</td><td>' + sisaText + '</td><td>' + prestasi.toFixed(2) + '%</td><td>' + foto + '</td><td style="text-align:center;">' + checkCell + '</td><td><button class="btn small danger" onclick="deleteEntry(\'progress\',\'' + r.id + '\')">Hapus</button></td>';
+        tbody.appendChild(tr);
+    });
+}
+
+async function addProgress(e){
+    e.preventDefault();
+    
+    if(!currentProjectId){
+        alert('Buat proyek dulu.');
+        return false;
+    }
+    
+    const deskripsiInput = document.getElementById('pDeskripsi');
+    const persenInput = document.getElementById('pPersen');
+    const deskripsi = deskripsiInput.value;
+    const persen = Number(persenInput.value);
+    
+    const uraianValid = [...new Set(currentData('rab').map(r => r.uraian))];
+    if(uraianValid.length === 0){
+        alert('Belum ada RAB. Tambahkan RAB/BoQ terlebih dahulu di menu RAB.');
+        return false;
+    }
+    
+    let deskripsiFinal = deskripsi;
+    if(!uraianValid.includes(deskripsi)){
+        const found = uraianValid.find(u => u.toLowerCase() === deskripsi.toLowerCase());
+        if(found){
+            deskripsiFinal = found;
+        } else {
+            alert('Uraian "' + deskripsi + '" tidak ditemukan di RAB. Silakan pilih dari dropdown.');
+            return false;
+        }
+    }
+    
+    const file = fotoFile;
+    let fotoUrl = null;
+    
+    if(file){
+        const compressedBlob = await compressImage(file, 800, 0.7);
+        if(compressedBlob){
+            const path = currentProjectId + '/' + Date.now() + '_' + file.name.replace(/\s+/g, '_');
+            const { error } = await sb.storage.from('progress-photos').upload(path, compressedBlob, {
+                contentType: 'image/jpeg'
+            });
+            if(!error){ 
+                const { data } = sb.storage.from('progress-photos').getPublicUrl(path); 
+                fotoUrl = data.publicUrl; 
+            }
+        }
+    }
+    
+    try{
+        const { data, error } = await sb.from('progress_log').insert({
+            project_id: currentProjectId,
+            tanggal: document.getElementById('pTanggal').value,
+            deskripsi: deskripsiFinal,
+            persen: persen,
+            foto_url: fotoUrl
+        }).select().single();
+        
+        if(error) throw error;
+        
+        document.getElementById('pTanggal').value = todayStr();
+        deskripsiInput.value = '';
+        persenInput.value = '';
+        document.getElementById('pFotoKamera').value = '';
+        document.getElementById('pFotoGaleri').value = '';
+        document.getElementById('pFotoPreview').style.display = 'none';
+        fotoFile = null;
+        
+        progressLog.push({
+            id: data.id,
+            projectId: data.project_id,
+            tanggal: data.tanggal,
+            deskripsi: data.deskripsi,
+            persen: data.persen,
+            foto: data.foto_url
+        });
+        
+        renderAll();
+        renderUraianOptions();
+        
+        alert('✅ Progres berhasil disimpan!');
+
+    }catch(err){
+        alert('❌ Gagal menyimpan: ' + err.message);
+    }
+    
+    return false;
+}
+
+function previewFoto(input){
+    const preview = document.getElementById('pFotoPreview');
+    if(input.files && input.files[0]){
+        const reader = new FileReader();
+        reader.onload = e => { preview.src = e.target.result; preview.style.display = 'block'; };
+        reader.readAsDataURL(input.files[0]);
+    } else {
+        preview.style.display = 'none';
+    }
+}
+
+function handleFotoKamera(input){
+    if(input.files && input.files[0]){
+        fotoFile = input.files[0];
+        previewFoto(input);
+    }
+}
+
+function handleFotoGaleri(input){
+    if(input.files && input.files[0]){
+        fotoFile = input.files[0];
+        previewFoto(input);
+    }
+}
+
+function compressImage(file, maxWidth = 800, quality = 0.7){
+    return new Promise((resolve) => {
+        const reader = new FileReader();
+        reader.onload = e => {
+            const img = new Image();
+            img.onload = () => {
+                const canvas = document.createElement('canvas');
+                let width = img.width;
+                let height = img.height;
+                
+                if(width > maxWidth){
+                    height = Math.round((maxWidth / width) * height);
+                    width = maxWidth;
+                }
+                
+                canvas.width = width;
+                canvas.height = height;
+                const ctx = canvas.getContext('2d');
+                ctx.drawImage(img, 0, 0, width, height);
+                
+                canvas.toBlob(blob => resolve(blob), 'image/jpeg', quality);
+            };
+            img.onerror = () => resolve(null);
+            img.src = e.target.result;
+        };
+        reader.onerror = () => resolve(null);
+        reader.readAsDataURL(file);
+    });
+}
+
+// ===== MATERIAL =====
+function renderMaterial(){
+    const allocRows = currentData('alloc');
+    const tbodyAlloc = document.querySelector('#tblAlloc tbody');
+    if(tbodyAlloc){
+        tbodyAlloc.innerHTML = '';
+        allocRows.forEach(r => {
+            const masuk = currentData('material').filter(m => m.tipe === 'masuk' && m.nama === r.nama).reduce((s,m) => s + m.jumlah, 0);
+            const selisih = masuk - r.jatah;
+            let status = 'Pas';
+            let cls = 'ok';
+            if(selisih < 0){
+                status = 'Kurang ' + Math.abs(selisih) + ' ' + r.satuan;
+                cls = 'warn';
+            } else if(selisih > 0){
+                status = 'Lebih ' + selisih + ' ' + r.satuan;
+                cls = 'info';
+            }
+            const tr = document.createElement('tr');
+            tr.innerHTML = '<td>' + esc(r.nama) + '</td><td>' + r.jatah + ' ' + esc(r.satuan) + '</td><td>' + masuk + ' ' + esc(r.satuan) + '</td><td><span class="tag ' + cls + '">' + status + '</span></td><td><button class="btn small danger" onclick="deleteEntry(\'alloc\',\'' + r.id + '\')">Hapus</button></td>';
+            tbodyAlloc.appendChild(tr);
+        });
+    }
+    
+    const matRows = currentData('material');
+    const tbodyMat = document.querySelector('#tblMaterial tbody');
+    if(tbodyMat){
+        tbodyMat.innerHTML = '';
+        matRows.forEach(r => {
+            const stock = currentData('material').filter(m => m.nama === r.nama && m.tanggal <= r.tanggal).reduce((s,m) => s + (m.tipe === 'masuk' ? m.jumlah : -m.jumlah), 0);
+            const stokTag = stock > 0 ? '<span class="tag ok">Sisa ' + stock + '</span>' : stock < 0 ? '<span class="tag warn">Kurang ' + Math.abs(stock) + '</span>' : '<span class="tag info">Habis</span>';
+            const tr = document.createElement('tr');
+            tr.innerHTML = '<td>' + formatTgl(r.tanggal) + '</td><td>' + (r.tipe === 'masuk' ? '<span class="tag ok">Masuk</span>' : '<span class="tag warn">Keluar</span>') + '</td><td>' + esc(r.nama) + '</td><td>' + r.jumlah + ' ' + esc(r.satuan) + '</td><td>' + stokTag + '</td><td><button class="btn small danger" onclick="deleteEntry(\'material\',\'' + r.id + '\')">Hapus</button></td>';
+            tbodyMat.appendChild(tr);
+        });
+    }
+}
+
+async function addMaterial(e){
+    e.preventDefault();
+    if(!currentProjectId) return false;
+    try{
+        const { data, error } = await sb.from('material_log').insert({
+            project_id: currentProjectId,
+            tanggal: document.getElementById('mTanggal').value,
+            tipe: document.getElementById('mTipe').value,
+            nama: document.getElementById('mNama').value,
+            jumlah: Number(document.getElementById('mJumlah').value),
+            satuan: document.getElementById('mSatuan').value
+        }).select().single();
+        if(error) throw error;
+        
+        materialLog.push({
+            id: data.id,
+            projectId: data.project_id,
+            tanggal: data.tanggal,
+            tipe: data.tipe,
+            nama: data.nama,
+            jumlah: data.jumlah,
+            satuan: data.satuan
+        });
+        
+        document.getElementById('mNama').value = '';
+        document.getElementById('mJumlah').value = '';
+        document.getElementById('mSatuan').value = '';
+        document.getElementById('mTanggal').value = todayStr();
+        
+        renderAll();
+        renderMaterial();
+        
+        alert('✅ Material berhasil disimpan!');
+        
+    }catch(err){
+        alert('❌ Gagal menyimpan: ' + err.message);
+    }
+    
+    return false;
+}
+
+async function addAlloc(e){
+    e.preventDefault();
+    if(!currentProjectId) return false;
+    
+    try{
+        const { data, error } = await sb.from('material_alloc').insert({
+            project_id: currentProjectId,
+            nama: document.getElementById('aNama').value,
+            jatah: Number(document.getElementById('aJatah').value),
+            satuan: document.getElementById('aSatuan').value
+        }).select().single();
+        if(error) throw error;
+        
+        allocations.push(data);
+        
+        document.getElementById('aNama').value = '';
+        document.getElementById('aJatah').value = '';
+        document.getElementById('aSatuan').value = '';
+        
+        renderAll();
+        renderMaterial();
+        
+        alert('✅ Kebutuhan material berhasil disimpan!');
+        
+    }catch(err){
+        alert('❌ Gagal menyimpan: ' + err.message);
+    }
+    
+    return false;
+}
+
+// ===== PEKERJA =====
+function computeRekap(jamMasuk, jamKeluar){
+    if(!jamMasuk || !jamKeluar) return null;
+    
+    const [hm, mm] = jamMasuk.split(':').map(Number);
+    const [hk, mk] = jamKeluar.split(':').map(Number);
+    
+    let start = hm * 60 + (mm || 0);
+    let end = hk * 60 + (mk || 0);
+    
+    if(end <= start) end += 24 * 60;
+    
+    const totalMenit = end - start;
+    
+    const JAM_17 = 17 * 60;
+    const JAM_22 = 22 * 60;
+    const JAM_24 = 24 * 60;
+    const JAM_NORMAL = 9 * 60;
+    
+    let H = 1;
+    let L = 0;
+    
+    const menitSetelah17 = Math.max(0, end - JAM_17);
+    
+    if(totalMenit > JAM_NORMAL && totalMenit <= JAM_22 - start){
+        H = 1;
+        L = menitSetelah17 / 60;
+    }
+    else if(totalMenit > JAM_22 - start && totalMenit <= JAM_24 - start){
+        H = 2;
+        L = 0;
+    }
+    else if(totalMenit > JAM_24 - start && totalMenit <= (JAM_24 + JAM_NORMAL) - start){
+        H = 3;
+        L = 0;
+    }
+    else {
+        H = 4;
+        L = 0;
+    }
+    
+    return { H: H, L: L };
+}
+
+function renderTimesheet(){
+    const rows = currentData('timesheet');
+    const tbody = document.querySelector('#tblTimesheet tbody');
+    if(!tbody) return;
+    tbody.innerHTML = '';
+    
+    rows.forEach(r => {
+        const rekap = r.status === 'hadir' ? computeRekap(r.jamMasuk, r.jamKeluar) : null;
+        const rekapText = rekap ? 'H=' + rekap.H + ' · L=' + rekap.L + ' jam' : '-';
+        
+        const tr = document.createElement('tr');
+        tr.innerHTML = '<td>' + formatTgl(r.tanggal) + '</td><td>' + esc(r.nama) + '</td><td>' + esc(r.kategori) + '</td><td><span class="tag ' + (r.status === 'hadir' ? 'ok' : r.status === 'alpa' ? 'warn' : 'info') + '">' + r.status + '</span></td><td>' + rekapText + '</td><td><button class="btn small danger" onclick="deleteEntry(\'timesheet\',\'' + r.id + '\')">Hapus</button></td>';
+        tbody.appendChild(tr);
+    });
+}
+
+async function addTimesheet(e){
+    e.preventDefault();
+    if(!currentProjectId) return false;
+    
+    try{
+        const { data, error } = await sb.from('timesheet_log').insert({
+            project_id: currentProjectId,
+            tanggal: document.getElementById('tTanggal').value,
+            nama: document.getElementById('tNama').value,
+            kategori: document.getElementById('tKategori').value,
+            status: document.getElementById('tStatus').value,
+            jam_masuk: document.getElementById('tJamMasuk').value || null,
+            jam_keluar: document.getElementById('tJamKeluar').value || null
+        }).select().single();
+        
+        if(error) throw error;
+        
+        timesheetLog.push({
+            id: data.id,
+            projectId: data.project_id,
+            tanggal: data.tanggal,
+            nama: data.nama,
+            kategori: data.kategori,
+            status: data.status,
+            jamMasuk: data.jam_masuk,
+            jamKeluar: data.jam_keluar
+        });
+        
+        document.getElementById('tNama').value = '';
+        document.getElementById('tTanggal').value = todayStr();
+        document.getElementById('tJamMasuk').value = '';
+        document.getElementById('tJamKeluar').value = '';
+        
+        renderAll();
+        renderTimesheet();
+        
+        alert('✅ Data pekerja berhasil disimpan!');
+        
+    }catch(err){
+        alert('❌ Gagal menyimpan: ' + err.message);
+    }
+    
+    return false;
+}
+
+// ===== RAB =====
+function renderRab(){
+    const rows = [...currentData('rab')].sort((a,b) => (a.noUrut || 0) - (b.noUrut || 0));
+    const tbody = document.querySelector('#tblRab tbody');
+    if(!tbody) return;
+    tbody.innerHTML = '';
+    let total = 0;
+    rows.forEach(r => {
+        total += Number(r.jumlahHarga || 0);
+    });
+    
+    rows.forEach(r => {
+        const bobot = total > 0 ? (Number(r.jumlahHarga || 0) / total) * 100 : 0;
+        const volumeDisplay = Number(r.volume || 0).toFixed(3).replace(/\.?0+$/, '');
+        
+        const tr = document.createElement('tr');
+        tr.innerHTML = '<td>' + r.noUrut + '</td><td>' + esc(r.uraian) + '</td><td>' + volumeDisplay + '</td><td>' + esc(r.satuan) + '</td><td>' + formatRp(r.hargaSatuan) + '</td><td>' + formatRp(r.jumlahHarga) + '</td><td>' + bobot.toFixed(2) + '%</td><td><button class="btn small danger" onclick="deleteEntry(\'rab\',\'' + r.id + '\')">Hapus</button></td>';
+        tbody.appendChild(tr);
+    });
+    
+    document.getElementById('rabTotal').textContent = formatRp(total);
+    document.getElementById('rabPpn').textContent = formatRp(total * 0.11);
+    document.getElementById('rabKontrak').textContent = formatRp(total * 1.11);
+}
+
+async function addRabItem(e){
+    e.preventDefault();
+    if(!currentProjectId) return false;
+    
+    const kategoriAddendum = document.getElementById('rabKategoriAddendum').value;
+    const volumeInput = Math.abs(Number(document.getElementById('rabVolume').value));
+    const volume = kategoriAddendum === 'kurang' ? -volumeInput : volumeInput;
+    const hargaSatuan = Number(document.getElementById('rabHarga').value);
+    const uraianDasar = document.getElementById('rabUraian').value.trim();
+    const keteranganAddendum = kategoriAddendum === 'kurang' ? ' (Addendum Kurang)' : ' (Addendum Tambah)';
+    const uraian = uraianDasar + keteranganAddendum;
+    
+    try{
+        const { data, error } = await sb.from('rab_items').insert({
+            project_id: currentProjectId,
+            no_urut: currentData('rab').length + 1,
+            uraian: uraian,
+            volume: volume,
+            satuan: document.getElementById('rabSatuan').value,
+            harga_satuan: hargaSatuan,
+            jumlah_harga: volume * hargaSatuan
+        }).select().single();
+        if(error) throw error;
+        
+        rabList.push(data);
+        
+        document.getElementById('rabUraian').value = '';
+        document.getElementById('rabVolume').value = '';
+        document.getElementById('rabSatuan').value = '';
+        document.getElementById('rabHarga').value = '';
+        
+        renderAll();
+        
+        alert('✅ Item addendum berhasil ditambahkan!');
+    }catch(err){ alert('Gagal: ' + err.message); }
+    return false;
+}
+
+// ===== RENDER CASH FLOW =====
+function renderCashflow(){
+    const rows = currentData('cashflow');
+    const tbody = document.querySelector('#tblCashflow tbody');
+    if(!tbody) return;
+    tbody.innerHTML = '';
+    
+    let totalIn = 0, totalOut = 0;
+    rows.forEach(r => {
+        if(r.jenis === 'in') totalIn += r.jumlah; else totalOut += r.jumlah;
+        
+        const tr = document.createElement('tr');
+        const jenisTag = r.jenis === 'in' ? '<span class="tag ok">Masuk</span>' : '<span class="tag warn">Keluar</span>';
+        tr.innerHTML = '<td>' + formatTgl(r.tanggal) + '</td><td>' + jenisTag + '</td><td>' + esc(r.keterangan || '-') + '</td><td>' + formatRp(r.jumlah) + '</td><td><button class="btn small danger" onclick="deleteEntry(\'cashflow\',\'' + r.id + '\')">Hapus</button></td>';
+        tbody.appendChild(tr);
+    });
+    
+    document.getElementById('costIn').textContent = formatRp(totalIn);
+    document.getElementById('costOut').textContent = formatRp(totalOut);
+    document.getElementById('costSaldo').textContent = formatRp(totalIn - totalOut);
+}
+
+function updateKategoriOptions() {
+    const jenis = document.getElementById('cfJenis').value;
+    const kategoriSelect = document.getElementById('cfKategori');
+    
+    kategoriSelect.innerHTML = '';
+    
+    let options = [];
+    if (jenis === 'in') {
+        options = ['DP/Uang muka', 'Termin', 'Lainnya'];
+    } else {
+        options = ['Site Manajemen/Operasional', 'Belanja Bahan', 'Belanja Alat', 'Subkon', 'Upah kerja', 'Lainnya'];
+    }
+    
+    options.forEach(opt => {
+        const option = document.createElement('option');
+        option.value = opt;
+        option.textContent = opt;
+        kategoriSelect.appendChild(option);
+    });
+}
+
+updateKategoriOptions();
+
+async function addCashflow(e){
+    e.preventDefault();
+    if(!currentProjectId) return false;
+    
+    try{
+        const { data, error } = await sb.from('cashflow_log').insert({
+            project_id: currentProjectId,
+            tanggal: document.getElementById('cfTanggal').value,
+            jenis: document.getElementById('cfJenis').value,
+            kategori: document.getElementById('cfKategori').value, 
+            keterangan: document.getElementById('cfKeterangan').value || null,
+            jumlah: Number(document.getElementById('cfJumlah').value)
+        }).select().single();
+        
+        if(error) throw error;
+        
+        cashflowLog.push({
+            id: data.id,
+            projectId: data.project_id,
+            tanggal: data.tanggal,
+            jenis: data.jenis,
+            keterangan: data.keterangan,
+            jumlah: data.jumlah
+        });
+        
+        document.getElementById('cfTanggal').value = todayStr();
+        document.getElementById('cfJenis').value = 'in';
+        document.getElementById('cfKeterangan').value = '';
+        document.getElementById('cfJumlah').value = '';
+        
+        renderAll();
+        updateKategoriOptions();
+        
+        alert('✅ Arus kas berhasil disimpan!');
+        
+    }catch(err){
+        alert('❌ Gagal menyimpan: ' + err.message);
+    }
+    
+    return false;
+}
+
+// ===== DELETE =====
+async function deleteEntry(kind, id){
+    if(!confirm('Hapus data ini?')) return;
+    const tableMap = { progress:'progress_log', material:'material_log', timesheet:'timesheet_log', alloc:'material_alloc', cashflow:'cashflow_log', plan:'plan_progress', rab:'rab_items', pic:'pic_proyek' };
+    const table = tableMap[kind];
+    if(!table) return;
+    try{
+        await sb.from(table).delete().eq('id', id);
+        if(kind === 'progress') progressLog = progressLog.filter(x => x.id !== id);
+        if(kind === 'material') materialLog = materialLog.filter(x => x.id !== id);
+        if(kind === 'timesheet') timesheetLog = timesheetLog.filter(x => x.id !== id);
+        if(kind === 'alloc') allocations = allocations.filter(x => x.id !== id);
+        if(kind === 'cashflow') cashflowLog = cashflowLog.filter(x => x.id !== id);
+        if(kind === 'plan') planLog = planLog.filter(x => x.id !== id);
+        if(kind === 'rab') rabList = rabList.filter(x => x.id !== id);
+        if(kind === 'pic') picList = picList.filter(x => x.id !== id);
+        renderAll();
+    }catch(err){ alert('Gagal: ' + err.message); }
+}
+
+// ===== WAGE =====
+function renderWage(){
+    const tbody = document.getElementById('tblWage');
+    if(!tbody) return;
+    tbody.innerHTML = '';
+    
+    ['Mandor', 'Kepala Tukang', 'Tukang', 'Buruh'].forEach(kat => {
+        const w = wageRates.find(x => x.projectId === currentProjectId && x.kategori === kat);
+        const tr = document.createElement('tr');
+        tr.innerHTML = '<td>' + kat + '</td><td>' + formatRp(w ? w.upahHarian : 0) + '</td><td>' + formatRp(w ? w.upahLembur : 0) + '</td>';
+        tbody.appendChild(tr);
+    });
+}
+
+async function saveWage(e){
+    e.preventDefault();
+    if(!currentProjectId) return false;
+    
+    const kat = document.getElementById('wageKategori').value;
+    
+    try{
+        const { data, error } = await sb.from('wage_rates').upsert({
+            project_id: currentProjectId,
+            kategori: kat,
+            upah_harian: Number(document.getElementById('wageHarian').value) || 0,
+            upah_lembur_per_jam: Number(document.getElementById('wageLembur').value) || 0
+        }, { onConflict: 'project_id,kategori' }).select().single();
+        
+        if(error) throw error;
+        
+        wageRates = wageRates.filter(x => !(x.projectId === currentProjectId && x.kategori === kat));
+        wageRates.push({
+            id: data.id,
+            projectId: data.project_id,
+            kategori: data.kategori,
+            upahHarian: data.upah_harian,
+            upahLembur: data.upah_lembur_per_jam
+        });
+        
+        renderAll();
+        renderWage();
+        
+        alert('✅ Upah untuk kategori "' + kat + '" berhasil disimpan!');
+        
+    }catch(err){
+        alert('❌ Gagal menyimpan: ' + err.message);
+    }
+    
+    return false;
+}
+
+// ===== PIC =====
+function renderPic(){
+    const rows = picList.filter(x => x.projectId === currentProjectId);
+    const tbody = document.querySelector('#tblPic tbody');
+    if(!tbody) return;
+    tbody.innerHTML = '';
+    
+    rows.forEach(r => {
+        const tr = document.createElement('tr');
+        tr.innerHTML = '<td>' + esc(r.kategori) + '</td>' + 
+                       '<td>' + esc(r.jabatan) + '</td>' + 
+                       '<td>' + esc(r.nama) + '</td>' + 
+                       '<td><input type="checkbox" ' + (r.ceklis ? 'checked' : '') + ' onchange="togglePic(\'' + r.id + '\',this.checked)"></td>' + 
+                       '<td><button class="btn small danger" onclick="deleteEntry(\'pic\',\'' + r.id + '\')">Hapus</button></td>';
+        tbody.appendChild(tr);
+    });
+}
+
+async function togglePic(id, checked){
+    await sb.from('pic_proyek').update({ ceklis: checked }).eq('id', id);
+}
+
+async function addPic(e){
+    e.preventDefault();
+    if(!currentProjectId) return false;
+    
+    try{
+        const { data, error } = await sb.from('pic_proyek').insert({
+            project_id: currentProjectId,
+            kategori: document.getElementById('picKategori').value,
+            jabatan: document.getElementById('picJabatan').value,
+            nama: document.getElementById('picNama').value,
+            wewenang: null,
+            ceklis: false
+        }).select().single();
+        if(error) throw error;
+        
+        picList.push(data);
+        
+        document.getElementById('picJabatan').value = '';
+        document.getElementById('picNama').value = '';
+        
+        renderAll();
+        renderPic();
+        
+        alert('✅ PIC berhasil ditambahkan!');
+        
+    }catch(err){
+        alert('❌ Gagal menyimpan: ' + err.message);
+    }
+    
+    return false;
+}
+
+// ===== PROJECT =====
+function handleRabFile(e){
+    const file = e.target.files && e.target.files[0];
+    const preview = document.getElementById('npRabPreview');
+    if(!file){
+        pendingRabItems = [];
+        preview.textContent = 'File harus punya kolom: "Uraian", "Volume", "Satuan", "Harga Satuan"';
+        return;
+    }
+    preview.textContent = 'Membaca file...';
+    const reader = new FileReader();
+    reader.onload = function(ev){
+        try{
+            const data = new Uint8Array(ev.target.result);
+            const workbook = XLSX.read(data, { type: 'array' });
+            const sheet = workbook.Sheets[workbook.SheetNames[0]];
+            const rows = XLSX.utils.sheet_to_json(sheet, { header:1, raw:true, defval:'' });
+            
+            let headerIdx = -1, colUraian = -1, colVolume = -1, colSatuan = -1, colHarga = -1;
+            for(let i = 0; i < Math.min(rows.length, 10); i++){
+                const row = rows[i] || [];
+                row.forEach((cell, idx) => {
+                    const h = String(cell || '').toLowerCase().trim();
+                    if(h.includes('uraian') && colUraian === -1) colUraian = idx;
+                    if((h.includes('volume') || h === 'vol') && colVolume === -1) colVolume = idx;
+                    if(h.includes('satuan') && !h.includes('harga') && colSatuan === -1) colSatuan = idx;
+                    if(h.includes('harga') && h.includes('satuan') && colHarga === -1) colHarga = idx;
+                });
+                if(colUraian !== -1 && colVolume !== -1 && colHarga !== -1){ headerIdx = i; break; }
+            }
+            if(headerIdx === -1){
+                preview.textContent = '❌ Kolom tidak ditemukan.';
+                pendingRabItems = [];
+                return;
+            }
+            
+            const items = [];
+            for(let i = headerIdx + 1; i < rows.length; i++){
+                const row = rows[i] || [];
+                const uraian = String(row[colUraian] || '').trim();
+                if(!uraian) continue;
+                const volume = parseFloat(String(row[colVolume] || '0').replace(/[^0-9.\-]/g, '')) || 0;
+                const satuan = String(row[colSatuan] || '').trim();
+                const harga = parseFloat(String(row[colHarga] || '0').replace(/[^0-9.\-]/g, '')) || 0;
+                const jumlah = volume * harga;
+                
+                const existing = items.map(x => x.uraian);
+                let uniqueUraian = uraian;
+                let counter = 2;
+                while(existing.includes(uniqueUraian)){ uniqueUraian = uraian + ' (' + counter + ')'; counter++; }
+                
+                items.push({ uraian: uniqueUraian, volume, satuan, hargaSatuan: harga, jumlahHarga: jumlah });
+            }
+            
+            pendingRabItems = items;
+            const total = items.reduce((s, it) => s + it.jumlahHarga, 0);
+            document.getElementById('npNilai').value = total;
+            preview.textContent = '✅ ' + items.length + ' item RAB terbaca. Total: ' + formatRp(total);
+        }catch(err){
+            preview.textContent = '❌ Gagal membaca file: ' + err.message;
+            pendingRabItems = [];
+        }
+    };
+    reader.readAsArrayBuffer(file);
+}
+
+async function saveProject(e){
+    e.preventDefault();
+    if(currentRole() !== 'management'){ 
+        alert('Khusus Management.'); 
+        return; 
+    }
+    
+    const btn = document.getElementById('btnSimpanProyek');
+    btn.disabled = true; btn.textContent = 'Menyimpan...';
+    
+    // ===== VALIDASI KUOTA PAKET (HANYA UNTUK MANAGEMENT) =====
+    const managementId = sessionStorage.getItem('drn_user_id');
+    const userPaket = getCurrentPaket();
+    
+    const projectCount = getProjectCountForUser(managementId);
+    
+    let maxProjects = 1;
+    if(userPaket === 'premium') maxProjects = 2;
+    else if(userPaket === 'pro_max') maxProjects = 5;
+    
+    if(projectCount >= maxProjects){
+        alert(`❌ Kuota paket ${userPaket} Anda sudah habis! Maksimal ${maxProjects} proyek.`);
+        btn.disabled = false;
+        btn.textContent = 'Simpan Proyek';
+        return;
+    }
+    
+    const payload = {
+        nama: document.getElementById('npNama').value,
+        lokasi: document.getElementById('npLokasi').value || null,
+        nomor_kontrak: document.getElementById('npKontrak').value || null,
+        nilai_kontrak: document.getElementById('npNilai').value || null,
+        tanggal_mulai: document.getElementById('npMulai').value || null,
+        tanggal_selesai: document.getElementById('npSelesai').value || null,
+        management_id: managementId
+    };
+    
+    try{
+        const { data, error } = await sb.from('projects').insert(payload).select().single();
+        if(error) throw error;
+        projects.push(data);
+        currentProjectId = data.id;
+        localStorage.setItem(KEYS.current, data.id);
+        
+        if(pendingRabItems.length > 0){
+            const rabPayload = pendingRabItems.map((item, idx) => ({
+                project_id: data.id,
+                no_urut: idx + 1,
+                uraian: item.uraian,
+                volume: item.volume,
+                satuan: item.satuan,
+                harga_satuan: item.hargaSatuan,
+                jumlah_harga: item.jumlahHarga
+            }));
+            const { error: rabError } = await sb.from('rab_items').insert(rabPayload);
+            if(rabError) throw rabError;
+            const { data: rabData } = await sb.from('rab_items').select('*').eq('project_id', data.id);
+            if(rabData) rabList = rabList.concat(rabData);
+        }
+        
+        document.getElementById('projectModal').style.display = 'none';
+        pendingRabItems = [];
+        renderAll();
+        switchTab('rab');
+        alert('✅ Proyek "' + payload.nama + '" berhasil dibuat!');
+    }catch(err){
+        alert('❌ Gagal menyimpan: ' + err.message);
+    } finally {
+        btn.disabled = false;
+        btn.textContent = 'Simpan Proyek';
+    }
+    return false;
+}
+
+async function deleteProject(){
+    if(currentRole() !== 'management'){ alert('Khusus Management.'); return; }
+    if(!currentProjectId) return;
+    const p = projects.find(x => x.id === currentProjectId);
+    if(!confirm('Hapus proyek "' + p.nama + '" beserta semua datanya?')) return;
+    try{
+        await sb.from('projects').delete().eq('id', currentProjectId);
+        projects = projects.filter(x => x.id !== currentProjectId);
+        currentProjectId = projects.length ? projects[0].id : null;
+        localStorage.setItem(KEYS.current, currentProjectId || '');
+        renderAll();
+    }catch(err){ alert('Gagal: ' + err.message); }
+}
+
+async function handleExistingRabFile(e){
+    const file = e.target.files && e.target.files[0];
+    if(!file) return;
+    try{
+        const data = new Uint8Array(await file.arrayBuffer());
+        const workbook = XLSX.read(data, { type: 'array' });
+        const sheet = workbook.Sheets[workbook.SheetNames[0]];
+        const rows = XLSX.utils.sheet_to_json(sheet, { header:1, raw:true, defval:'' });
+        
+        let headerIdx = -1, colUraian = -1, colVolume = -1, colSatuan = -1, colHarga = -1;
+        for(let i = 0; i < Math.min(rows.length, 10); i++){
+            const row = rows[i] || [];
+            row.forEach((cell, idx) => {
+                const h = String(cell || '').toLowerCase().trim();
+                if(h.includes('uraian') && colUraian === -1) colUraian = idx;
+                if((h.includes('volume') || h === 'vol') && colVolume === -1) colVolume = idx;
+                if(h.includes('satuan') && !h.includes('harga') && colSatuan === -1) colSatuan = idx;
+                if(h.includes('harga') && h.includes('satuan') && colHarga === -1) colHarga = idx;
+            });
+            if(colUraian !== -1 && colVolume !== -1 && colHarga !== -1){ headerIdx = i; break; }
+        }
+        if(headerIdx === -1){ alert('❌ Kolom tidak ditemukan.'); return; }
+        
+        const items = [];
+        for(let i = headerIdx + 1; i < rows.length; i++){
+            const row = rows[i] || [];
+            const uraian = String(row[colUraian] || '').trim();
+            if(!uraian) continue;
+            const volume = parseFloat(String(row[colVolume] || '0').replace(/[^0-9.\-]/g, '')) || 0;
+            const satuan = String(row[colSatuan] || '').trim();
+            const harga = parseFloat(String(row[colHarga] || '0').replace(/[^0-9.\-]/g, '')) || 0;
+            const jumlah = volume * harga;
+            const existing = items.map(x => x.uraian);
+            let uniqueUraian = uraian;
+            let counter = 2;
+            while(existing.includes(uniqueUraian)){ uniqueUraian = uraian + ' (' + counter + ')'; counter++; }
+            items.push({ uraian: uniqueUraian, volume, satuan, hargaSatuan: harga, jumlahHarga: jumlah });
+        }
+        
+        const rabPayload = items.map((item, idx) => ({
+            project_id: currentProjectId,
+            no_urut: currentData('rab').length + idx + 1,
+            uraian: item.uraian,
+            volume: item.volume,
+            satuan: item.satuan,
+            harga_satuan: item.hargaSatuan,
+            jumlah_harga: item.jumlahHarga
+        }));
+        
+        const { error } = await sb.from('rab_items').insert(rabPayload);
+        if(error) throw error;
+        const { data: rabData } = await sb.from('rab_items').select('*').eq('project_id', currentProjectId);
+        if(rabData) rabList = rabData;
+        
+        renderAll();
+        renderProgress();
+        alert('✅ ' + items.length + ' item RAB berhasil diimport!');
+    }catch(err){
+        alert('❌ Gagal: ' + err.message);
+    } finally {
+        document.getElementById('rabFileInput').value = '';
+    }
+}
+
+// ===== PLAN =====
+async function addPlan(e){
+    e.preventDefault();
+    if(!currentProjectId) return false;
+    try{
+        const { data, error } = await sb.from('plan_progress').insert({
+            project_id: currentProjectId,
+            tanggal: document.getElementById('rpTanggal').value,
+            persen: Number(document.getElementById('rpPersen').value)
+        }).select().single();
+        if(error) throw error;
+        
+        planLog.push({
+            id: data.id,
+            projectId: data.project_id,
+            tanggal: data.tanggal,
+            persen: data.persen
+        });
+        
+        document.getElementById('rpTanggal').value = todayStr();
+        document.getElementById('rpPersen').value = '';
+        
+        renderSCurve();
+        renderPlanTable();
+        renderUraianOptions();
+        
+        alert('✅ Titik rencana berhasil ditambahkan!');
+    }catch(err){ alert('Gagal: ' + err.message); }
+    return false;
+}
+
+// ===== PRINT =====
+function printRabBoQ(){
+    if(!currentProjectId) return;
+    
+    const p = projects.find(x => x.id === currentProjectId);
+    const area = document.getElementById('printArea');
+    
+    const rabRows = [...currentData('rab')].sort((a,b) => (a.noUrut || 0) - (b.noUrut || 0));
+    
+    if(rabRows.length === 0){
+        alert('Belum ada data RAB untuk dicetak.');
+        return;
+    }
+    
+    let totalRAB = 0;
+    rabRows.forEach(r => {
+        totalRAB += Number(r.jumlahHarga || 0);
+    });
+    
+    const ppn = totalRAB * 0.11;
+    const nilaiKontrak = totalRAB + ppn;
+    
+    const rowsHtml = rabRows.map((r, i) => {
+        const volumeDisplay = Number(r.volume || 0).toFixed(2);
+        const hargaSatuan = Number(r.hargaSatuan || 0).toLocaleString('id-ID');
+        const jumlahHarga = Number(r.jumlahHarga || 0).toLocaleString('id-ID');
+        
+        return '<tr>' +
+            '<td style="text-align:center;">' + (i+1) + '</td>' +
+            '<td>' + esc(r.uraian) + '</td>' +
+            '<td style="text-align:right;">' + volumeDisplay + '</td>' +
+            '<td style="text-align:center;">' + esc(r.satuan) + '</td>' +
+            '<td style="text-align:right;">' + hargaSatuan + '</td>' +
+            '<td style="text-align:right;">' + jumlahHarga + '</td>' +
+            '</tr>';
+    }).join('');
+    
+    const now = new Date();
+    const bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+    const tanggalCetak = now.getDate() + ' ' + bulan[now.getMonth()] + ' ' + now.getFullYear();
+    const jamCetak = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ':' + String(now.getSeconds()).padStart(2, '0');
+    
+    area.innerHTML = '<div style="padding:20px;font-family:Arial;">' +
+        '<h2 style="text-align:center;">RENCANA ANGGARAN BIAYA (RAB/BoQ)</h2>' +
+        '<p style="text-align:center;">CV. DINAMIKA REKONSTRUKSI NUSANTARA</p>' +
+        '<hr>' +
+        '<p><b>Proyek:</b> ' + esc(p ? p.nama : '-') + '</p>' +
+        '<p><b>No. Kontrak:</b> ' + esc(p && p.nomorKontrak ? p.nomorKontrak : '-') + '</p>' +
+        '<table border="1" cellpadding="6" style="width:100%;border-collapse:collapse;margin-top:10px;table-layout:auto;">' +
+        '<thead style="display:table-header-group;">' +
+        '<tr style="background:#eee;">' +
+        '<th style="text-align:center;">No</th>' +
+        '<th style="text-align:center;">Uraian Pekerjaan</th>' +
+        '<th style="text-align:right;">Volume</th>' +
+        '<th style="text-align:center;">Satuan</th>' +
+        '<th style="text-align:right;">Harga Satuan (Rp.)</th>' +
+        '<th style="text-align:right;">Jumlah Harga (Rp.)</th>' +
+        '</tr>' +
+        '</thead>' +
+        '<tbody>' +
+        rowsHtml +
+        '<tr style="font-weight:bold;background:#eee;">' +
+        '<td colspan="5" style="text-align:right;">TOTAL RAB</td>' +
+        '<td style="text-align:right;">' + totalRAB.toLocaleString('id-ID') + '</td>' +
+        '</tr>' +
+        '<tr>' +
+        '<td colspan="5" style="text-align:right;">PPN 11%</td>' +
+        '<td style="text-align:right;">' + ppn.toLocaleString('id-ID') + '</td>' +
+        '</tr>' +
+        '<tr style="font-weight:bold;background:#eee;">' +
+        '<td colspan="5" style="text-align:right;">NILAI KONTRAK (RAB + PPN)</td>' +
+        '<td style="text-align:right;">' + nilaiKontrak.toLocaleString('id-ID') + '</td>' +
+        '</tr>' +
+        '</tbody>' +
+        '</table>' +
+        buildSignatureBlock() +
+        '<div style="margin-top:20px; text-align:left; font-size:11px; color:#555; font-style:italic;">' +
+        'Dokumen dicetak otomatis menggunakan Aplikasi <b>SIMPeL</b> - Sistem Pemantauan Lapangan, ' + tanggalCetak + ' ' + jamCetak +
+        '</div>' +
+        '</div>';
+    
+    setTimeout(() => window.print(), 200);
+}
+
+function toggleAllPhotoChecks(btn){
+    const checkboxes = document.querySelectorAll('.print-photo-check');
+    const allChecked = Array.from(checkboxes).every(cb => cb.checked);
+    
+    checkboxes.forEach(cb => {
+        cb.checked = !allChecked;
+    });
+    
+    if(allChecked){
+        btn.textContent = 'Pilih Semua';
+    } else {
+        btn.textContent = 'Batal Pilih';
+    }
+}
+
+function printProgressReport(){
+    if(!currentProjectId) return;
+
+    const p = projects.find(x => x.id === currentProjectId);
+    const area = document.getElementById('printArea');
+
+    const rabRows = [...currentData('rab')].sort((a,b) => a.noUrut - b.noUrut);
+
+    const progDates = [...new Set(progressLog.filter(x => x.projectId === currentProjectId).map(x => x.tanggal))].filter(Boolean).sort();
+    const tglMingguLalu = progDates.length > 1 ? progDates[progDates.length - 2] : '';
+    const tglMingguIni = progDates.length > 0 ? progDates[progDates.length - 1] : '';
+
+    const formatTanggalIndo = (dateStr) => {
+        if(!dateStr) return '-';
+        const bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+        const parts = dateStr.split('-');
+        const tahun = parts[0];
+        const bulanAngka = parseInt(parts[1], 10);
+        const tanggal = parseInt(parts[2], 10);
+        return tanggal + ' ' + bulan[bulanAngka - 1] + ' ' + tahun;
+    };
+
+    const formatAngka = (val) => {
+        const num = Number(val || 0);
+        if(num === 100) return '100';
+        return num.toFixed(3).replace('.', ',');
+    };
+
+    let totalPrestasi = 0;
+
+    const rowsHtml = rabRows.map((r, i) => {
+        const bobot = getBobot(r.uraian);
+
+        const progMingguLalu = progressLog.filter(x => x.projectId === currentProjectId && x.deskripsi === r.uraian && x.tanggal < tglMingguIni).sort((a,b) => a.tanggal > b.tanggal ? -1 : 1)[0]?.persen || 0;
+
+        const progMingguIni = progressLog.filter(x => x.projectId === currentProjectId && x.deskripsi === r.uraian && x.tanggal <= tglMingguIni).sort((a,b) => a.tanggal > b.tanggal ? -1 : 1)[0]?.persen || 0;
+
+        const progsdMingguIni = progressLog.filter(x => x.projectId === currentProjectId && x.deskripsi === r.uraian).sort((a,b) => a.tanggal > b.tanggal ? -1 : 1)[0]?.persen || 0;
+
+        const prestasi = (progsdMingguIni / 100) * bobot;
+        totalPrestasi += prestasi;
+
+        return '<tr>' +
+            '<td style="text-align:center;">' + (i+1) + '</td>' +
+            '<td>' + esc(r.uraian) + '</td>' +
+            '<td style="text-align:center;">' + formatAngka(bobot) + '</td>' +
+            '<td style="text-align:center;">' + formatAngka(progMingguLalu) + '</td>' +
+            '<td style="text-align:center;">' + formatAngka(progMingguIni) + '</td>' +
+            '<td style="text-align:center;">' + formatAngka(progsdMingguIni) + '</td>' +
+            '<td style="text-align:center;">' + formatAngka(prestasi) + '</td>' +
+            '</tr>';
+    }).join('');
+
+    const now = new Date();
+    const bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+    const tanggalCetak = now.getDate() + ' ' + bulan[now.getMonth()] + ' ' + now.getFullYear();
+    const jamCetak = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ':' + String(now.getSeconds()).padStart(2, '0');
+
+    area.innerHTML = '<div style="padding:20px;font-family:Arial;">' +
+    '<h2 style="text-align:center;">LAPORAN PROGRES PEKERJAAN</h2>' +
+    '<p style="text-align:center;">CV. DINAMIKA REKONSTRUKSI NUSANTARA</p>' +
+    '<hr>' +
+    '<p><b>Proyek:</b> ' + esc(p ? p.nama : '-') + '</p>' +
+    '<p><b>No. Kontrak:</b> ' + esc(p && p.nomorKontrak ? p.nomorKontrak : '-') + '</p>' +
+    '<p><b>Periode:</b> ' + formatTanggalIndo(tglMingguLalu) + ' s/d ' + formatTanggalIndo(tglMingguIni) + '</p>' +
+    '<p><b>Progres Total:</b> ' + computeProgress().toFixed(1) + '%</p>' +
+    '<table border="1" cellpadding="6" style="width:100%;border-collapse:collapse;margin-top:10px;table-layout:auto;">' +
+    '<thead style="display:table-header-group;">' +
+    '<tr style="background:#eee;">' +
+    '<th style="text-align:center;">No</th>' +
+    '<th style="text-align:center;">Uraian Pekerjaan</th>' +
+    '<th style="text-align:center;">Bobot (%)</th>' +
+    '<th style="text-align:center;">Progres Minggu Lalu (%)</th>' +
+    '<th style="text-align:center;">Progres Minggu Ini (%)</th>' +
+    '<th style="text-align:center;">Progres s/d Minggu Ini (%)</th>' +
+    '<th style="text-align:center;">Prestasi s/d Minggu Ini (%)</th>' +
+    '</tr>' +
+    '</thead>' +
+    '<tbody>' +
+    rowsHtml +
+    '<tr style="font-weight:bold;background:#eee;">' +
+    '<td colspan="6" style="text-align:right;">TOTAL PRESTASI PEKERJAAN (%)</td>' +
+    '<td style="text-align:center;">' + formatAngka(totalPrestasi) + '</td>' +
+    '</tr>' +
+    '</tbody>' +
+    '</table>' +
+    buildSignatureBlock() +
+    '<div style="margin-top:20px; text-align:left; font-size:11px; color:#555; font-style:italic;">' +
+    'Dokumen dicetak otomatis menggunakan Aplikasi <b>SIMPeL</b> - Sistem Pemantauan Lapangan, ' + tanggalCetak + ' ' + jamCetak +
+    '</div>' +
+    '</div>';
+
+    setTimeout(() => window.print(), 200);
+}
+
+function buildSignatureBlock(){
+    const signers = picList.filter(x => x.projectId === currentProjectId && x.ceklis);
+    if(signers.length === 0) return '';
+    
+    const blocks = signers.map(r => {
+        const label = r.kategori === 'Direksi' ? 'Mengetahui,' : 'Dibuat oleh,';
+        return '<div style="text-align:center; width:200px; display:inline-block; margin:0 20px;">' +
+            '<div style="font-size:12px; margin-bottom:60px;">' + label + '</div>' +
+            '<div style="font-weight:bold; font-size:13px; margin-bottom:0;">' + esc(r.nama) + '</div>' +
+            '<div style="border-top:1px solid #333; padding-top:0; font-size:11px; color:#555;">' + esc(r.jabatan) + '</div>' +
+            '</div>';
+    }).join('');
+    
+    return '<div style="margin-top:40px; text-align:center;">' + blocks + '</div>';
+}
+
+function printSCurve(){
+    const svg = document.getElementById('sCurve');
+    if(!svg) return;
+    
+    const p = projects.find(x => x.id === currentProjectId);
+    
+    const planRows = [...planLog].filter(x => x.projectId === currentProjectId).sort((a,b) => (a.tanggal || '') > (b.tanggal || '') ? 1 : -1);
+    
+    let tableHtml = '';
+    if(planRows.length > 0){
+        tableHtml = '<table border="1" cellpadding="6" style="width:100%;border-collapse:collapse;margin-top:20px;table-layout:fixed;">' +
+            '<thead style="display:table-header-group;">' +
+            '<tr style="background:#eee;">' +
+            '<th style="text-align:center;width:25%;">Tanggal</th>' +
+            '<th style="text-align:center;width:25%;">Rencana (%)</th>' +
+            '<th style="text-align:center;width:25%;">Realisasi (%)</th>' +
+            '<th style="text-align:center;width:25%;">Deviasi (%)</th>' +
+            '</tr>' +
+            '</thead>' +
+            '<tbody>';
+        
+        planRows.forEach(r => {
+            const realisasi = computeProgress(r.tanggal);
+            const deviasi = realisasi - r.persen;
+            const deviasiColor = deviasi < 0 ? '#B23A2E' : '#2F7D5A';
+            
+            tableHtml += '<tr>' +
+                '<td style="text-align:center;">' + formatTgl(r.tanggal) + '</td>' +
+                '<td style="text-align:center;">' + r.persen + '</td>' +
+                '<td style="text-align:center;">' + realisasi.toFixed(1) + '</td>' +
+                '<td style="text-align:center;color:' + deviasiColor + ';font-weight:600;">' + (deviasi >= 0 ? '+' : '') + deviasi.toFixed(1) + '</td>' +
+                '</tr>';
+        });
+        
+        tableHtml += '</tbody></table>';
+    }
+    
+    const now = new Date();
+    const bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+    const tanggalCetak = now.getDate() + ' ' + bulan[now.getMonth()] + ' ' + now.getFullYear();
+    const jamCetak = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ':' + String(now.getSeconds()).padStart(2, '0');
+    
+    const area = document.getElementById('printArea');
+    area.innerHTML = '<div style="padding:20px;font-family:Arial;">' +
+        '<h2 style="text-align:center;">KURVA S</h2>' +
+        '<p style="text-align:center;">CV. DINAMIKA REKONSTRUKSI NUSANTARA</p>' +
+        '<hr>' +
+        '<p><b>Proyek:</b> ' + esc(p ? p.nama : '-') + '</p>' +
+        '<p><b>No. Kontrak:</b> ' + esc(p && p.nomorKontrak ? p.nomorKontrak : '-') + '</p>' +
+        '<div style="max-width:600px; margin:0 auto;">' + svg.outerHTML + '</div>' +
+        tableHtml +
+        '<div style="margin-top:20px; text-align:left; font-size:11px; color:#555; font-style:italic;">' +
+        'Dokumen dicetak otomatis menggunakan Aplikasi <b>SIMPeL</b> - Sistem Pemantauan Lapangan, ' + tanggalCetak + ' ' + jamCetak +
+        '</div>' +
+        '</div>';
+    
+    setTimeout(() => window.print(), 200);
+}
+
+function printWage(e){
+    e.preventDefault();
+    if(!currentProjectId) return false;
+    
+    const awal = document.getElementById('wageAwal').value;
+    const akhir = document.getElementById('wageAkhir').value;
+    
+    const rows = currentData('timesheet').filter(r => r.tanggal >= awal && r.tanggal <= akhir && r.status === 'hadir');
+    
+    if(rows.length === 0){
+        alert('Tidak ada data pekerja hadir pada periode tersebut.');
+        return false;
+    }
+    
+    let rekap = {};
+    rows.forEach(r => {
+        if(!rekap[r.nama]){
+            rekap[r.nama] = { 
+                nama: r.nama, 
+                kategori: r.kategori, 
+                totalH: 0, 
+                totalL: 0,
+                jamMasuk: r.jamMasuk || '-',
+                jamKeluar: r.jamKeluar || '-'
+            };
+        }
+        if(r.jamMasuk) rekap[r.nama].jamMasuk = r.jamMasuk;
+        if(r.jamKeluar) rekap[r.nama].jamKeluar = r.jamKeluar;
+        
+        const rekapHarian = computeRekap(r.jamMasuk, r.jamKeluar);
+        if(rekapHarian){
+            rekap[r.nama].totalH += rekapHarian.H;
+            rekap[r.nama].totalL += rekapHarian.L;
+        }
+    });
+    
+    let totalGaji = 0;
+    const daftarPekerja = Object.values(rekap).sort((a,b) => a.nama.localeCompare(b.nama));
+    
+    const rowsHtml = daftarPekerja.map((pk, idx) => {
+        const w = wageRates.find(x => x.projectId === currentProjectId && x.kategori === pk.kategori);
+        const upahHarian = w ? Number(w.upahHarian) : 0;
+        const upahLembur = w ? Number(w.upahLembur) : 0;
+        const jumlahUpahHarian = Math.round(pk.totalH * upahHarian);
+        const jumlahUpahLemburan = Math.round(pk.totalL * upahLembur);
+        const total = jumlahUpahHarian + jumlahUpahLemburan;
+        totalGaji += total;
+        
+        return '<tr>' +
+            '<td style="text-align:center;">' + (idx + 1) + '</td>' +
+            '<td>' + esc(pk.nama) + '</td>' +
+            '<td style="text-align:center;">' + esc(pk.kategori) + '</td>' +
+            '<td style="text-align:center;">' + pk.jamMasuk + '</td>' +
+            '<td style="text-align:center;">' + pk.jamKeluar + '</td>' +
+            '<td style="text-align:center;">' + pk.totalH + '</td>' +
+            '<td style="text-align:center;">' + pk.totalL.toFixed(1) + '</td>' +
+            '<td style="text-align:right;">' + formatRp(jumlahUpahHarian) + '</td>' +
+            '<td style="text-align:right;">' + formatRp(jumlahUpahLemburan) + '</td>' +
+            '<td style="text-align:right;">' + formatRp(total) + '</td>' +
+            '</tr>';
+    }).join('');
+    
+    const now = new Date();
+    const bulan = ['Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni', 'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'];
+    const tanggalCetak = now.getDate() + ' ' + bulan[now.getMonth()] + ' ' + now.getFullYear();
+    const jamCetak = String(now.getHours()).padStart(2, '0') + ':' + String(now.getMinutes()).padStart(2, '0') + ':' + String(now.getSeconds()).padStart(2, '0');
+    
+    const area = document.getElementById('printArea');
+    area.innerHTML = '<div style="padding:20px;font-family:Arial;">' +
+        '<h2 style="text-align:center;">REKAP UPAH</h2>' +
+        '<p style="text-align:center;">CV. DINAMIKA REKONSTRUKSI NUSANTARA</p>' +
+        '<p style="text-align:center;">Periode: ' + formatTgl(awal) + ' - ' + formatTgl(akhir) + '</p>' +
+        '<hr>' +
+        '<table border="1" cellpadding="6" style="width:100%;border-collapse:collapse;margin-top:10px;table-layout:fixed;">' +
+        '<thead style="display:table-header-group;">' +
+        '<tr style="background:#eee;">' +
+        '<th style="text-align:center;width:4%;">No</th>' +
+        '<th style="text-align:center;width:12%;">Nama</th>' +
+        '<th style="text-align:center;width:10%;">Kategori</th>' +
+        '<th style="text-align:center;width:8%;">Jam Masuk</th>' +
+        '<th style="text-align:center;width:8%;">Jam Keluar</th>' +
+        '<th style="text-align:center;width:6%;">Hari (H)</th>' +
+        '<th style="text-align:center;width:8%;">Lembur (L)</th>' +
+        '<th style="text-align:right;width:12%;">Jumlah Upah Harian</th>' +
+        '<th style="text-align:right;width:12%;">Jumlah Upah Lemburan</th>' +
+        '<th style="text-align:right;width:12%;">Total Gaji</th>' +
+        '</tr>' +
+        '</thead>' +
+        '<tbody>' +
+        rowsHtml +
+        '<tr style="font-weight:bold;background:#eee;">' +
+        '<td colspan="9" style="text-align:right;">TOTAL PEMBAYARAN</td>' +
+        '<td style="text-align:right;">' + formatRp(totalGaji) + '</td>' +
+        '</tr>' +
+        '</tbody>' +
+        '</table>' +
+        '<div style="margin-top:20px; text-align:left; font-size:11px; color:#555; font-style:italic;">' +
+        'Dokumen dicetak otomatis menggunakan Aplikasi <b>SIMPeL</b> - Sistem Pemantauan Lapangan, ' + tanggalCetak + ' ' + jamCetak +
+        '</div>' +
+        '</div>';
+    
+    setTimeout(() => window.print(), 200);
+    return false;
+}
+
+function exportBackup(){
+    if(currentRole() !== 'management'){ alert('Khusus Management.'); return; }
+    if(typeof XLSX === 'undefined'){ alert('Pustaka Excel belum dimuat.'); return; }
+    const p = projects.find(x => x.id === currentProjectId);
+    if(!p) return;
+    const wb = XLSX.utils.book_new();
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet([
+        ['Nama Proyek', p.nama], ['Lokasi', p.lokasi || '-'], ['No. Kontrak', p.nomorKontrak || '-'], ['Nilai Kontrak', p.nilaiKontrak || 0], ['Tanggal Mulai', p.tanggalMulai || '-'], ['Tanggal Selesai', p.tanggalSelesai || '-']
+    ]), 'Info');
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(
+        [['No','Uraian','Volume','Satuan','Harga','Jumlah']].concat(currentData('rab').map((r,i) => [r.noUrut,r.uraian,r.volume,r.satuan,r.hargaSatuan,r.jumlahHarga]))
+    ), 'RAB');
+    XLSX.utils.book_append_sheet(wb, XLSX.utils.aoa_to_sheet(
+        [['Tanggal','Deskripsi','Progres']].concat(currentData('progress').map(r => [r.tanggal,r.deskripsi,r.persen]))
+    ), 'Progres');
+    XLSX.writeFile(wb, 'Backup_' + p.nama.replace(/\s+/g,'_') + '_' + todayStr() + '.xlsx');
+}
+
+function showPhoto(url){
+    document.getElementById('lightboxImg').src = url;
+    document.getElementById('lightbox').style.display = 'flex';
+}
+
+// ===== INIT =====
+async function initApp(){
+    const today = todayStr();
+    document.getElementById('pTanggal').value = today;
+    document.getElementById('mTanggal').value = today;
+    document.getElementById('tTanggal').value = today;
+    document.getElementById('cfTanggal').value = today;
+    document.getElementById('rpTanggal').value = today;
+    
+    // Cek Role
+    const role = currentRole();
+    
+    // ===== JIKA ROLE BELUM ADA, TAPI USER ID ADA (DARI PEMBAYARAN) =====
+    if(!role && sessionStorage.getItem('drn_user_id')){
+        document.getElementById('loginModal').style.display = 'flex';
+        alert('✅ Pembayaran diterima! Silakan login menggunakan User ID Anda: ' + sessionStorage.getItem('drn_user_id'));
+        return;
+    }
+    
+    if(role){
+        // Sembunyikan Login Modal
+        document.getElementById('loginModal').style.display = 'none';
+        
+        // Jika Staff, set proyek pilihan
+        if(role === 'staff' && sessionStorage.getItem('drn_project')){
+            currentProjectId = sessionStorage.getItem('drn_project');
+        }
+        
+        // ===== AMBIL DATA USER TERBARU DARI SUPABASE (UNTUK ADD-ON PRINT) =====
+        if(role === 'management' && sessionStorage.getItem('drn_user_id')){
+            try {
+                const { data: user, error } = await sb.from('users').select('*').eq('id', sessionStorage.getItem('drn_user_id')).single();
+                if(!error && user){
+                    // Update paket & addon_print di session
+                    sessionStorage.setItem('drn_paket', user.paket || 'basic');
+                    sessionStorage.setItem('drn_addon_print', user.addon_print ? 'true' : 'false');
+                }
+            } catch (e) {
+                console.error('Gagal memuat user:', e);
+            }
+        }
+        
+        // Load Data
+        await loadAll();
+        renderAll();
+        
+        // ==== KONTROL AKSES MENU BERDASARKAN ROLE ====
+        if(role === 'staff'){
+            document.querySelector('.proj-bar button[onclick="openProjectModal()"]').style.display = 'none';
+            document.querySelector('.proj-bar button[onclick="exportBackup()"]').style.display = 'none';
+            document.querySelector('.proj-bar button[onclick="deleteProject()"]').style.display = 'none';
+            
+            document.querySelector('#mainTabs button[data-tab="cost"]').style.display = 'none';
+            document.querySelector('#mainTabs button[data-tab="rab"]').style.display = 'none';
+        }
+    } else {
+        // ===== JIKA ROLE & USER ID KOSONG =====
+        document.getElementById('loginModal').style.display = 'none';
+        alert('Anda belum memiliki akses. Silakan pilih paket terlebih dahulu.');
+        window.location.href = './pembayaran.html';
+    }
+}
+
+initApp();
+</script>
+
+<script>
+if ('serviceWorker' in navigator) {
+    window.addEventListener('load', function() {
+        navigator.serviceWorker.register('./sw.js')
+            .then(function(registration) {
+                console.log('Service Worker terdaftar:', registration.scope);
+            })
+            .catch(function(error) {
+                console.log('Gagal mendaftarkan Service Worker:', error);
+            });
+    });
+}
+</script>
+
+</body>
+  </html>
