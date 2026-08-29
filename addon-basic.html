@@ -18,6 +18,9 @@
         .paid { color: #2F7D5A; font-weight: bold; }
         .waiting { color: #5B6675; }
         a { display: block; text-align: center; margin-top: 15px; color: #10263E; font-weight: bold; text-decoration: none; }
+        
+        /* Modal untuk user yang sudah punya add-on */
+        .alert-modal { background: #E4F3EA; color: #2F7D5A; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center; font-weight: bold; }
     </style>
 </head>
 <body>
@@ -49,6 +52,11 @@
         <a href="./index.html">🔗 Kembali ke Aplikasi SIMPeL</a>
     </div>
     
+    <div id="alreadyHaveArea" style="display:none;">
+        <div class="alert-modal">✅ Anda sudah memiliki Add-On Print!</div>
+        <a href="./index.html">🔗 Kembali ke Aplikasi SIMPeL</a>
+    </div>
+    
     <a href="./index.html">⬅️ Kembali</a>
 </div>
 
@@ -74,6 +82,33 @@
     
     // ===== AMBIL USER ID DARI SESSION =====
     const userId = sessionStorage.getItem('drn_user_id');
+    
+    // ===== CEK STATUS ADD-ON OTOMATIS =====
+    async function cekStatusAddOn() {
+        if(!userId){
+            alert('Silakan login terlebih dahulu!');
+            window.location.href = './index.html';
+            return;
+        }
+        
+        const { data: user, error } = await sb.from('users').select('addon_print').eq('id', userId).single();
+        
+        if(error || !user){
+            // Jika user tidak ditemukan, kembali ke index
+            alert('User tidak ditemukan! Silakan login kembali.');
+            window.location.href = './index.html';
+            return;
+        }
+        
+        if(user.addon_print){
+            // Jika sudah punya add-on, tampilkan pesan
+            document.getElementById('paymentArea').style.display = 'none';
+            document.getElementById('alreadyHaveArea').style.display = 'block';
+        } else {
+            // Jika belum punya, tampilkan tombol bayar
+            document.getElementById('paymentArea').style.display = 'block';
+        }
+    }
     
     function mulaiPembayaran() {
         if(!userId){
@@ -115,12 +150,9 @@
         });
     }
     
-    // Cek status jika sudah ada order
+    // Cek status add-on saat halaman dimuat
     window.onload = function() {
-        if(!userId){
-            alert('Silakan login terlebih dahulu!');
-            window.location.href = './index.html';
-        }
+        cekStatusAddOn();
     };
 </script>
 </body>
