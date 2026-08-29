@@ -26,7 +26,7 @@
         button.orange { width: 100%; padding: 14px; background: #E9EBE6; color: #333; border: none; border-radius: 12px; font-size: 14px; cursor: pointer; margin-top: 10px; }
         
         /* FORM LOGIN LANGSUNG DI HALAMAN PEMBAYARAN */
-        .login-section { max-width: 360px; margin: -30px auto; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+        .login-section { max-width: 360px; margin: -120px auto 20px; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); position: relative; z-index: 2; }
         .login-section h2 { color: #10263E; font-size: 18px; margin-bottom: 15px; text-align: center; }
         .login-section label { display: block; font-size: 12px; font-weight: bold; color: #5B6675; margin-bottom: 5px; }
         .login-section input { width: 100%; padding: 10px; border: 1px solid #C9D3DC; border-radius: 6px; font-size: 14px; margin-bottom: 15px; }
@@ -37,15 +37,15 @@
 
     <div class="hero" id="heroSection"></div>
 
-    <!-- FORM LOGIN LANGSUNG -->
-    <div class="login-section">
+    <!-- FORM LOGIN LANGSUNG (HANYA TAMPIL DI HALAMAN PILIH PAKET) -->
+    <div class="login-section" id="loginSection">
         <h2>🔑 Login Management</h2>
         <form onsubmit="return loginUser(event)">
-            <label>User ID (DRN-XXXXXX)</label>
-            <input type="text" id="inputUserId" placeholder="Contoh: DRN-AHEK37" required>
+            <label>User ID</label>
+            <input type="text" id="inputUserId" required>
             
             <label>Password</label>
-            <input type="password" id="inputPassword" placeholder="Masukkan password" required>
+            <input type="password" id="inputPassword" required>
             
             <button type="submit">Login</button>
         </form>
@@ -179,6 +179,7 @@
                 alert('⚠️ Transaksi sudah dibuat. Menunggu verifikasi admin...');
                 document.getElementById('pilihPaketSection').style.display = 'none';
                 document.getElementById('heroSection').style.display = 'none';
+                document.getElementById('loginSection').style.display = 'none'; // <-- HIDDEN
                 document.getElementById('paymentSection').style.display = 'block';
                 cekStatus();
                 return;
@@ -187,6 +188,7 @@
             sessionStorage.setItem('paket', paketTerpilih);
             document.getElementById('pilihPaketSection').style.display = 'none';
             document.getElementById('heroSection').style.display = 'none';
+            document.getElementById('loginSection').style.display = 'none'; // <-- HIDDEN
             document.getElementById('paymentSection').style.display = 'block';
             document.getElementById('btnLanjut').style.display = 'none';
             
@@ -206,6 +208,7 @@
             document.getElementById('paymentSection').style.display = 'none';
             document.getElementById('pilihPaketSection').style.display = 'block';
             document.getElementById('heroSection').style.display = 'block';
+            document.getElementById('loginSection').style.display = 'block'; // <-- TAMPILKAN KEMBALI
             document.getElementById('btnLanjut').style.display = 'none';
         }
 
@@ -304,6 +307,7 @@
                 paketTerpilih = savedPaket;
                 document.getElementById('pilihPaketSection').style.display = 'none';
                 document.getElementById('heroSection').style.display = 'none';
+                document.getElementById('loginSection').style.display = 'none'; // <-- HIDDEN
                 document.getElementById('paymentSection').style.display = 'block';
                 
                 const namaPaket = paketTerpilih.charAt(0).toUpperCase() + paketTerpilih.slice(1);
@@ -313,6 +317,7 @@
                 cekStatus();
             } else {
                 document.getElementById('pilihPaketSection').style.display = 'block';
+                document.getElementById('loginSection').style.display = 'block';
                 document.getElementById('paymentSection').style.display = 'none';
             }
         };
