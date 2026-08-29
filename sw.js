@@ -1,4 +1,4 @@
-const CACHE_NAME = 'simpel-v6.0.0'; // Ganti versi agar cache lama terhapus
+const CACHE_NAME = 'simpel-v7.0.0'; // Ganti versi agar cache lama terhapus
 const urlsToCache = [
     './',
     './index.html',
