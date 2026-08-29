@@ -141,6 +141,12 @@
                 // ===== AKTIFKAN ADD-ON DI SUPABASE =====
                 sb.from('users').update({ addon_print: true }).eq('id', userId)
                     .then(() => {
+                        // Simpan juga di Firebase agar real-time
+                        db.ref('users/' + userId + '/addon_print').set(true);
+                        
+                        // Update session
+                        sessionStorage.setItem('drn_addon_print', 'true');
+                        
                         document.getElementById('paymentArea').style.display = 'none';
                         document.getElementById('successArea').style.display = 'block';
                         alert('✅ Add-On Print berhasil diaktifkan!');
