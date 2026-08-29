@@ -4,252 +4,83 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="manifest" href="https://cvdrn2025-design.github.io/SIMPel-Project-v.2.0/manifest.json">
-    <title>Admin SIMPeL - Panel Verifikasi & Manajemen User</title>
+    <title>Admin SIMPeL - Verifikasi Pembayaran & Buat User ID</title>
     <style>
-        * { box-sizing: border-box; margin: 0; padding: 0; }
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-            background: #E9EBE6;
-            padding: 20px;
-        }
-
-        .container { max-width: 1000px; margin: auto; }
-        .card {
-            background: #fff;
-            padding: 20px;
-            border-radius: 8px;
-            margin-bottom: 20px;
-            box-shadow: 0 2px 8px rgba(0,0,0,0.1);
-        }
-
-        h1, h2, h3 { color: #10263E; margin-bottom: 10px; }
-        h1 { font-size: 24px; }
-        h2 { font-size: 18px; }
-        h3 { font-size: 15px; }
-
-        .flex-between {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 15px;
-        }
-
-        .btn {
-            padding: 10px 16px;
-            border: none;
-            border-radius: 6px;
-            font-weight: 600;
-            cursor: pointer;
-            font-size: 14px;
-            transition: all 0.3s;
-        }
-
-        .btn-orange { background: #E8801C; color: white; }
-        .btn-orange:hover { background: #C56A12; }
-        .btn-red { background: #B23A2E; color: white; }
-        .btn-red:hover { background: #8E2D24; }
-        .btn-green { background: #2F7D5A; color: white; }
-        .btn-green:hover { background: #256648; }
-        .btn-blue { background: #10263E; color: white; }
-        .btn-blue:hover { background: #0A1B2E; }
-
-        .tag {
-            display: inline-block;
-            padding: 4px 10px;
-            border-radius: 10px;
-            font-size: 12px;
-            font-weight: 600;
-        }
-
-        .tag-ok { background: #E4F3EA; color: #2F7D5A; }
-        .tag-warn { background: #FBE9E7; color: #B23A2E; }
-        .tag-info { background: #E3F2FD; color: #1565C0; }
-
-        .table-wrapper { overflow-x: auto; margin-top: 15px; }
-        table {
-            width: 100%;
-            border-collapse: collapse;
-            font-size: 14px;
-        }
-        th, td {
-            border: 1px solid #ddd;
-            padding: 10px 8px;
-            text-align: left;
-        }
-        th {
-            background: #F6F7F5;
-            font-weight: 600;
-            color: #10263E;
-            text-transform: uppercase;
-            font-size: 12px;
-        }
-        td.amount { text-align: right; font-family: monospace; }
-        td.center { text-align: center; }
-
-        .hasil-verifikasi {
-            background: #F6F7F5;
-            border: 2px dashed #E8801C;
-            text-align: center;
-            padding: 20px;
-            border-radius: 6px;
-            margin-top: 15px;
-        }
-
-        .kode-unik {
-            font-size: 24px;
-            font-family: monospace;
-            font-weight: bold;
-            color: #E8801C;
-            letter-spacing: 2px;
-        }
-
-        .user-id {
-            font-size: 20px;
-            font-family: monospace;
-            font-weight: bold;
-            color: #10263E;
-        }
-
-        .form-group {
-            margin-bottom: 15px;
-        }
-
-        .form-group label {
-            display: block;
-            font-size: 12px;
-            font-weight: 600;
-            color: #5B6675;
-            margin-bottom: 5px;
-            text-transform: uppercase;
-        }
-
-        .form-group input,
-        .form-group select {
-            width: 100%;
-            padding: 10px;
-            border: 1px solid #C9D3DC;
-            border-radius: 6px;
-            font-size: 14px;
-        }
-
-        .alert {
-            padding: 12px;
-            border-radius: 6px;
-            margin-bottom: 15px;
-            font-size: 14px;
-        }
-
-        .alert-success { background: #E4F3EA; color: #2F7D5A; border: 1px solid #2F7D5A; }
-        .alert-error { background: #FBE9E7; color: #B23A2E; border: 1px solid #B23A2E; }
-        .alert-info { background: #E3F2FD; color: #1565C0; border: 1px solid #1565C0; }
-
-        .tab-nav {
-            display: flex;
-            background: #10263E;
-            border-radius: 8px 8px 0 0;
-            overflow: hidden;
-        }
-
-        .tab-nav button {
-            flex: 1;
-            padding: 12px;
-            background: transparent;
-            border: none;
-            color: #9FB3C6;
-            font-weight: 600;
-            cursor: pointer;
-            border-bottom: 3px solid transparent;
-            transition: all 0.3s;
-        }
-
-        .tab-nav button.active {
-            background: rgba(255,255,255,0.1);
-            color: #fff;
-            border-bottom-color: #E8801C;
-        }
-
-        .tab-content { display: none; }
-        .tab-content.active { display: block; }
-
-        .modal {
-            position: fixed;
-            top: 0;
-            left: 0;
-            right: 0;
-            bottom: 0;
-            background: rgba(10,27,46,0.8);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            z-index: 1000;
-        }
-
-        .modal-box {
-            background: #fff;
-            border-radius: 8px;
-            padding: 25px;
-            max-width: 500px;
-            width: 90%;
-            max-height: 80vh;
-            overflow-y: auto;
-        }
-
+        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; background: #E9EBE6; padding: 20px; }
+        .container { max-width: 800px; margin: auto; }
+        .card { background: #fff; padding: 20px; border-radius: 8px; margin-bottom: 20px; }
+        h1, h2, h3 { color: #10263E; margin: 0 0 10px 0; }
+        input { width: 100%; padding: 12px; margin: 10px 0; border: 1px solid #C9D3DC; border-radius: 6px; font-size: 16px; }
+        button { padding: 10px; background: #E8801C; color: white; border: none; border-radius: 4px; font-weight: bold; cursor: pointer; }
+        button:hover { background: #C56A12; }
+        
         .hide { display: none !important; }
+        .tag { display: inline-block; padding: 4px 10px; border-radius: 10px; font-size: 12px; font-weight: bold; }
+        .ok { background: #E4F3EA; color: #2F7D5A; }
+        .warn { background: #FBE9E7; color: #B23A2E; }
+        
+        .table-wrapper { overflow-x: auto; }
+        table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        th, td { border: 1px solid #ddd; padding: 8px; text-align: left; font-size: 14px; }
+        td.amount { text-align: right; }
+        
+        .hasil-verifikasi { background: #F6F7F5; border: 2px dashed #E8801C; text-align: center; padding: 15px; font-size: 24px; font-family: monospace; font-weight: bold; margin: 15px 0; border-radius: 6px; }
+        
+        .flex-between { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
+        .btn-red { background: #B23A2E; }
+        .btn-green { background: #2F7D5A; }
+        
+        /* Tabs */
+        .tab-nav { display: flex; background: #10263E; border-radius: 8px 8px 0 0; overflow: hidden; }
+        .tab-nav button { flex: 1; padding: 12px; background: transparent; border: none; color: #9FB3C6; font-weight: 600; cursor: pointer; border-bottom: 3px solid transparent; transition: all 0.3s; }
+        .tab-nav button.active { background: rgba(255,255,255,0.1); color: #fff; border-bottom-color: #E8801C; }
+        .tab-content { display: none; padding: 20px; }
+        .tab-content.active { display: block; }
     </style>
 </head>
 <body>
-
 <div class="container">
-    
-    <!-- LOGIN SECTION -->
+
+    <!-- LOGIN -->
     <div id="loginArea" class="card">
         <h1>🔐 Admin SIMPeL</h1>
         <p style="color:#5B6675; margin-bottom: 20px;">Silakan login untuk mengelola transaksi dan user.</p>
         
-        <div class="form-group">
-            <label>Password Admin</label>
-            <input type="password" id="adminPass" placeholder="Masukkan password">
-        </div>
+        <input type="password" id="adminPass" placeholder="Password Admin">
+        <button onclick="loginAdmin()" style="width:100%; margin-top:10px;">Masuk</button>
         
-        <button class="btn btn-orange" onclick="loginAdmin()" style="width:100%; margin-top:10px;">Masuk</button>
-        
-        <div id="loginError" class="alert alert-error hide" style="margin-top:15px;">
-            ❌ Password salah!
-        </div>
-        
-        <div class="alert alert-info" style="margin-top:20px;">
+        <p style="color:red; display:none; margin-top:10px;" id="loginError">❌ Password salah!</p>
+        <div class="alert alert-info" style="margin-top:15px; padding:10px; background:#E3F2FD; color:#1565C0; border-radius:4px;">
             💡 Password default: <b>admin123</b>
         </div>
     </div>
 
-    <!-- DASHBOARD SECTION -->
+    <!-- DASHBOARD -->
     <div id="dashboardArea" class="hide">
-        <div class="flex-between" style="margin-bottom: 20px;">
+        <div class="flex-between">
             <h1>📊 Dashboard Admin</h1>
-            <button class="btn btn-red" onclick="logoutAdmin()">Keluar</button>
+            <button class="btn-red" onclick="logoutAdmin()">Keluar</button>
         </div>
 
-        <!-- Summary Stats -->
-        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; margin-bottom: 20px;">
+        <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(150px, 1fr)); gap: 15px; margin-bottom: 20px;">
             <div class="card">
-                <h3 style="font-size: 14px; color: #5B6675;">Total Transaksi</h3>
+                <h3 style="font-size: 12px; color: #5B6675;">Total Transaksi</h3>
                 <div style="font-size: 32px; font-weight: bold; color: #10263E;" id="totalTransaksi">0</div>
             </div>
             <div class="card">
-                <h3 style="font-size: 14px; color: #5B6675;">Menunggu Verifikasi</h3>
+                <h3 style="font-size: 12px; color: #5B6675;">Menunggu Verifikasi</h3>
                 <div style="font-size: 32px; font-weight: bold; color: #E8801C;" id="totalWaiting">0</div>
             </div>
             <div class="card">
-                <h3 style="font-size: 14px; color: #5B6675;">Sudah Dibayar</h3>
+                <h3 style="font-size: 12px; color: #5B6675;">Sudah Dibayar</h3>
                 <div style="font-size: 32px; font-weight: bold; color: #2F7D5A;" id="totalPaid">0</div>
             </div>
             <div class="card">
-                <h3 style="font-size: 14px; color: #5B6675;">Total User Aktif</h3>
+                <h3 style="font-size: 12px; color: #5B6675;">Total User</h3>
                 <div style="font-size: 32px; font-weight: bold; color: #10263E;" id="totalUsers">0</div>
             </div>
         </div>
 
-        <!-- TABS -->
         <div class="card" style="padding:0; overflow:hidden;">
             <div class="tab-nav">
                 <button class="active" onclick="switchTab('transactions')">💰 Transaksi</button>
@@ -257,11 +88,10 @@
                 <button onclick="switchTab('settings')">⚙️ Pengaturan</button>
             </div>
 
-            <!-- TAB: TRANSACTIONS -->
-            <div id="tab-transactions" class="tab-content active" style="padding:20px;">
+            <div id="tab-transactions" class="tab-content active">
                 <div class="flex-between">
                     <h3>Daftar Transaksi</h3>
-                    <button class="btn btn-blue" onclick="refreshTransactions()">🔄 Refresh</button>
+                    <button class="btn-green" onclick="refreshTransactions()">🔄 Refresh</button>
                 </div>
                 
                 <div class="table-wrapper">
@@ -272,37 +102,30 @@
                                 <th>Paket</th>
                                 <th>Jumlah</th>
                                 <th>Status</th>
-                                <th>Waktu</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody id="tblTransactions">
-                            <tr><td colspan="6" class="center">Memuat data...</td></tr>
+                            <tr><td colspan="5" class="center">Memuat data...</td></tr>
                         </tbody>
                     </table>
                 </div>
 
-                <!-- Hasil Verifikasi (Modal) -->
-                <div id="hasilVerifikasi" class="hasil-verifikasi hide">
-                    <h3 style="margin-bottom:15px;">🎉 User ID Berhasil Dibuat!</h3>
-                    <div style="margin-bottom:15px;">
-                        <div style="font-size:12px; color:#5B6675; margin-bottom:5px;">Kode Unik</div>
-                        <div class="kode-unik" id="hasilKode">-</div>
-                    </div>
-                    <div style="margin-bottom:15px;">
-                        <div style="font-size:12px; color:#5B6675; margin-bottom:5px;">User ID Management</div>
-                        <div class="user-id" id="hasilUserId">-</div>
-                    </div>
-                    <button class="btn btn-green" onclick="copyUserID()" style="margin-right:10px;">📋 Copy User ID</button>
-                    <button class="btn btn-orange" onclick="closeVerificationModal()">Tutup</button>
+                <div id="hasilVerifikasi" class="hasil-verifikasi hide" style="margin-top:15px;">
+                    <h3 style="margin-bottom:10px;">🎉 User ID Berhasil Dibuat!</h3>
+                    <div style="font-size:12px; color:#5B6675;">Kode Unik</div>
+                    <div style="font-size:20px; font-weight:bold; color:#E8801C;" id="hasilKode">-</div>
+                    <div style="font-size:12px; color:#5B6675; margin-top:10px;">User ID Management</div>
+                    <div style="font-size:20px; font-weight:bold; color:#10263E;" id="hasilUserId">-</div>
+                    <button onclick="copyUserID()" style="margin-top:15px; background:#10263E;">📋 Copy User ID</button>
+                    <button onclick="closeVerificationModal()" class="btn-green" style="margin-top:15px;">Tutup</button>
                 </div>
             </div>
 
-            <!-- TAB: USERS -->
-            <div id="tab-users" class="tab-content" style="padding:20px;">
+            <div id="tab-users" class="tab-content">
                 <div class="flex-between">
                     <h3>Daftar User Terdaftar</h3>
-                    <button class="btn btn-blue" onclick="refreshUsers()">🔄 Refresh</button>
+                    <button onclick="refreshUsers()" class="btn-green">🔄 Refresh</button>
                 </div>
                 
                 <div class="table-wrapper">
@@ -314,38 +137,23 @@
                                 <th>Paket</th>
                                 <th>Role</th>
                                 <th>Status</th>
-                                <th>Tanggal Daftar</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
                         <tbody id="tblUsers">
-                            <tr><td colspan="7" class="center">Memuat data...</td></tr>
+                            <tr><td colspan="6" class="center">Memuat data...</td></tr>
                         </tbody>
                     </table>
                 </div>
             </div>
 
-            <!-- TAB: SETTINGS -->
-            <div id="tab-settings" class="tab-content" style="padding:20px;">
+            <div id="tab-settings" class="tab-content">
                 <h3>Pengaturan Admin</h3>
-                
                 <div class="form-group">
                     <label>Password Admin Baru</label>
                     <input type="password" id="newAdminPass" placeholder="Password baru (min. 6 karakter)">
                 </div>
-                
-                <button class="btn btn-orange" onclick="changeAdminPassword()">Update Password</button>
-                
-                <hr style="margin:20px 0; border:none; border-top:1px solid #ddd;">
-                
-                <h3 style="margin-bottom:10px;">Informasi</h3>
-                <div class="alert alert-info">
-                    <b>Alur Sistem:</b><br>
-                    1. User memilih paket & membayar di halaman pembayaran<br>
-                    2. Admin memverifikasi pembayaran<br>
-                    3. Admin membuat User ID Management<br>
-                    4. User login menggunakan User ID tersebut
-                </div>
+                <button onclick="changeAdminPassword()" style="background:#E8801C;">Update Password</button>
             </div>
         </div>
     </div>
@@ -358,7 +166,6 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
-    // ===== KONFIGURASI =====
     const firebaseConfig = {
         apiKey: "AIzaSyAD3HHCS6nEf-K2RV2F-niPNmyoxlV49PE",
         authDomain: "simpeldb.firebaseapp.com",
@@ -372,16 +179,13 @@
     const SUPABASE_URL = 'https://ufxmcjlyfounpqasqftw.supabase.co';
     const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVmeG1jamx5Zm91bnBxYXNxZnR3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU3Mjc3OTcsImV4cCI6MjEwMTMwMzc5N30.jTW0UlLOAkd6umY_wWRQscl32xT6DMmGhAwFcm81_zI';
 
-    // ===== INISIALISASI =====
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
     const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
 
-    // ===== STATE =====
     let transactionsData = {};
     let usersData = [];
 
-    // ===== AUTH =====
     function loginAdmin() {
         const pass = document.getElementById('adminPass').value;
         
@@ -390,12 +194,10 @@
             document.getElementById('loginArea').classList.add('hide');
             document.getElementById('dashboardArea').classList.remove('hide');
             
-            // Load semua data
             loadTransactions();
             loadUsers();
             updateStats();
             
-            // Set up listener untuk realtime update
             db.ref('transactions').on('value', (snap) => {
                 transactionsData = snap.val() || {};
                 renderTransactions();
@@ -403,10 +205,8 @@
             });
             
         } else {
-            document.getElementById('loginError').classList.remove('hide');
-            setTimeout(() => {
-                document.getElementById('loginError').classList.add('hide');
-            }, 3000);
+            document.getElementById('loginError').style.display = 'block';
+            setTimeout(() => document.getElementById('loginError').style.display = 'none', 3000);
         }
     }
 
@@ -414,25 +214,49 @@
         sessionStorage.removeItem('adminLoggedIn');
         document.getElementById('loginArea').classList.remove('hide');
         document.getElementById('dashboardArea').classList.add('hide');
-        
-        // Remove listener
         db.ref('transactions').off();
     }
 
-    // ===== TAB MANAGEMENT =====
     function switchTab(tabName) {
-        // Update tab nav
         document.querySelectorAll('.tab-nav button').forEach(btn => btn.classList.remove('active'));
         document.querySelectorAll('.tab-content').forEach(content => content.classList.remove('active'));
         
-        // Active tab
         document.getElementById('tab-' + tabName).classList.add('active');
         const activeBtn = document.querySelector(`.tab-nav button[onclick="switchTab('${tabName}')"]`);
         if(activeBtn) activeBtn.classList.add('active');
         
-        // Refresh data sesuai tab
         if(tabName === 'transactions') renderTransactions();
         if(tabName === 'users') renderUsers();
+    }
+
+    // ===== GENERATE USER ID UNIK (Tidak Berurutan) =====
+    function generateUniqueUserID() {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        let result = 'DRN-';
+        const length = 6;
+        
+        for (let i = 0; i < length; i++) {
+            result += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        
+        // Jika sudah ada di database, buat ulang
+        if (usersData.some(u => u.id === result)) {
+            return generateUniqueUserID();
+        }
+        
+        return result;
+    }
+
+    function generateUniqueKode() {
+        const chars = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789';
+        let result = 'SIM-';
+        const length = 6;
+        
+        for (let i = 0; i < length; i++) {
+            result += chars.charAt(Math.floor(Math.random() * chars.length));
+        }
+        
+        return result;
     }
 
     // ===== TRANSACTIONS =====
@@ -448,34 +272,30 @@
         tbody.innerHTML = '';
         
         if (Object.keys(transactionsData).length === 0) {
-            tbody.innerHTML = '<tr><td colspan="6" class="center">Belum ada transaksi.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="5" class="center">Belum ada transaksi.</td></tr>';
             return;
         }
         
-        // Sort by created_at (descending)
         const sortedTransactions = Object.entries(transactionsData).sort((a, b) => {
             return (b[1].created_at || 0) - (a[1].created_at || 0);
         });
         
         sortedTransactions.forEach(([key, val]) => {
             const status = val.status === 'PAID' 
-                ? '<span class="tag tag-ok">PAID</span>' 
-                : '<span class="tag tag-warn">WAITING</span>';
+                ? '<span class="tag ok">PAID</span>' 
+                : '<span class="tag warn">WAITING</span>';
             
             const amount = (val.amount || 0).toLocaleString('id-ID');
-            const createdAt = new Date(val.created_at || Date.now()).toLocaleString('id-ID', {
-                day: 'numeric', month: 'short', year: 'numeric', hour: '2-digit', minute: '2-digit'
-            });
             
             let actionHtml = '';
             
             if (val.status === 'WAITING') {
-                actionHtml = `<button class="btn btn-green" onclick="verifikasiPembayaran('${key}')">✓ Verifikasi</button>`;
+                actionHtml = `<button class="btn-green" onclick="verifikasiPembayaran('${key}')">✓ Verifikasi</button>`;
             } else if (val.status === 'PAID') {
                 if (val.user_id) {
-                    actionHtml = `<span class="tag tag-ok">User ID: ${val.user_id}</span>`;
+                    actionHtml = `<span class="tag ok">User ID: ${val.user_id}</span>`;
                 } else {
-                    actionHtml = `<button class="btn btn-orange" onclick="buatUserID('${val.order_id}', '${val.paket}', '${key}')">👤 Buat User ID</button>`;
+                    actionHtml = `<button onclick="buatUserID('${val.order_id}', '${val.paket}', '${key}')">👤 Buat User ID</button>`;
                 }
             }
             
@@ -485,7 +305,6 @@
                 <td>${val.paket}</td>
                 <td class="amount">Rp ${amount}</td>
                 <td>${status}</td>
-                <td>${createdAt}</td>
                 <td>${actionHtml}</td>
             `;
             tbody.appendChild(tr);
@@ -500,21 +319,19 @@
     }
 
     async function buatUserID(orderId, paket, key) {
-        // Generate User ID
-        const userId = 'DRN-' + Math.random().toString(36).substring(2, 8).toUpperCase();
-        const kodeUnik = 'SIM-' + Math.random().toString(36).substring(2, 8).toUpperCase();
+        // ===== GENERATE USER ID UNIK (Tidak Berurutan) =====
+        const userId = generateUniqueUserID();
+        const kodeUnik = generateUniqueKode();
         
         try {
             // ==== 1. SIMPAN KE FIREBASE ====
             await db.ref('transactions/' + key + '/user_id').set(userId);
             await db.ref('transactions/' + key + '/verified').set(true);
             
-            // ==== 2. SIMPAN KE SUPABASE ====
-            // Cek apakah user sudah ada
+            // ==== 2. SIMPAN KE SUPABASE (Tabel users) ====
             const { data: existingUser } = await sb.from('users').select('*').eq('id', userId).single();
             
             if (!existingUser) {
-                // Insert User Baru
                 const { data, error } = await sb.from('users').insert({
                     id: userId,
                     kode_unik: kodeUnik,
@@ -533,11 +350,9 @@
             document.getElementById('hasilUserId').textContent = userId;
             document.getElementById('hasilVerifikasi').classList.remove('hide');
             
-            // Simpan ke session storage untuk copy
             sessionStorage.setItem('lastGeneratedUserId', userId);
             sessionStorage.setItem('lastGeneratedKode', kodeUnik);
             
-            // Refresh data
             await loadUsers();
             renderTransactions();
             
@@ -548,7 +363,6 @@
 
     function closeVerificationModal() {
         document.getElementById('hasilVerifikasi').classList.add('hide');
-        // Refresh data
         refreshTransactions();
         refreshUsers();
     }
@@ -583,25 +397,23 @@
         tbody.innerHTML = '';
         
         if (usersData.length === 0) {
-            tbody.innerHTML = '<tr><td colspan="7" class="center">Belum ada user terdaftar.</td></tr>';
+            tbody.innerHTML = '<tr><td colspan="6" class="center">Belum ada user terdaftar.</td></tr>';
             return;
         }
         
         usersData.forEach(user => {
             const statusTag = user.status === 'Aktif' 
-                ? '<span class="tag tag-ok">Aktif</span>' 
-                : '<span class="tag tag-warn">Nonaktif</span>';
+                ? '<span class="tag ok">Aktif</span>' 
+                : '<span class="tag warn">Nonaktif</span>';
             
             const createdAt = user.created_at ? new Date(user.created_at).toLocaleDateString('id-ID') : '-';
             
             let actionHtml = '';
             if (user.status === 'Aktif') {
-                actionHtml = `<button class="btn btn-red" onclick="toggleUserStatus('${user.id}', 'nonaktif')">Nonaktifkan</button>`;
+                actionHtml = `<button class="btn-red" onclick="toggleUserStatus('${user.id}', 'nonaktif')">Nonaktifkan</button>`;
             } else {
-                actionHtml = `<button class="btn btn-green" onclick="toggleUserStatus('${user.id}', 'aktif')">Aktifkan</button>`;
+                actionHtml = `<button class="btn-green" onclick="toggleUserStatus('${user.id}', 'aktif')">Aktifkan</button>`;
             }
-            
-            actionHtml += ` <button class="btn btn-blue" onclick="lihatDetailUser('${user.id}')" style="margin-top:5px;">Detail</button>`;
             
             const tr = document.createElement('tr');
             tr.innerHTML = `
@@ -610,7 +422,6 @@
                 <td>${user.paket}</td>
                 <td>${user.role}</td>
                 <td>${statusTag}</td>
-                <td>${createdAt}</td>
                 <td>${actionHtml}</td>
             `;
             tbody.appendChild(tr);
@@ -637,19 +448,17 @@
         }
     }
 
-    function lihatDetailUser(userId) {
-        const user = usersData.find(u => u.id === userId);
-        if (user) {
-            alert(
-                `📋 DETAIL USER\n\n` +
-                `User ID: ${user.id}\n` +
-                `Kode Unik: ${user.kode_unik || '-'}\n` +
-                `Paket: ${user.paket}\n` +
-                `Role: ${user.role}\n` +
-                `Status: ${user.status}\n` +
-                `Terdaftar: ${user.created_at ? new Date(user.created_at).toLocaleString('id-ID') : '-'}`
-            );
-        }
+    // ===== STATS =====
+    function updateStats() {
+        const allTrans = Object.values(transactionsData);
+        const waitingCount = allTrans.filter(t => t.status === 'WAITING').length;
+        const paidCount = allTrans.filter(t => t.status === 'PAID').length;
+        
+        document.getElementById('totalTransaksi').textContent = allTrans.length;
+        document.getElementById('totalWaiting').textContent = waitingCount;
+        document.getElementById('totalPaid').textContent = paidCount;
+        
+        document.getElementById('totalUsers').textContent = usersData.filter(u => u.status === 'Aktif').length;
     }
 
     // ===== SETTINGS =====
@@ -661,28 +470,12 @@
             return;
         }
         
-        // Simpan password baru ke Firebase (untuk keamanan sebaiknya di backend)
         db.ref('admin/password').set(newPass)
             .then(() => {
                 alert('✅ Password admin berhasil diubah!');
                 document.getElementById('newAdminPass').value = '';
             })
             .catch(err => alert('❌ Gagal mengubah password: ' + err.message));
-    }
-
-    // ===== STATS =====
-    function updateStats() {
-        // Transaksi stats
-        const allTrans = Object.values(transactionsData);
-        const waitingCount = allTrans.filter(t => t.status === 'WAITING').length;
-        const paidCount = allTrans.filter(t => t.status === 'PAID').length;
-        
-        document.getElementById('totalTransaksi').textContent = allTrans.length;
-        document.getElementById('totalWaiting').textContent = waitingCount;
-        document.getElementById('totalPaid').textContent = paidCount;
-        
-        // Users stats
-        document.getElementById('totalUsers').textContent = usersData.filter(u => u.status === 'Aktif').length;
     }
 
     // ===== REFRESH =====
@@ -702,11 +495,9 @@
             document.getElementById('loginArea').classList.add('hide');
             document.getElementById('dashboardArea').classList.remove('hide');
             
-            // Load data
             loadTransactions();
             loadUsers();
             
-            // Set up listener
             db.ref('transactions').on('value', (snap) => {
                 transactionsData = snap.val() || {};
                 renderTransactions();
