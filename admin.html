@@ -29,6 +29,8 @@
         .flex-between { display: flex; justify-content: space-between; align-items: center; margin-bottom: 15px; }
         .btn-red { background: #B23A2E; }
         .btn-green { background: #2F7D5A; }
+        .btn-lock { background: #6A1B9A; }
+        .btn-unlock { background: #2F7D5A; }
         
         /* Tabs */
         .tab-nav { display: flex; background: #10263E; border-radius: 8px 8px 0 0; overflow: hidden; }
@@ -336,6 +338,26 @@
         });
     }
 
+    // ===== KUNCI / BUKA PRINT (MANUAL OLEH ADMIN) =====
+    async function toggleAddonPrint(userId, currentStatus) {
+        const newStatus = !currentStatus;
+        const action = newStatus ? 'BUKA' : 'KUNCI';
+        
+        if (!confirm(`Yakin ingin ${action} fitur Print untuk user ${userId}?`)) return;
+        
+        try {
+            await sb.from('users')
+                .update({ addon_print: newStatus })
+                .eq('id', userId);
+            
+            alert(`✅ Fitur Print ${action === 'BUKA' ? 'DIBUKA' : 'DIKUNCI'} untuk user ${userId}!`);
+            await loadUsers();
+            
+        } catch (err) {
+            alert('❌ Gagal update status: ' + err.message);
+        }
+    }
+
     // ===== BUAT USER ID DENGAN ADD-ON =====
     async function buatUserID(orderId, paket, key) {
         // ===== 1. TANYAKAN ADD-ON PRINT =====
@@ -432,14 +454,23 @@
                 : '<span class="tag warn">Nonaktif</span>';
             
             const addonTag = user.addon_print 
-                ? '<span class="tag ok">✅ Ya</span>' 
-                : '<span class="tag warn">❌ Tidak</span>';
+                ? '<span class="tag ok">✅ Terbuka</span>' 
+                : '<span class="tag warn">🔒 Terkunci</span>';
             
             let actionHtml = '';
-            if (user.status === 'Aktif') {
-                actionHtml = `<button class="btn-red" onclick="toggleUserStatus('${user.id}', 'nonaktif')">Nonaktifkan</button>`;
+            
+            // Tombol Kunci/Buka Print
+            if (user.addon_print) {
+                actionHtml = `<button class="btn-lock" onclick="toggleAddonPrint('${user.id}', true)">🔒 Kunci</button> `;
             } else {
-                actionHtml = `<button class="btn-green" onclick="toggleUserStatus('${user.id}', 'aktif')">Aktifkan</button>`;
+                actionHtml = `<button class="btn-unlock" onclick="toggleAddonPrint('${user.id}', false)">🔓 Buka</button> `;
+            }
+            
+            // Tombol Status User
+            if (user.status === 'Aktif') {
+                actionHtml += `<button class="btn-red" onclick="toggleUserStatus('${user.id}', 'nonaktif')">Nonaktifkan</button>`;
+            } else {
+                actionHtml += `<button class="btn-green" onclick="toggleUserStatus('${user.id}', 'aktif')">Aktifkan</button>`;
             }
             
             const tr = document.createElement('tr');
@@ -539,4 +570,4 @@
     };
 </script>
 </body>
-</html>
+    </html>
