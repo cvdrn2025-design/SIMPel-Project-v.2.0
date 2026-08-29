@@ -170,6 +170,7 @@
             window.open(`https://wa.me/${nomorAdmin}?text=${encodeURIComponent(pesan)}`, '_blank');
         }
 
+        // ===== CEK STATUS PEMBAYARAN & SINKRON KE SUPABASE =====
         function cekStatus() {
             const orderId = sessionStorage.getItem('orderId');
             if (!orderId) return;
@@ -183,11 +184,39 @@
                     document.getElementById('linkAplikasiBox').style.display = 'block';
                     document.getElementById('btnKirimWA').style.display = 'none';
                     
-                    db.ref('transactions/' + orderId).once('value', (snap) => {
+                    db.ref('transactions/' + orderId).once('value', async (snap) => {
                         const transData = snap.val();
                         if (transData && transData.user_id) {
                             sessionStorage.setItem('drn_user_id', transData.user_id);
                             sessionStorage.setItem('drn_paket', transData.paket);
+                            
+                            // ===== SINKRON KE SUPABASE =====
+                            const { data: existingUser } = await sb.from('users').select('*').eq('id', transData.user_id).single();
+                            
+                            if (!existingUser) {
+                                // Simpan user baru ke Supabase
+                                const { data, error } = await sb.from('users').insert({
+                                    id: transData.user_id,
+                                    paket: transData.paket,
+                                    role: 'management',
+                                    status: 'Aktif',
+                                    addon_print: transData.paket === 'basic' ? false : true,
+                                    created_at: new Date().toISOString()
+                                }).select().single();
+                                
+                                if (error) {
+                                    console.error('Gagal insert ke Supabase:', error);
+                                } else {
+                                    console.log('User berhasil disinkronkan ke Supabase:', data);
+                                }
+                            } else {
+                                // Update paket jika sudah ada
+                                await sb.from('users').update({
+                                    paket: transData.paket,
+                                    status: 'Aktif'
+                                }).eq('id', transData.user_id);
+                                console.log('User sudah ada, paket diperbarui.');
+                            }
                             
                             document.getElementById('hasilUserId').textContent = 'User ID Anda (Management): ' + transData.user_id;
                             document.getElementById('hasilUserId').style.display = 'block';
