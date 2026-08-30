@@ -873,15 +873,14 @@ function logout(){
     location.reload();
 }
 
-// ===== LOGOUT DARI MODAL =====
 function logoutFromModal() {
     if (confirm('Yakin ingin keluar dari aplikasi SIMPeL?')) {
         // Hapus semua session dan localStorage
         sessionStorage.clear();
         localStorage.clear();
         
-        // Redirect ke halaman pembayaran
-        window.location.href = './pembayaran.html';
+        // ===== REDIRECT KE BLANK PAGE =====
+        window.location.replace('about:blank');
     }
 }
 
