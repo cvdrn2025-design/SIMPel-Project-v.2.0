@@ -8,14 +8,24 @@
     <style>
         body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 0; background: transparent; padding-bottom: 80px; }
         .hero { background-image: url('https://cvdrn2025-design.github.io/SIMPel-Project-v.2.0/pembayaran.png'); background-size: cover; background-position: top center; height: 320px; width: 100%; position: relative; z-index: 0; }
-        .container { max-width: 360px; margin: 10px auto 0; background: transparent; border-radius: 14px 14px 0 0; padding: 15px; position: relative; z-index: 1; min-height: 350px; }
+        .container { max-width: 360px; margin: -30px auto 0; background: transparent; border-radius: 14px 14px 0 0; padding: 15px; position: relative; z-index: 1; min-height: 350px; }
         .paket { border: 1.5px solid #E9EBE6; border-radius: 10px; padding: 12px; margin-bottom: 12px; cursor: pointer; transition: all 0.3s; background: #fff; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
         .paket:hover { border-color: #E8801C; }
         .paket.selected { border-color: #E8801C; background: #FFF3DA; }
         .paket h3 { margin: 0 0 4px 0; color: #10263E; font-size: 15px; }
         .paket .harga { font-size: 16px; font-weight: 700; color: #E8801C; }
         .paket .fitur { font-size: 11px; color: #5B6675; margin-top: 6px; }
+
+        /* TOMBOL LANJUT KE PEMBAYARAN - MELAYANG FIXED DI BAWAH */
         #btnLanjut { position: fixed; bottom: 20px; left: 20px; right: 20px; max-width: 360px; margin: 0 auto; padding: 14px; background: #E8801C; color: white; border: none; border-radius: 12px; font-size: 16px; font-weight: 700; cursor: pointer; display: none; box-shadow: 0 4px 10px rgba(232, 128, 28, 0.5); z-index: 100; }
+
+        /* FORM LOGIN DI BAWAH KARTU PAKET */
+        .login-section { max-width: 360px; margin: 20px auto; background: #fff; padding: 20px; border-radius: 12px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); position: relative; z-index: 1; }
+        .login-section h2 { color: #10263E; font-size: 18px; margin-bottom: 15px; text-align: center; }
+        .login-section label { display: block; font-size: 12px; font-weight: bold; color: #5B6675; margin-bottom: 5px; }
+        .login-section input { width: 100%; padding: 10px; border: 1px solid #C9D3DC; border-radius: 6px; font-size: 14px; margin-bottom: 15px; }
+        .login-section button { width: 100%; padding: 12px; background: #10263E; color: white; border: none; border-radius: 8px; font-size: 14px; font-weight: bold; cursor: pointer; }
+
         #paymentSection { display: none; background: #fff; padding: 20px; max-width: 360px; margin: 20px auto 0; border-radius: 8px; text-align: center; position: relative; z-index: 1; }
         img#qris { width: 100%; max-width: 300px; margin: 0 auto; display: block; border: 1px solid #ccc; border-radius: 8px; margin-bottom: 15px; }
         .status { font-size: 14px; margin-top: 15px; }
@@ -28,34 +38,52 @@
 </head>
 <body>
 
+    <!-- HERO IMAGE -->
     <div class="hero" id="heroSection"></div>
 
+    <!-- KARTU PAKET (PALING ATAS, MENIMPA HERO DENGAN MARGIN -30px) -->
     <div class="container" id="pilihPaketSection">
         <div class="paket" onclick="pilihPaket('basic')">
             <h3>Paket Basic</h3>
             <div class="harga">Rp 60.000 / bulan</div>
             <div class="fitur">✔️ 1 Proyek</div>
-            <div class="fitur">⚠️ View-Only</div>
+            <div class="fitur">⚠️ Print & Backup DIKUNCI (Bisa beli Add-On)</div>
         </div>
         
         <div class="paket" onclick="pilihPaket('premium')">
             <h3>Paket Premium</h3>
             <div class="harga">Rp 299.000 / bulan</div>
             <div class="fitur">✔️ 2 Proyek + Add-on</div>
-            <div class="fitur">✔️ Full Access</div>
+            <div class="fitur">✅ Full Access (Print & Backup Terbuka)</div>
         </div>
         
         <div class="paket" onclick="pilihPaket('pro_max')">
             <h3>Paket Pro Max</h3>
             <div class="harga">Rp 499.000 / bulan</div>
             <div class="fitur">✔️ 5 Proyek + Add-on</div>
-            <div class="fitur">✔️ Full Access</div>
+            <div class="fitur">✅ Full Access (Print & Backup Terbuka)</div>
             <div class="fitur">✔️ Modul SiCerMat</div>
         </div>
     </div>
 
+    <!-- FORM LOGIN (DI BAWAH KARTU PAKET) -->
+    <div class="login-section" id="loginSection">
+        <h2>Login dengan User ID</h2>
+        <form onsubmit="return loginUser(event)">
+            <label>User ID</label>
+            <input type="text" id="inputUserId" placeholder="Masukkan User ID" required>
+            
+            <label>Password</label>
+            <input type="password" id="inputPassword" placeholder="Masukkan Password" required>
+            
+            <button type="submit">Login</button>
+        </form>
+    </div>
+
+    <!-- TOMBOL LANJUT KE PEMBAYARAN (MELAYANG FIXED DI BAWAH) -->
     <button id="btnLanjut" onclick="lanjutKePembayaran()">Lanjut ke Pembayaran</button>
 
+    <!-- HALAMAN PEMBAYARAN QRIS -->
     <div id="paymentSection">
         <h2>Scan untuk Membayar</h2>
         <img id="qris" src="https://cvdrn2025-design.github.io/SIMPel-Project-v.2.0/qris.png" alt="QRIS Pembayaran" style="display:none;">
@@ -100,6 +128,49 @@
 
         let paketTerpilih = sessionStorage.getItem('paket') || null;
 
+        // ===== LOGIN LANGSUNG DARI HALAMAN PEMBAYARAN =====
+        async function loginUser(e) {
+            e.preventDefault();
+            
+            const userIdInput = document.getElementById('inputUserId').value.trim().toUpperCase();
+            const passwordInput = document.getElementById('inputPassword').value;
+            
+            // Validasi password
+            if (passwordInput !== 'admin01') {
+                alert('❌ Password Management salah!');
+                return false;
+            }
+            
+            // Cek User ID di Supabase
+            try {
+                const { data: user, error } = await sb.from('users').select('*').eq('id', userIdInput).single();
+                
+                if (error || !user) {
+                    alert('❌ User ID tidak ditemukan! Silakan lakukan pembayaran terlebih dahulu.');
+                    return false;
+                }
+                
+                if (user.status !== 'Aktif') {
+                    alert('❌ Akun Anda non-aktif. Hubungi Admin!');
+                    return false;
+                }
+                
+                // Simpan ke sessionStorage
+                sessionStorage.setItem('drn_user_id', userIdInput);
+                sessionStorage.setItem('drn_role', 'management');
+                sessionStorage.setItem('drn_paket', user.paket || 'basic');
+                sessionStorage.setItem('drn_addon_print', user.addon_print ? 'true' : 'false');
+                
+                alert('✅ Login Management berhasil! Paket: ' + (user.paket || 'basic') + (user.addon_print ? ' + Add-On Print' : ''));
+                window.location.href = './index.html';
+                
+            } catch (err) {
+                alert('❌ Gagal terhubung ke server: ' + err.message);
+            }
+            
+            return false;
+        }
+
         function pilihPaket(paket) {
             paketTerpilih = paket;
             sessionStorage.setItem('paket', paket);
@@ -115,6 +186,7 @@
                 alert('⚠️ Transaksi sudah dibuat. Menunggu verifikasi admin...');
                 document.getElementById('pilihPaketSection').style.display = 'none';
                 document.getElementById('heroSection').style.display = 'none';
+                document.getElementById('loginSection').style.display = 'none';
                 document.getElementById('paymentSection').style.display = 'block';
                 cekStatus();
                 return;
@@ -123,6 +195,7 @@
             sessionStorage.setItem('paket', paketTerpilih);
             document.getElementById('pilihPaketSection').style.display = 'none';
             document.getElementById('heroSection').style.display = 'none';
+            document.getElementById('loginSection').style.display = 'none';
             document.getElementById('paymentSection').style.display = 'block';
             document.getElementById('btnLanjut').style.display = 'none';
             
@@ -141,6 +214,7 @@
             sessionStorage.removeItem('orderId');
             document.getElementById('paymentSection').style.display = 'none';
             document.getElementById('pilihPaketSection').style.display = 'block';
+            document.getElementById('loginSection').style.display = 'block';
             document.getElementById('heroSection').style.display = 'block';
             document.getElementById('btnLanjut').style.display = 'none';
         }
@@ -183,11 +257,40 @@
                     document.getElementById('linkAplikasiBox').style.display = 'block';
                     document.getElementById('btnKirimWA').style.display = 'none';
                     
-                    db.ref('transactions/' + orderId).once('value', (snap) => {
+                    db.ref('transactions/' + orderId).once('value', async (snap) => {
                         const transData = snap.val();
                         if (transData && transData.user_id) {
                             sessionStorage.setItem('drn_user_id', transData.user_id);
                             sessionStorage.setItem('drn_paket', transData.paket);
+                            
+                            // ===== SINKRON KE SUPABASE =====
+                            const { data: existingUser } = await sb.from('users').select('*').eq('id', transData.user_id).single();
+                            
+                            if (!existingUser) {
+                                const { data, error } = await sb.from('users').insert({
+                                    id: transData.user_id,
+                                    paket: transData.paket,
+                                    role: 'management',
+                                    status: 'Aktif',
+                                    addon_print: transData.paket === 'basic' ? false : true,
+                                    created_at: new Date().toISOString()
+                                }).select().single();
+                                
+                                if (error) {
+                                    console.error('Gagal insert ke Supabase:', error);
+                                } else {
+                                    console.log('User berhasil disinkronkan ke Supabase:', data);
+                                }
+                            } else {
+                                await sb.from('users').update({
+                                    paket: transData.paket,
+                                    status: 'Aktif'
+                                }).eq('id', transData.user_id);
+                                console.log('User sudah ada, paket diperbarui.');
+                            }
+                            
+                            // ===== SIMPAN ADD-ON KE SESSION =====
+                            sessionStorage.setItem('drn_addon_print', transData.paket === 'basic' ? 'false' : 'true');
                             
                             document.getElementById('hasilUserId').textContent = 'User ID Anda (Management): ' + transData.user_id;
                             document.getElementById('hasilUserId').style.display = 'block';
@@ -211,6 +314,7 @@
                 paketTerpilih = savedPaket;
                 document.getElementById('pilihPaketSection').style.display = 'none';
                 document.getElementById('heroSection').style.display = 'none';
+                document.getElementById('loginSection').style.display = 'none';
                 document.getElementById('paymentSection').style.display = 'block';
                 
                 const namaPaket = paketTerpilih.charAt(0).toUpperCase() + paketTerpilih.slice(1);
@@ -220,9 +324,10 @@
                 cekStatus();
             } else {
                 document.getElementById('pilihPaketSection').style.display = 'block';
+                document.getElementById('loginSection').style.display = 'block';
                 document.getElementById('paymentSection').style.display = 'none';
             }
         };
     </script>
 </body>
-</html>
+            </html>
