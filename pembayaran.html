@@ -71,10 +71,10 @@
         <h2>Login dengan User ID</h2>
         <form onsubmit="return loginUser(event)">
             <label>User ID</label>
-            <input type="text" id="inputUserId" required>
+            <input type="text" id="inputUserId" placeholder="Masukkan User ID" required>
             
             <label>Password</label>
-            <input type="password" id="inputPassword" required>
+            <input type="password" id="inputPassword" placeholder="Masukkan Password" required>
             
             <button type="submit">Login</button>
         </form>
@@ -176,7 +176,7 @@
             sessionStorage.setItem('paket', paket);
             document.querySelectorAll('.paket').forEach(el => el.classList.remove('selected'));
             event.currentTarget.classList.add('selected');
-            document.getElementById('btnLanjut').style.display = 'block';
+            document.getElementById('btnLanjut').style.display = 'block'; // <-- MUNCULKAN TOMBOL
         }
 
         function lanjutKePembayaran() {
@@ -197,6 +197,7 @@
             document.getElementById('heroSection').style.display = 'none';
             document.getElementById('loginSection').style.display = 'none'; // <-- HIDDEN
             document.getElementById('paymentSection').style.display = 'block';
+            document.getElementById('btnLanjut').style.display = 'none'; // <-- SEMBUNYIKAN TOMBOL
             document.getElementById('btnLanjut').style.display = 'none';
             
             document.getElementById('qris').style.display = 'block';
