@@ -865,12 +865,27 @@ function login(e){
 }
 
 function logout(){
+    // Hapus session role & userId
     sessionStorage.removeItem(KEYS.role);
     sessionStorage.removeItem(KEYS.userId);
     sessionStorage.removeItem(KEYS.paket);
     sessionStorage.removeItem(KEYS.addonPrint);
     sessionStorage.removeItem(KEYS.project);
-    location.reload();
+    
+    // ===== TAMPILKAN MODAL LOGIN (TANPA RELOAD) =====
+    document.getElementById('loginModal').style.display = 'flex';
+    
+    // Sembunyikan dashboard content
+    document.querySelector('.header').style.display = 'none';
+    document.querySelector('.tabs').style.display = 'none';
+    document.querySelector('.container').style.display = 'none';
+    
+    // Reset form login
+    document.getElementById('loginPass').value = '';
+    document.getElementById('loginKode').value = '';
+    
+    // Tampilkan pesan
+    alert('Anda telah keluar. Silakan login kembali.');
 }
 
 function logoutFromModal() {
