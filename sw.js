@@ -1,4 +1,4 @@
-const CACHE_NAME = 'simpel-v9.0.0'; // Ganti versi agar cache lama terhapus
+const CACHE_NAME = 'simpel-v9.1.0'; // Ganti versi agar cache lama terhapus
 const urlsToCache = [
     './',
     './index.html',
@@ -9,7 +9,9 @@ const urlsToCache = [
     './icon-192.png',
     './icon-512.png',
     'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2',
-    'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js'
+    'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js',
+    'https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js',
+    'https://www.gstatic.com/firebasejs/9.22.0/firebase-database-compat.js'
 ];
 
 // ===== 1. INSTALL SERVICE WORKER =====
@@ -48,11 +50,15 @@ self.addEventListener('fetch', (event) => {
     // ===== JANGAN CACHE REQUEST KE SUPABASE / FIREBASE / API =====
     if (
         url.hostname.includes('supabase.co') ||
+        url.hostname.includes('supabase.in') ||
         url.hostname.includes('firebaseio.com') ||
         url.hostname.includes('firebase.google.com') ||
         url.hostname.includes('gstatic.com') ||
+        url.hostname.includes('googleapis.com') ||
+        url.hostname.includes('firebasestorage.googleapis.com') ||
         url.pathname.includes('/api/') ||
-        url.pathname.includes('/auth/')
+        url.pathname.includes('/auth/') ||
+        url.pathname.includes('/storage/')
     ) {
         return; // Network-only untuk data real-time
     }
@@ -83,22 +89,34 @@ self.addEventListener('fetch', (event) => {
     }
 
     // ===== STRATEGI: CACHE-FIRST UNTUK ASET STATIS =====
-    event.respondWith(
-        caches.match(request).then((cachedResponse) => {
-            if (cachedResponse) {
-                return cachedResponse;
-            }
-            return fetch(request).then((response) => {
-                if (response.status === 200 && url.origin === self.location.origin) {
-                    const responseToCache = response.clone();
-                    caches.open(CACHE_NAME).then((cache) => {
-                        cache.put(request, responseToCache);
-                    });
+    if (
+        url.origin === self.location.origin || 
+        url.hostname.includes('gstatic.com') ||
+        url.hostname.includes('jsdelivr.net') ||
+        url.hostname.includes('cdnjs.cloudflare.com')
+    ) {
+        event.respondWith(
+            caches.match(request).then((cachedResponse) => {
+                if (cachedResponse) {
+                    return cachedResponse;
                 }
-                return response;
-            });
-        })
-    );
+                return fetch(request).then((response) => {
+                    if (response.status === 200) {
+                        const responseToCache = response.clone();
+                        caches.open(CACHE_NAME).then((cache) => {
+                            cache.put(request, responseToCache);
+                        });
+                    }
+                    return response;
+                });
+            })
+        );
+        return;
+    }
+
+    // ===== STRATEGI: NETWORK-ONLY UNTUK SEMUA REQUEST LAINNYA =====
+    // (Khususnya untuk gambar dari Supabase Storage)
+    return;
 });
 
 // ===== 4. PUSH NOTIFICATION (Opsional) =====
@@ -137,3 +155,30 @@ self.addEventListener('notificationclick', (event) => {
         })
     );
 });
+
+// ===== 6. MESSAGE EVENT (Untuk Update dari Client) =====
+self.addEventListener('message', (event) => {
+    if (event.data === 'SKIP_WAITING') {
+        self.skipWaiting();
+    }
+});
+
+// ===== 7. BACKGROUND SYNC (Opsional untuk offline) =====
+self.addEventListener('sync', (event) => {
+    if (event.tag === 'sync-data') {
+        event.waitUntil(syncData());
+    }
+});
+
+// Fungsi sinkronisasi data saat offline
+async function syncData() {
+    try {
+        // Ambil data yang perlu disinkronkan dari IndexedDB (jika ada)
+        // Kirim ke server saat online kembali
+        console.log('Background Sync: Mencoba sinkronisasi data...');
+        return true;
+    } catch (error) {
+        console.error('Background Sync gagal:', error);
+        return false;
+    }
+}
