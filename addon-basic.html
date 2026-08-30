@@ -6,13 +6,36 @@
     <link rel="manifest" href="https://cvdrn2025-design.github.io/SIMPel-Project-v.2.0/manifest.json">
     <title>Beli Add-On Print - SIMPeL</title>
     <style>
-        body { font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; margin: 0; padding: 20px; background: #E9EBE6; }
-        .container { max-width: 400px; margin: auto; background: #fff; padding: 25px; border-radius: 12px; box-shadow: 0 4px 12px rgba(0,0,0,0.1); }
+        body { 
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; 
+            margin: 0; 
+            padding: 20px; 
+            background: #E9EBE6; 
+        }
+        .container { 
+            max-width: 400px; 
+            margin: auto; 
+            background: #fff; 
+            padding: 25px; 
+            border-radius: 12px; 
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1); 
+        }
         h1 { color: #10263E; font-size: 22px; margin-bottom: 5px; }
         .harga { font-size: 32px; font-weight: bold; color: #E8801C; margin: 15px 0; }
         .fitur { background: #F6F7F5; padding: 15px; border-radius: 8px; margin-bottom: 20px; }
         .fitur li { margin: 8px 0; font-size: 14px; color: #333; }
-        button { width: 100%; padding: 15px; background: #E8801C; border: none; color: white; font-size: 16px; font-weight: bold; border-radius: 8px; cursor: pointer; margin-top: 15px; }
+        button { 
+            width: 100%; 
+            padding: 15px; 
+            background: #E8801C; 
+            border: none; 
+            color: white; 
+            font-size: 16px; 
+            font-weight: bold; 
+            border-radius: 8px; 
+            cursor: pointer; 
+            margin-top: 15px; 
+        }
         button:hover { background: #C56A12; }
         .status { text-align: center; margin-top: 15px; font-size: 14px; }
         .paid { color: #2F7D5A; font-weight: bold; }
@@ -20,7 +43,47 @@
         a { display: block; text-align: center; margin-top: 15px; color: #10263E; font-weight: bold; text-decoration: none; }
         
         /* Modal untuk user yang sudah punya add-on */
-        .alert-modal { background: #E4F3EA; color: #2F7D5A; padding: 15px; border-radius: 8px; margin-bottom: 20px; text-align: center; font-weight: bold; }
+        .alert-modal { 
+            background: #E4F3EA; 
+            color: #2F7D5A; 
+            padding: 15px; 
+            border-radius: 8px; 
+            margin-bottom: 20px; 
+            text-align: center; 
+            font-weight: bold; 
+        }
+        
+        /* Logout button */
+        .btn-logout {
+            background: #B23A2E;
+            margin-top: 10px;
+        }
+        .btn-logout:hover {
+            background: #9A2E24;
+        }
+        
+        /* Order ID display */
+        .order-id-box {
+            background: #FFF3DA;
+            padding: 15px;
+            border-radius: 8px;
+            margin: 15px 0;
+            text-align: center;
+            border: 2px dashed #E8801C;
+        }
+        
+        .order-id-box .label {
+            font-size: 12px;
+            color: #5B6675;
+            margin-bottom: 5px;
+        }
+        
+        .order-id-box .value {
+            font-size: 18px;
+            font-weight: bold;
+            color: #10263E;
+            font-family: monospace;
+        }
     </style>
 </head>
 <body>
@@ -37,27 +100,34 @@
             <li>✅ Cetak RAB/BoQ</li>
             <li>✅ Cetak Kurva S</li>
             <li>✅ Cetak Rekap Upah</li>
+            <li>✅ Cetak Foto Progres</li>
             <li>✅ Export Backup Excel</li>
         </ul>
     </div>
     
+    <!-- AREA PEMBAYARAN -->
     <div id="paymentArea">
         <button onclick="mulaiPembayaran()">💳 Bayar Sekarang</button>
-        <div class="status waiting" id="statusText">Menunggu pembayaran...</div>
+        <div class="status waiting" id="statusText" style="display:none;"></div>
     </div>
     
+    <!-- AREA SUKSES -->
     <div id="successArea" style="display:none;">
-        <div class="status paid">✅ Pembayaran Diterima!</div>
+        <div class="alert-modal">✅ Pembayaran Diterima!</div>
         <p style="text-align:center;">Add-On Print Anda sudah aktif. Silakan kembali ke aplikasi.</p>
-        <a href="./index.html">🔗 Kembali ke Aplikasi SIMPeL</a>
+        <a href="./index.html" style="display:block; padding:14px; background:#10263E; color:white; border-radius:12px; text-align:center; margin-top:15px;">🔗 Kembali ke Aplikasi SIMPeL</a>
     </div>
     
+    <!-- AREA SUDAH PUNYA -->
     <div id="alreadyHaveArea" style="display:none;">
         <div class="alert-modal">✅ Anda sudah memiliki Add-On Print!</div>
-        <a href="./index.html">🔗 Kembali ke Aplikasi SIMPeL</a>
+        <a href="./index.html" style="display:block; padding:14px; background:#10263E; color:white; border-radius:12px; text-align:center; margin-top:15px;">🔗 Kembali ke Aplikasi SIMPeL</a>
     </div>
     
-    <a href="./index.html">⬅️ Kembali</a>
+    <!-- TOMBOL KELUAR -->
+    <button class="btn-logout" onclick="logoutFromAddon()">🚪 Keluar Aplikasi</button>
+    
+    <a href="./index.html" style="margin-top:10px;">⬅️ Kembali ke Dashboard</a>
 </div>
 
 <!-- LIBRARY FIREBASE & SUPABASE -->
@@ -66,6 +136,7 @@
 <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
 <script>
+    // ===== KONFIGURASI =====
     const firebaseConfig = {
         apiKey: "AIzaSyAD3HHCS6nEf-K2RV2F-niPNmyoxlV49PE",
         authDomain: "simpeldb.firebaseapp.com",
@@ -78,38 +149,101 @@
     
     firebase.initializeApp(firebaseConfig);
     const db = firebase.database();
-    const sb = window.supabase.createClient('https://ufxmcjlyfounpqasqftw.supabase.co', 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVmeG1jamx5Zm91bnBxYXNxZnR3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU3Mjc3OTcsImV4cCI6MjEwMTMwMzc5N30.jTW0UlLOAkd6umY_wWRQscl32xT6DMmGhAwFcm81_zI');
+    const sb = window.supabase.createClient(
+        'https://ufxmcjlyfounpqasqftw.supabase.co', 
+        'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVmeG1jamx5Zm91bnBxYXNxZnR3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU3Mjc3OTcsImV4cCI6MjEwMTMwMzc5N30.jTW0UlLOAkd6umY_wWRQscl32xT6DMmGhAwFcm81_zI'
+    );
     
     // ===== AMBIL USER ID DARI SESSION =====
     const userId = sessionStorage.getItem('drn_user_id');
+    let orderId = null;
+    let statusListener = null;
+    
+    // ===== FUNGSI LOGOUT =====
+    function logoutFromAddon() {
+        if (confirm('Yakin ingin keluar dari aplikasi SIMPeL?')) {
+            // Hapus semua session dan localStorage
+            sessionStorage.clear();
+            localStorage.clear();
+            
+            // Redirect ke halaman pembayaran
+            window.location.href = './pembayaran.html';
+        }
+    }
     
     // ===== CEK STATUS ADD-ON OTOMATIS =====
     async function cekStatusAddOn() {
+        // Cek apakah user sudah login
         if(!userId){
             alert('Silakan login terlebih dahulu!');
             window.location.href = './index.html';
             return;
         }
         
-        const { data: user, error } = await sb.from('users').select('addon_print').eq('id', userId).single();
-        
-        if(error || !user){
-            // Jika user tidak ditemukan, kembali ke index
-            alert('User tidak ditemukan! Silakan login kembali.');
-            window.location.href = './index.html';
-            return;
-        }
-        
-        if(user.addon_print){
-            // Jika sudah punya add-on, tampilkan pesan
-            document.getElementById('paymentArea').style.display = 'none';
-            document.getElementById('alreadyHaveArea').style.display = 'block';
-        } else {
+        try {
+            // Ambil data user dari Supabase
+            const { data: user, error } = await sb.from('users')
+                .select('addon_print, paket, status')
+                .eq('id', userId)
+                .single();
+            
+            if(error || !user){
+                // Jika user tidak ditemukan
+                alert('User tidak ditemukan! Silakan login kembali.');
+                window.location.href = './index.html';
+                return;
+            }
+            
+            // Cek status user
+            if(user.status !== 'Aktif'){
+                alert('Akun Anda non-aktif. Hubungi Admin!');
+                window.location.href = './index.html';
+                return;
+            }
+            
+            // Cek apakah sudah punya add-on
+            if(user.addon_print){
+                // Jika sudah punya add-on, tampilkan pesan
+                document.getElementById('paymentArea').style.display = 'none';
+                document.getElementById('alreadyHaveArea').style.display = 'block';
+                
+                // Update session
+                sessionStorage.setItem('drn_addon_print', 'true');
+                return;
+            }
+            
             // Jika belum punya, tampilkan tombol bayar
             document.getElementById('paymentArea').style.display = 'block';
+            
+            // Cek apakah ada order yang belum selesai
+            const existingOrders = await db.ref('transactions')
+                .orderByChild('user_id')
+                .equalTo(userId)
+                .once('value');
+            
+            const orders = existingOrders.val() || {};
+            const pendingAddon = Object.values(orders).find(o => 
+                o.type === 'addon_print' && o.status === 'WAITING'
+            );
+            
+            if(pendingAddon){
+                // Ada order yang belum diverifikasi
+                orderId = pendingAddon.order_id;
+                document.getElementById('statusText').style.display = 'block';
+                document.getElementById('statusText').textContent = 'Order ID: ' + orderId + ' | Menunggu verifikasi admin...';
+                document.getElementById('statusText').className = 'status waiting';
+                
+                // Mulai monitoring status
+                monitorStatus(orderId);
+            }
+            
+        } catch (err) {
+            console.error('Gagal cek status:', err);
+            alert('Gagal terhubung ke server: ' + err.message);
         }
     }
     
+    // ===== MULAI PEMBAYARAN =====
     function mulaiPembayaran() {
         if(!userId){
             alert('Silakan login terlebih dahulu!');
@@ -117,8 +251,10 @@
             return;
         }
         
-        const orderId = 'ADDON-' + Date.now();
+        // Generate order ID unik
+        orderId = 'ADDON-' + Date.now();
         
+        // Simpan transaksi ke Firebase
         db.ref('transactions/' + orderId).set({
             order_id: orderId,
             user_id: userId,
@@ -127,37 +263,84 @@
             status: 'WAITING',
             created_at: Date.now()
         }).then(() => {
+            // Tampilkan status
+            document.getElementById('statusText').style.display = 'block';
             document.getElementById('statusText').textContent = 'Order ID: ' + orderId + ' | Menunggu verifikasi admin...';
-            cekStatus(orderId);
+            document.getElementById('statusText').className = 'status waiting';
+            
+            // Simpan order ID ke session
+            sessionStorage.setItem('addon_order_id', orderId);
+            
+            // Mulai monitoring status
+            monitorStatus(orderId);
+            
+            // Buka WhatsApp untuk kirim bukti
+            const nomorAdmin = '6282145111853';
+            const pesan = `Halo Admin SIMPeL!\n\nSaya ingin membeli Add-On Print.\nOrder ID: ${orderId}\nUser ID: ${userId}\n\nMohon segera diverifikasi. Terima kasih!`;
+            window.open(`https://wa.me/${nomorAdmin}?text=${encodeURIComponent(pesan)}`, '_blank');
+            
         }).catch(err => {
-            alert('Gagal: ' + err.message);
+            alert('Gagal membuat transaksi: ' + err.message);
         });
     }
     
-    function cekStatus(orderId) {
-        db.ref('transactions/' + orderId).on('value', (snap) => {
+    // ===== MONITOR STATUS PEMBAYARAN =====
+    function monitorStatus(orderId) {
+        // Hapus listener lama jika ada
+        if(statusListener){
+            db.ref('transactions/' + orderId).off('value', statusListener);
+        }
+        
+        // Buat listener baru
+        statusListener = db.ref('transactions/' + orderId).on('value', async (snap) => {
             const data = snap.val();
+            
             if(data && data.status === 'PAID'){
                 // ===== AKTIFKAN ADD-ON DI SUPABASE =====
-                sb.from('users').update({ addon_print: true }).eq('id', userId)
-                    .then(() => {
-                        // Simpan juga di Firebase agar real-time
-                        db.ref('users/' + userId + '/addon_print').set(true);
-                        
-                        // Update session
-                        sessionStorage.setItem('drn_addon_print', 'true');
-                        
-                        document.getElementById('paymentArea').style.display = 'none';
-                        document.getElementById('successArea').style.display = 'block';
-                        alert('✅ Add-On Print berhasil diaktifkan!');
-                    })
-                    .catch(err => alert('Gagal mengaktifkan di Supabase: ' + err.message));
+                try {
+                    const { error } = await sb.from('users')
+                        .update({ addon_print: true })
+                        .eq('id', userId);
+                    
+                    if(error) throw error;
+                    
+                    // Update session
+                    sessionStorage.setItem('drn_addon_print', 'true');
+                    sessionStorage.removeItem('addon_order_id');
+                    
+                    // Hentikan listener
+                    db.ref('transactions/' + orderId).off('value', statusListener);
+                    
+                    // Tampilkan pesan sukses
+                    document.getElementById('paymentArea').style.display = 'none';
+                    document.getElementById('successArea').style.display = 'block';
+                    
+                    alert('✅ Add-On Print berhasil diaktifkan!');
+                    
+                } catch (err) {
+                    alert('Gagal mengaktifkan di Supabase: ' + err.message);
+                }
             }
         });
     }
     
-    // Cek status add-on saat halaman dimuat
+    // ===== CEK STATUS SAAT HALAMAN DIMUAT =====
     window.onload = function() {
+        // Cek apakah ada order pending di session
+        const savedOrderId = sessionStorage.getItem('addon_order_id');
+        
+        if(savedOrderId){
+            // Ada order yang belum selesai
+            orderId = savedOrderId;
+            document.getElementById('statusText').style.display = 'block';
+            document.getElementById('statusText').textContent = 'Order ID: ' + orderId + ' | Menunggu verifikasi admin...';
+            document.getElementById('statusText').className = 'status waiting';
+            
+            // Mulai monitoring
+            monitorStatus(orderId);
+        }
+        
+        // Cek status add-on
         cekStatusAddOn();
     };
 </script>
