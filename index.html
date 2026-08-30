@@ -2839,7 +2839,7 @@ function showPhoto(url){
 }
 
 // ===== INIT =====
-async function initApp(){
+async function initApp() {
     const today = todayStr();
     document.getElementById('pTanggal').value = today;
     document.getElementById('mTanggal').value = today;
@@ -2847,41 +2847,60 @@ async function initApp(){
     document.getElementById('cfTanggal').value = today;
     document.getElementById('rpTanggal').value = today;
     
-    // Cek Role
+    // ===== CEK SESSION =====
     const role = currentRole();
+    const userId = sessionStorage.getItem(KEYS.userId);
     
-    // ===== JIKA ROLE BELUM ADA =====
-    if(!role) {
-        // Tampilkan modal login
-        document.getElementById('loginModal').style.display = 'flex';
+    // ===== JIKA BELUM LOGIN / TIDAK ADA SESSION =====
+    if (!role || !userId) {
+        // ===== CEK APAKAH USER BARU DATANG DARI PEMBAYARAN =====
+        const fromPayment = sessionStorage.getItem('drn_from_payment');
         
-        // Jika ada User ID dari halaman pembayaran, tampilkan pesan selamat datang
-        if(sessionStorage.getItem('drn_user_id')) {
+        if (fromPayment === 'true') {
+            // User baru selesai bayar, tampilkan modal login
+            sessionStorage.removeItem('drn_from_payment');
+            document.getElementById('loginModal').style.display = 'flex';
+            
+            // Sembunyikan dashboard content
+            document.querySelector('.header').style.display = 'none';
+            document.querySelector('.tabs').style.display = 'none';
+            document.querySelector('.container').style.display = 'none';
+            
+            // Tampilkan pesan selamat datang
             setTimeout(() => {
                 alert('✅ Pembayaran diterima! Silakan login menggunakan User ID Anda: ' + sessionStorage.getItem('drn_user_id'));
             }, 500);
+            
+            return;
         }
         
+        // ===== JIKA BUKAN DARI PEMBAYARAN, REDIRECT KE PEMBAYARAN =====
+        window.location.href = './pembayaran.html';
         return;
     }
     
-    // ===== JIKA ROLE SUDAH ADA =====
-    // Sembunyikan Login Modal
+    // ===== JIKA SUDAH LOGIN, TAMPILKAN DASHBOARD =====
+    // Sembunyikan modal login
     document.getElementById('loginModal').style.display = 'none';
     
+    // Tampilkan dashboard content
+    document.querySelector('.header').style.display = 'block';
+    document.querySelector('.tabs').style.display = 'flex';
+    document.querySelector('.container').style.display = 'block';
+    
     // Jika Staff, set proyek pilihan
-    if(role === 'staff' && sessionStorage.getItem('drn_project')){
-        currentProjectId = sessionStorage.getItem('drn_project');
+    if (role === 'staff' && sessionStorage.getItem(KEYS.project)) {
+        currentProjectId = sessionStorage.getItem(KEYS.project);
     }
     
     // ===== AMBIL DATA USER TERBARU DARI SUPABASE (UNTUK ADD-ON PRINT) =====
-    if(role === 'management' && sessionStorage.getItem('drn_user_id')){
+    if (role === 'management' && sessionStorage.getItem(KEYS.userId)) {
         try {
-            const { data: user, error } = await sb.from('users').select('*').eq('id', sessionStorage.getItem('drn_user_id')).single();
-            if(!error && user){
+            const { data: user, error } = await sb.from('users').select('*').eq('id', sessionStorage.getItem(KEYS.userId)).single();
+            if (!error && user) {
                 // Update paket & addon_print di session
-                sessionStorage.setItem('drn_paket', user.paket || 'basic');
-                sessionStorage.setItem('drn_addon_print', user.addon_print ? 'true' : 'false');
+                sessionStorage.setItem(KEYS.paket, user.paket || 'basic');
+                sessionStorage.setItem(KEYS.addonPrint, user.addon_print ? 'true' : 'false');
             }
         } catch (e) {
             console.error('Gagal memuat user:', e);
@@ -2893,24 +2912,26 @@ async function initApp(){
     renderAll();
     
     // ==== KONTROL AKSES MENU BERDASARKAN ROLE ====
-    if(role === 'staff'){
+    if (role === 'staff') {
         document.querySelector('.proj-bar button[onclick="openProjectModal()"]').style.display = 'none';
         document.querySelector('.proj-bar button[onclick="exportBackup()"]').style.display = 'none';
         document.querySelector('.proj-bar button[onclick="deleteProject()"]').style.display = 'none';
         
         document.querySelector('#mainTabs button[data-tab="cost"]').style.display = 'none';
         document.querySelector('#mainTabs button[data-tab="rab"]').style.display = 'none';
-    }
-    
-    // ===== BLOKIR TOMBOL GANTI PASSWORD UNTUK STAFF =====
-    if(role === 'staff'){
+        
+        // Sembunyikan tombol ganti password untuk staff
         const btnGantiPass = document.querySelector('button[onclick="openChangePasswordModal()"]');
-        if(btnGantiPass){
+        if (btnGantiPass) {
             btnGantiPass.style.display = 'none';
         }
     }
+    
+    // ===== BLOKIR PRINT UNTUK BASIC TANPA ADD-ON =====
+    blockPrintForBasic();
 }
 
+// Panggil initApp saat halaman dimuat
 initApp();
 </script>
 
