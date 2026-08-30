@@ -120,19 +120,39 @@
             cursor: pointer; 
             margin-top: 20px; 
         }
+        
+        /* ===== TOMBOL MASUK KE APLIKASI - KONTRAST & BESAR ===== */
         a.btn-link { 
             width: 100%; 
-            padding: 14px; 
-            background: #10263E; 
+            padding: 18px; 
+            background: linear-gradient(135deg, #2F7D5A, #256A4C); 
             color: white; 
-            border: none; 
+            border: 2px solid #1E5B3E;
             border-radius: 12px; 
-            font-size: 16px; 
-            font-weight: 700; 
+            font-size: 18px; 
+            font-weight: 800; 
             text-decoration: none; 
-            display: inline-block; 
-            margin-top: 10px; 
+            display: block; 
+            text-align: center;
+            margin-top: 15px;
+            box-shadow: 0 4px 12px rgba(47, 125, 90, 0.4);
+            letter-spacing: 0.5px;
+            text-transform: uppercase;
+            transition: all 0.3s;
+            cursor: pointer;
         }
+
+        a.btn-link:hover {
+            background: linear-gradient(135deg, #256A4C, #1E5B3E);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 16px rgba(47, 125, 90, 0.5);
+        }
+
+        a.btn-link:active {
+            transform: translateY(0);
+            box-shadow: 0 2px 8px rgba(47, 125, 90, 0.3);
+        }
+        
         button.orange { 
             width: 100%; 
             padding: 14px; 
@@ -166,24 +186,6 @@
             font-weight: bold;
             color: #2F7D5A;
             font-family: monospace;
-        }
-        
-        /* Tombol Logout */
-        .btn-logout {
-            background: #B23A2E;
-            color: white;
-            border: none;
-            border-radius: 12px;
-            padding: 14px;
-            font-size: 14px;
-            font-weight: 700;
-            cursor: pointer;
-            width: 100%;
-            margin-top: 10px;
-        }
-        
-        .btn-logout:hover {
-            background: #9A2E24;
         }
     </style>
 </head>
@@ -229,10 +231,6 @@
             
             <button type="submit">Login</button>
         </form>
-        
-        <div style="border-top:1px solid #C9D3DC; margin-top:15px; padding-top:15px;">
-            <button class="btn-logout" onclick="logoutFromPayment()">🚪 Keluar Aplikasi</button>
-        </div>
     </div>
 
     <!-- TOMBOL LANJUT KE PEMBAYARAN (MELAYANG FIXED DI BAWAH) -->
@@ -256,14 +254,14 @@
         
         <!-- LINK APLIKASI -->
         <div id="linkAplikasiBox" style="display:none;">
-            <button class="btn-link" onclick="masukKeAplikasi()">🔗 Masuk ke Aplikasi SIMPeL</button>
+            <a class="btn-link" onclick="masukKeAplikasi()">
+                🔗 MASUK KE APLIKASI SIMPeL
+            </a>
         </div>
         
         <button id="btnKirimWA" onclick="kirimKeWhatsApp()">Kirim Bukti ke WhatsApp Admin</button>
         
         <button class="orange" onclick="kembaliPilihPaket()">Kembali Pilih Paket</button>
-        
-        <button class="btn-logout" onclick="logoutFromPayment()">🚪 Keluar Aplikasi</button>
     </div>
 
     <!-- LIBRARY FIREBASE & SUPABASE -->
@@ -295,18 +293,6 @@
         let paketTerpilih = sessionStorage.getItem('paket') || null;
         let statusListener = null;
 
-        // ===== LOGOUT =====
-        function logoutFromPayment() {
-            if (confirm('Yakin ingin keluar dari aplikasi SIMPeL?')) {
-                // Hapus semua session dan localStorage
-                sessionStorage.clear();
-                localStorage.clear();
-                
-                // Redirect ke halaman pembayaran
-                window.location.href = './pembayaran.html';
-            }
-        }
-
         // ===== LOGIN LANGSUNG DARI HALAMAN PEMBAYARAN =====
         async function loginUser(e) {
             e.preventDefault();
@@ -334,13 +320,15 @@
                     return false;
                 }
                 
-                // Simpan ke sessionStorage
+                // ===== SIMPAN KE SESSIONSTORAGE =====
                 sessionStorage.setItem('drn_user_id', userIdInput);
                 sessionStorage.setItem('drn_role', 'management');
                 sessionStorage.setItem('drn_paket', user.paket || 'basic');
                 sessionStorage.setItem('drn_addon_print', user.addon_print ? 'true' : 'false');
                 
                 alert('✅ Login Management berhasil! Paket: ' + (user.paket || 'basic') + (user.addon_print ? ' + Add-On Print' : ''));
+                
+                // ===== REDIRECT KE INDEX.HTML =====
                 window.location.href = './index.html';
                 
             } catch (err) {
@@ -526,6 +514,9 @@
                 statusListener = null;
             }
             
+            // ===== TANDAI BAHWA USER DATANG DARI PEMBAYARAN =====
+            sessionStorage.setItem('drn_from_payment', 'true');
+            
             sessionStorage.removeItem('orderId');
             sessionStorage.removeItem('paket');
             window.location.href = './index.html';
@@ -578,4 +569,4 @@
         };
     </script>
 </body>
-  </html>
+    </html>
