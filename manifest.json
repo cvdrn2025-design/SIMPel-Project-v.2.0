@@ -1,49 +1,64 @@
 {
   "name": "SIMPeL - Sistem Pemantauan Lapangan",
   "short_name": "SIMPeL",
-  "description": "Aplikasi Sistem Pemantauan Lapangan untuk CV. Dinamika Rekonstruksi Nusantara",
-  "start_url": "./",
-  "display": "fullscreen",
+  "description": "Sistem Pemantauan Lapangan CV. Dinamika Rekonstruksi Nusantara",
+  "start_url": "./index.html",
+  "scope": "./",
+  "display": "standalone",
   "orientation": "portrait",
-  "background_color": "#E9EBE6",
-  "theme_color": "#10263E",
+  "background_color": "#10263E",
+  "theme_color": "#E8801C",
   "lang": "id",
   "dir": "ltr",
+  "categories": ["business", "productivity", "utilities"],
   "icons": [
     {
-      "src": "https://cvdrn2025-design.github.io/SIMPel-Project-v.2.0/icon-192.png",
+      "src": "./icon-192.png",
       "sizes": "192x192",
       "type": "image/png",
-      "purpose": "any"
+      "purpose": "any maskable"
     },
     {
-      "src": "https://cvdrn2025-design.github.io/SIMPel-Project-v.2.0/icon-512.png",
+      "src": "./icon-512.png",
       "sizes": "512x512",
       "type": "image/png",
-      "purpose": "any"
-    },
-    {
-      "src": "https://cvdrn2025-design.github.io/SIMPel-Project-v.2.0/icon-512.png",
-      "sizes": "512x512",
-      "type": "image/png",
-      "purpose": "maskable"
+      "purpose": "any maskable"
     }
   ],
   "shortcuts": [
     {
-      "name": "Buka Dashboard",
+      "name": "Dashboard",
       "short_name": "Dashboard",
-      "description": "Buka halaman Ringkasan Proyek",
-      "url": "https://cvdrn2025-design.github.io/SIMPel-Project-v.2.0/index.html#tab-dashboard",
-      "icons": [{ "src": "https://cvdrn2025-design.github.io/SIMPel-Project-v.2.0/icon-192.png", "sizes": "192x192" }]
+      "description": "Buka Dashboard SIMPeL",
+      "url": "./index.html",
+      "icons": [{ "src": "./icon-192.png", "sizes": "192x192" }]
     },
     {
-      "name": "Buka Progres",
-      "short_name": "Progres",
-      "description": "Buka halaman Catat Progres",
-      "url": "https://cvdrn2025-design.github.io/SIMPel-Project-v.2.0/index.html#tab-progress",
-      "icons": [{ "src": "https://cvdrn2025-design.github.io/SIMPel-Project-v.2.0/icon-192.png", "sizes": "192x192" }]
+      "name": "Pembayaran",
+      "short_name": "Pembayaran",
+      "description": "Buka halaman pembayaran",
+      "url": "./pembayaran.html",
+      "icons": [{ "src": "./icon-192.png", "sizes": "192x192" }]
+    },
+    {
+      "name": "Admin",
+      "short_name": "Admin",
+      "description": "Buka dashboard admin",
+      "url": "./admin.html",
+      "icons": [{ "src": "./icon-192.png", "sizes": "192x192" }]
     }
   ],
-  "categories": ["business", "productivity", "utilities"]
+  "prefer_related_applications": false,
+  "related_applications": [],
+  "display_override": ["standalone", "fullscreen", "minimal-ui"],
+  "launch_handler": {
+    "client_mode": "navigate-existing"
+  },
+  "screenshots": [
+    {
+      "src": "./screenshot-1.png",
+      "sizes": "1080x1920",
+      "type": "image/png"
+    }
+  ]
 }
