@@ -1,4 +1,4 @@
-const CACHE_NAME = 'simpel-v10.0.0'; // Ganti versi agar cache lama terhapus
+const CACHE_NAME = 'simpel-v10.1.0'; // Update versi untuk menghapus cache lama
 const urlsToCache = [
     './',
     './index.html',
@@ -8,6 +8,8 @@ const urlsToCache = [
     './manifest.json',
     './icon-192.png',
     './icon-512.png',
+    './pembayaran.png',
+    './qris.png',
     'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2',
     'https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js',
     'https://www.gstatic.com/firebasejs/9.22.0/firebase-app-compat.js',
@@ -48,12 +50,12 @@ self.addEventListener('fetch', (event) => {
     const url = new URL(request.url);
 
     // ===== JANGAN CACHE REQUEST KE SUPABASE / FIREBASE / API =====
-    // Ini penting agar data real-time selalu fresh
     if (
         url.hostname.includes('supabase.co') ||
         url.hostname.includes('supabase.in') ||
         url.hostname.includes('firebaseio.com') ||
         url.hostname.includes('firebase.google.com') ||
+        url.hostname.includes('firebaseapp.com') ||
         url.hostname.includes('gstatic.com') ||
         url.hostname.includes('googleapis.com') ||
         url.hostname.includes('firebasestorage.googleapis.com') ||
@@ -62,10 +64,8 @@ self.addEventListener('fetch', (event) => {
         url.pathname.includes('/auth/') ||
         url.pathname.includes('/storage/')
     ) {
-        // Network-only untuk data real-time - JANGAN INTERVENSI
-        // Tapi masih bisa cache gambar dari Supabase Storage untuk offline
+        // Cache gambar dari Supabase Storage untuk offline
         if (url.hostname.includes('supabase.co') && url.pathname.includes('/storage/')) {
-            // Cache gambar dari Supabase Storage
             event.respondWith(
                 caches.match(request).then((cachedResponse) => {
                     if (cachedResponse) {
@@ -94,22 +94,18 @@ self.addEventListener('fetch', (event) => {
         event.respondWith(
             fetch(request)
                 .then((response) => {
-                    // Clone response untuk cache
                     const responseToCache = response.clone();
                     caches.open(CACHE_NAME).then((cache) => {
                         cache.put(request, responseToCache);
-                        // Juga cache index.html untuk fallback
                         cache.put('./index.html', responseToCache);
                     });
                     return response;
                 })
                 .catch(() => {
-                    // Jika offline, fallback ke cache
                     return caches.match(request).then((cachedResponse) => {
                         if (cachedResponse) {
                             return cachedResponse;
                         }
-                        // Fallback ke index.html
                         return caches.match('./index.html');
                     });
                 })
@@ -122,7 +118,9 @@ self.addEventListener('fetch', (event) => {
         url.origin === self.location.origin || 
         url.hostname.includes('gstatic.com') ||
         url.hostname.includes('jsdelivr.net') ||
-        url.hostname.includes('cdnjs.cloudflare.com')
+        url.hostname.includes('cdnjs.cloudflare.com') ||
+        url.hostname.includes('github.io') ||
+        url.hostname.includes('githubusercontent.com')
     ) {
         event.respondWith(
             caches.match(request).then((cachedResponse) => {
@@ -138,7 +136,6 @@ self.addEventListener('fetch', (event) => {
                     }
                     return response;
                 }).catch(() => {
-                    // Jika fetch gagal dan tidak ada cache, return 404
                     return new Response('', { status: 404, statusText: 'Not Found' });
                 });
             })
@@ -146,12 +143,11 @@ self.addEventListener('fetch', (event) => {
         return;
     }
 
-    // ===== STRATEGI: STALE-WHILE-REVALIDATE UNTUK KONSULTASI DOKUMEN =====
+    // ===== STRATEGI: STALE-WHILE-REVALIDATE =====
     if (request.destination === 'document' || request.destination === 'script' || request.destination === 'style') {
         event.respondWith(
             caches.match(request).then((cachedResponse) => {
                 const fetchPromise = fetch(request).then((response) => {
-                    // Update cache dengan response baru
                     if (response.status === 200) {
                         const responseToCache = response.clone();
                         caches.open(CACHE_NAME).then((cache) => {
@@ -160,11 +156,9 @@ self.addEventListener('fetch', (event) => {
                     }
                     return response;
                 }).catch(() => {
-                    // Jika fetch gagal, return cachedResponse atau fallback
                     return cachedResponse || new Response('', { status: 404, statusText: 'Not Found' });
                 });
 
-                // Return cache dulu (jika ada), lalu update di background
                 return cachedResponse || fetchPromise;
             })
         );
@@ -172,18 +166,16 @@ self.addEventListener('fetch', (event) => {
     }
 
     // ===== STRATEGI: NETWORK-ONLY UNTUK SEMUA REQUEST LAINNYA =====
-    // (Khususnya untuk request ke domain lain yang tidak terdaftar)
     return;
 });
 
-// ===== 4. PUSH NOTIFICATION (Opsional) =====
+// ===== 4. PUSH NOTIFICATION =====
 self.addEventListener('push', (event) => {
     let data = {};
     
     try {
         data = event.data.json();
     } catch (error) {
-        // Jika bukan JSON, gunakan body sebagai teks
         data = {
             title: event.data.text(),
             body: ''
@@ -217,12 +209,10 @@ self.addEventListener('notificationclick', (event) => {
         clients.matchAll({ type: 'window', includeUncontrolled: true }).then((clientList) => {
             for (const client of clientList) {
                 if ('focus' in client) {
-                    // Jika client sudah ada, fokus dan navigasi ke URL
                     client.navigate(urlToOpen);
                     return client.focus();
                 }
             }
-            // Jika tidak ada client, buka window baru
             if (clients.openWindow) {
                 return clients.openWindow(urlToOpen);
             }
@@ -230,11 +220,9 @@ self.addEventListener('notificationclick', (event) => {
     );
 });
 
-// ===== 6. MESSAGE EVENT (Untuk Update dari Client) =====
+// ===== 6. MESSAGE EVENT =====
 self.addEventListener('message', (event) => {
-    // Terima pesan dari client
     if (event.data && event.data.type === 'CACHE_URLS') {
-        // Cache URL spesifik yang diminta client
         const urlsToCache = event.data.urls || [];
         event.waitUntil(
             caches.open(CACHE_NAME).then((cache) => {
@@ -247,14 +235,11 @@ self.addEventListener('message', (event) => {
         self.skipWaiting();
     }
     
-    // Untuk update dari server (push dari admin)
     if (event.data && event.data.type === 'DATA_UPDATED') {
-        // Clear cache untuk data terbaru
         event.waitUntil(
             caches.keys().then((cacheNames) => {
                 return Promise.all(
                     cacheNames.map((cacheName) => {
-                        // Hapus semua cache kecuali yang valid
                         if (cacheName !== CACHE_NAME) {
                             return caches.delete(cacheName);
                         }
@@ -265,7 +250,7 @@ self.addEventListener('message', (event) => {
     }
 });
 
-// ===== 7. BACKGROUND SYNC (Opsional untuk offline) =====
+// ===== 7. BACKGROUND SYNC =====
 self.addEventListener('sync', (event) => {
     if (event.tag === 'sync-data') {
         event.waitUntil(syncData());
@@ -284,28 +269,24 @@ self.addEventListener('sync', (event) => {
     }
 });
 
-// ===== 8. PERIODIC SYNC (Untuk update data otomatis) =====
+// ===== 8. PERIODIC SYNC =====
 self.addEventListener('periodicsync', (event) => {
     if (event.tag === 'update-data') {
         event.waitUntil(updateData());
     }
 });
 
-// Fungsi sinkronisasi data saat offline
+// ===== 9. FUNGSI SINKRONISASI =====
 async function syncData() {
     try {
-        // Ambil data yang perlu disinkronkan dari IndexedDB
         const db = await openDatabase();
         const pendingData = await getPendingData(db);
         
-        // Kirim ke server saat online kembali
         for (const item of pendingData) {
             await sendToServer(item);
         }
         
-        // Hapus data yang sudah disinkronkan
         await clearPendingData(db);
-        
         console.log('Background Sync: Sinkronisasi data berhasil');
         return true;
     } catch (error) {
@@ -314,11 +295,9 @@ async function syncData() {
     }
 }
 
-// Fungsi sinkronisasi progres
 async function syncProgress() {
     try {
         console.log('Sinkronisasi progres...');
-        // Kirim progress data yang pending
         return true;
     } catch (error) {
         console.error('Sync progress gagal:', error);
@@ -326,7 +305,6 @@ async function syncProgress() {
     }
 }
 
-// Fungsi sinkronisasi material
 async function syncMaterial() {
     try {
         console.log('Sinkronisasi material...');
@@ -337,7 +315,6 @@ async function syncMaterial() {
     }
 }
 
-// Fungsi sinkronisasi timesheet
 async function syncTimesheet() {
     try {
         console.log('Sinkronisasi timesheet...');
@@ -348,10 +325,8 @@ async function syncTimesheet() {
     }
 }
 
-// Fungsi update data periodic
 async function updateData() {
     try {
-        // Notify semua client untuk update
         const clients = await self.clients.matchAll();
         clients.forEach(client => {
             client.postMessage({
@@ -366,7 +341,7 @@ async function updateData() {
     }
 }
 
-// ===== 9. FUNGSI BANTU INDEXEDDB =====
+// ===== 10. FUNGSI BANTU INDEXEDDB =====
 async function openDatabase() {
     return new Promise((resolve, reject) => {
         const request = indexedDB.open('simpel-offline-db', 1);
@@ -374,22 +349,18 @@ async function openDatabase() {
         request.onupgradeneeded = (event) => {
             const db = event.target.result;
             
-            // Buat object store untuk pending data
             if (!db.objectStoreNames.contains('pending-data')) {
                 db.createObjectStore('pending-data', { keyPath: 'id', autoIncrement: true });
             }
             
-            // Buat object store untuk progress
             if (!db.objectStoreNames.contains('progress-data')) {
                 db.createObjectStore('progress-data', { keyPath: 'id', autoIncrement: true });
             }
             
-            // Buat object store untuk material
             if (!db.objectStoreNames.contains('material-data')) {
                 db.createObjectStore('material-data', { keyPath: 'id', autoIncrement: true });
             }
             
-            // Buat object store untuk timesheet
             if (!db.objectStoreNames.contains('timesheet-data')) {
                 db.createObjectStore('timesheet-data', { keyPath: 'id', autoIncrement: true });
             }
@@ -405,7 +376,6 @@ async function openDatabase() {
     });
 }
 
-// Fungsi mengambil data pending
 async function getPendingData(db) {
     return new Promise((resolve, reject) => {
         const transaction = db.transaction(['pending-data'], 'readonly');
@@ -422,10 +392,8 @@ async function getPendingData(db) {
     });
 }
 
-// Fungsi kirim ke server
 async function sendToServer(item) {
     try {
-        // Kirim data ke Supabase
         const response = await fetch(item.url, {
             method: item.method || 'POST',
             headers: {
@@ -447,7 +415,6 @@ async function sendToServer(item) {
     }
 }
 
-// Fungsi menghapus data pending
 async function clearPendingData(db) {
     return new Promise((resolve, reject) => {
         const transaction = db.transaction(['pending-data'], 'readwrite');
@@ -464,11 +431,10 @@ async function clearPendingData(db) {
     });
 }
 
-// ===== 10. HANDLE OFFLINE EVENTS =====
+// ===== 11. HANDLE OFFLINE EVENTS =====
 self.addEventListener('offline', (event) => {
     console.log('Service Worker: Aplikasi offline');
     
-    // Notify semua client bahwa aplikasi offline
     self.clients.matchAll().then(clients => {
         clients.forEach(client => {
             client.postMessage({
@@ -482,7 +448,6 @@ self.addEventListener('offline', (event) => {
 self.addEventListener('online', (event) => {
     console.log('Service Worker: Aplikasi online kembali');
     
-    // Notify semua client bahwa aplikasi online
     self.clients.matchAll().then(clients => {
         clients.forEach(client => {
             client.postMessage({
@@ -492,14 +457,12 @@ self.addEventListener('online', (event) => {
         });
     });
     
-    // Trigger sync data
     self.registration.sync.register('sync-data').catch(() => {
         console.log('Background sync tidak didukung');
     });
 });
 
-// ===== 11. HANDLE PERMISSION =====
+// ===== 12. HANDLE PERMISSION =====
 self.addEventListener('permissionchange', (event) => {
-    // Handle perubahan izin notifikasi
     console.log('Service Worker: Permission berubah');
 });
