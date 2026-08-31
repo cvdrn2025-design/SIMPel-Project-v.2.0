@@ -1,0 +1,1021 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Backup Data — SIMPeL</title>
+    <link rel="icon" type="image/png" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAADz0lEQVR4nO2XO0hcWxSGv30eM874ilFURMjFyiBKFBUUbARLRWdExELUSkQUrERQESzsxMrGRiy0E2y0sfLRDgraiI3giDqCj8GZ8TzWLZI5GXOTQOCGXLj+zeHstdfa/9n/enAUIPxBaH/y8DcCbwTeCPwnCBgASimUUr/sLCKeXzqG4ziICJqm4bouuq7jOM4rv8zzFL+hEyqlEPkaNk3mezAAfD4fq6urFBUV4boumvZzZUQEEUHXdQAsy+L6+prDw0PW1tZIJBJMT0/T09PD0tISKysr6LqOUgrbtgmFQoyNjXF3dweBQEC2trbk38LBwYGUlJRILBbz1ubm5gQQ0zRFKSUTExMiIvL09CSGYRhsbGywurqKz+fDNM1XX/vy8kI8HgcgPz+fYDCI67o4juNpqWkabW1thEIhmpub6e/v5+rqioKCAgBmZmYoLi5mZGQEEcFxHBzH4eHhAePjx480NTUBMD8/z/X19SsCNTU1hEIhHMdheXmZWCz2XVkikQjd3d24rktRUZGn/c3NDcXFxQwPD1NWVkZXfPz8+eJEZNTQ2jo6MA7OzssLu76xkTiQSVlZXMzs4CsL+/T319PS0tLiyMjo6R0dHB5uYlUolvrLv6+sTy7LEsiypq6sTPleFAKLruqyvr0symZT7+3spLCyUs7OzH+p/dHQkTU1NAsjl5aWIiITDYQFkaWnJ22dZloiIXF1diZGuURFhamqKaDSKpmkYhkFjYyO1tbUATE5OUlFRgYjQ1dWFruu4rkteXh6Li4vk5+cjIrS3tzM4OEggEMC2bQzDQCnF+Pg40WiUhYUFNE3zbAwMDPw0qxOJhCwsLEh5ebk8PDzI8fHxq1sCpLOz84f+/f39opSSrKwsAWRoaEhs2xYRkWg0Kqqqqkp6enq82k43DKUUFxcX7O3tcX5+TjgcpqGhgZOTE9bW1v7RbLq7u6muriaVSmEYBpqmoes66+vrnJ6evkrY1tZWent72djYQOXk5Ei6zNIwTROlNF5eUgCUlpYSj8eJx+OYpkl2dvaX5MtC1z9f5+3trZf5mV0vGAzi9/vRNA0RIRAIeDIrpVCfPtVKXl4ulmURj8fJzc0lEAiQTCZ5enoiFovx4cNfKMWX+nUxTRPbtnAcB78/CxAeHx95964AEZebmxvevy8klUphmgaJRBK/34dhGLiuSyqVIjs7G9u2f88s+BUY6W6WqWd6UqXXMt8z92ZO0My1zFjfIm33nrz9F7wReCPwfyfwN+7Vh1DW3MetAAAAAElFTkSuQmCC">
+    
+    <!-- Library -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/xlsx/0.18.5/xlsx.full.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/FileSaver.js/2.0.5/FileSaver.min.js"></script>
+    
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Arial, sans-serif;
+            background: #F6F7F5;
+            color: #1B2431;
+            line-height: 1.6;
+            padding: 20px;
+        }
+        
+        .header {
+            background: #10263E;
+            color: #EAF1F8;
+            padding: 20px;
+            border-radius: 8px 8px 0 0;
+            margin-bottom: 20px;
+        }
+        
+        .header h1 {
+            font-size: 24px;
+            margin-bottom: 5px;
+        }
+        
+        .header p {
+            font-size: 14px;
+            color: #8FB6D9;
+        }
+        
+        .container {
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+        
+        .card {
+            background: #fff;
+            border: 1px solid #C9D3DC;
+            border-radius: 8px;
+            padding: 20px;
+            margin-bottom: 20px;
+        }
+        
+        .card h2 {
+            color: #10263E;
+            margin-bottom: 15px;
+            font-size: 18px;
+        }
+        
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(150px, 1fr));
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+        
+        .stat {
+            background: #F6F7F5;
+            border-left: 4px solid #E8801C;
+            padding: 15px;
+            border-radius: 4px;
+        }
+        
+        .stat .num {
+            font-size: 24px;
+            font-weight: bold;
+            color: #10263E;
+        }
+        
+        .stat .lbl {
+            font-size: 12px;
+            color: #5B6675;
+            text-transform: uppercase;
+            margin-top: 5px;
+        }
+        
+        .btn {
+            display: inline-block;
+            padding: 12px 24px;
+            border: none;
+            border-radius: 6px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin: 5px;
+        }
+        
+        .btn-primary { background: #10263E; color: #fff; }
+        .btn-primary:hover { background: #0A1B2E; }
+        .btn-success { background: #2F7D5A; color: #fff; }
+        .btn-success:hover { background: #256B4B; }
+        .btn-warning { background: #E8801C; color: #fff; }
+        .btn-warning:hover { background: #C56A12; }
+        .btn-danger { background: #B23A2E; color: #fff; }
+        .btn-danger:hover { background: #9A3126; }
+        .btn-outline { background: transparent; border: 2px solid #10263E; color: #10263E; }
+        .btn-outline:hover { background: #10263E; color: #fff; }
+        .btn-lg { padding: 15px 30px; font-size: 16px; }
+        .btn-sm { padding: 8px 16px; font-size: 12px; }
+        
+        .backup-list { margin-top: 20px; }
+        
+        .backup-item {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            padding: 15px;
+            border: 1px solid #C9D3DC;
+            border-radius: 6px;
+            margin-bottom: 10px;
+            background: #F9FAFB;
+        }
+        
+        .backup-item .info { flex: 1; }
+        .backup-item .name { font-weight: 600; color: #10263E; }
+        .backup-item .date { font-size: 12px; color: #5B6675; margin-top: 3px; }
+        .backup-item .size { font-size: 11px; color: #5B6675; margin-top: 2px; }
+        .backup-item .actions { display: flex; gap: 5px; }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #E9EBE6;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 10px 0;
+        }
+        
+        .progress-bar .fill {
+            height: 100%;
+            background: linear-gradient(90deg, #E8801C, #2F7D5A);
+            transition: width 0.3s;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 12px;
+            color: #fff;
+        }
+        
+        .status-box {
+            padding: 15px;
+            border-radius: 6px;
+            margin: 10px 0;
+            display: none;
+        }
+        
+        .status-success { background: #E4F3EA; border: 1px solid #2F7D5A; color: #2F7D5A; }
+        .status-error { background: #FBE9E7; border: 1px solid #B23A2E; color: #B23A2E; }
+        .status-info { background: #E3F2FD; border: 1px solid #1565C0; color: #1565C0; }
+        
+        .backup-schedule {
+            margin-top: 20px;
+            padding: 15px;
+            background: #FFF3DA;
+            border: 1px solid #E8801C;
+            border-radius: 6px;
+        }
+        
+        .backup-schedule h3 { color: #8A5A00; margin-bottom: 10px; }
+        .backup-schedule p { font-size: 13px; color: #6B4A00; }
+        
+        .modal {
+            position: fixed;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background: rgba(0,0,0,0.5);
+            display: none;
+            align-items: center;
+            justify-content: center;
+            z-index: 1000;
+        }
+        
+        .modal-box {
+            background: #fff;
+            padding: 30px;
+            border-radius: 8px;
+            max-width: 500px;
+            width: 90%;
+        }
+        
+        .modal-box h2 { margin-bottom: 20px; }
+        .modal-box label { display: block; margin-bottom: 10px; font-weight: 600; }
+        .modal-box select, .modal-box input { width: 100%; padding: 10px; margin-bottom: 15px; border: 1px solid #C9D3DC; border-radius: 4px; }
+        .modal-box .btn { width: 100%; margin: 5px 0; }
+        
+        .hidden { display: none !important; }
+        
+        .auto-backup-status {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-size: 13px;
+            font-weight: 600;
+        }
+        
+        .auto-backup-on { background: #E4F3EA; color: #2F7D5A; }
+        .auto-backup-off { background: #FBE9E7; color: #B23A2E; }
+        
+        .dot { width: 8px; height: 8px; border-radius: 50%; display: inline-block; }
+        .dot-green { background: #2F7D5A; }
+        .dot-red { background: #B23A2E; }
+        
+        .table { width: 100%; border-collapse: collapse; margin-top: 15px; }
+        .table th, .table td { padding: 10px; text-align: left; border-bottom: 1px solid #C9D3DC; }
+        .table th { background: #F6F7F5; font-weight: 600; font-size: 12px; text-transform: uppercase; }
+        
+        .project-select {
+            width: 100%;
+            padding: 10px;
+            margin: 10px 0;
+            border: 1px solid #C9D3DC;
+            border-radius: 4px;
+            font-size: 14px;
+        }
+        
+        .security-note {
+            background: #FBE9E7;
+            border: 2px solid #B23A2E;
+            padding: 15px;
+            border-radius: 6px;
+            margin: 15px 0;
+            color: #9A3126;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- HEADER -->
+        <div class="header">
+            <h1>💾 Backup Data SIMPeL</h1>
+            <p>CV. DINAMIKA REKONSTRUKSI NUSANTARA</p>
+            <p style="margin-top:10px; font-size:13px; color:#8FB6D9;">
+                Sistem backup data khusus untuk user yang login
+            </p>
+        </div>
+
+        <!-- STATUS USER -->
+        <div class="card">
+            <h2>👤 Informasi User</h2>
+            <div id="userInfo" style="padding: 10px; background: #F6F7F5; border-radius: 6px;">
+                <p style="margin: 5px 0;"><strong>Role:</strong> <span id="userRole">-</span></p>
+                <p style="margin: 5px 0;"><strong>User ID:</strong> <span id="userId">-</span></p>
+                <p style="margin: 5px 0;"><strong>Proyek:</strong> <span id="userProject">-</span></p>
+            </div>
+            
+            <div class="security-note">
+                <strong>🔒 Catatan Keamanan:</strong>
+                Backup ini HANYA mengambil data milik user yang login. Data user lain TIDAK akan disertakan.
+            </div>
+        </div>
+
+        <!-- STATISTIK DATA USER -->
+        <div class="card">
+            <h2>📊 Statistik Data Anda</h2>
+            <div class="stats-grid">
+                <div class="stat">
+                    <div class="num" id="statProjects">0</div>
+                    <div class="lbl">Proyek</div>
+                </div>
+                <div class="stat">
+                    <div class="num" id="statProgress">0</div>
+                    <div class="lbl">Data Progres</div>
+                </div>
+                <div class="stat">
+                    <div class="num" id="statMaterial">0</div>
+                    <div class="lbl">Data Material</div>
+                </div>
+                <div class="stat">
+                    <div class="num" id="statTimesheet">0</div>
+                    <div class="lbl">Data Pekerja</div>
+                </div>
+                <div class="stat">
+                    <div class="num" id="statCashflow">0</div>
+                    <div class="lbl">Data Arus Kas</div>
+                </div>
+                <div class="stat">
+                    <div class="num" id="statRab">0</div>
+                    <div class="lbl">Data RAB</div>
+                </div>
+                <div class="stat">
+                    <div class="num" id="statLastBackup">-</div>
+                    <div class="lbl">Backup Terakhir</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- TOMBOL BACKUP -->
+        <div class="card">
+            <h2>🎯 Backup Data Anda</h2>
+            
+            <div style="display: flex; flex-wrap: wrap; gap: 10px; margin-bottom: 15px;">
+                <button class="btn btn-primary btn-lg" onclick="backupToExcel()">
+                    📊 Backup ke Excel
+                </button>
+                <button class="btn btn-success btn-lg" onclick="backupToJSON()">
+                    📦 Backup ke JSON
+                </button>
+                <button class="btn btn-warning btn-lg" onclick="backupToLocalStorage()">
+                    💾 Backup ke Browser
+                </button>
+            </div>
+            
+            <!-- Progress Bar -->
+            <div class="progress-bar hidden" id="progressBar">
+                <div class="fill" id="progressFill" style="width:0%">0%</div>
+            </div>
+            
+            <!-- Status Box -->
+            <div class="status-box" id="statusBox"></div>
+        </div>
+
+        <!-- PENGATURAN BACKUP OTOMATIS -->
+        <div class="card">
+            <h2>⚙️ Pengaturan Backup Otomatis</h2>
+            
+            <div class="backup-schedule">
+                <h3>📋 Jadwal Backup Otomatis</h3>
+                <p>
+                    Backup otomatis akan menyimpan data Anda ke localStorage browser.
+                    Data tersimpan di browser ini dan dapat di-restore kapan saja.
+                </p>
+            </div>
+            
+            <form onsubmit="return saveAutoBackupSettings(event)">
+                <label style="display:block; margin-bottom:10px; font-weight:600;">Frekuensi Backup:</label>
+                <select id="backupFrequency" style="width:100%; padding:10px; margin-bottom:15px; border:1px solid #C9D3DC; border-radius:4px;">
+                    <option value="never">Nonaktif (Manual)</option>
+                    <option value="daily">Setiap Hari</option>
+                    <option value="weekly">Setiap Minggu</option>
+                    <option value="monthly">Setiap Bulan</option>
+                </select>
+                
+                <button type="submit" class="btn btn-primary" style="width:100%;">
+                    💾 Simpan Pengaturan
+                </button>
+            </form>
+            
+            <div id="autoBackupStatus" class="auto-backup-status auto-backup-off" style="margin-top:15px;">
+                <span class="dot dot-red"></span>
+                Backup Otomatis: NONAKTIF
+            </div>
+        </div>
+
+        <!-- RIWAYAT BACKUP -->
+        <div class="card">
+            <h2>📚 Riwayat Backup Anda</h2>
+            <div class="backup-list" id="backupList"></div>
+        </div>
+
+        <!-- RESTORE DATA -->
+        <div class="card">
+            <h2>🔄 Restore Data Anda</h2>
+            
+            <div style="margin-bottom: 15px;">
+                <label style="display:block; margin-bottom:5px; font-weight:600;">Pilih File Backup untuk Restore:</label>
+                <input type="file" id="restoreFile" accept=".json,.xlsx" style="width:100%; padding:10px; border:1px solid #C9D3DC; border-radius:4px;">
+            </div>
+            
+            <button class="btn btn-danger btn-lg" onclick="restoreFromFile()">
+                🔄 Restore dari File
+            </button>
+            <button class="btn btn-outline btn-lg" onclick="restoreFromLocalStorage()">
+                💾 Restore dari Browser
+            </button>
+        </div>
+
+        <!-- INFORMASI PENTING -->
+        <div class="card" style="background: #FFF3DA; border-color: #E8801C;">
+            <h2 style="color: #8A5A00;">⚠️ PENTING!</h2>
+            <ul style="margin-left: 20px; color: #6B4A00;">
+                <li><strong>Backup ini khusus untuk user yang login</strong></li>
+                <li><strong>Data user lain TIDAK akan disertakan</strong></li>
+                <li><strong>Restore hanya akan mengembalikan data milik Anda</strong></li>
+                <li><strong>Simpan file backup</strong> di tempat aman (Google Drive, Dropbox, dll)</li>
+                <li><strong>Backup otomatis</strong> hanya tersimpan di browser ini</li>
+            </ul>
+        </div>
+    </div>
+
+    <!-- MODAL KONFIRMASI -->
+    <div class="modal" id="confirmModal">
+        <div class="modal-box">
+            <h2>⚠️ Konfirmasi</h2>
+            <p id="confirmText"></p>
+            <button class="btn btn-danger" onclick="confirmAction()">Ya, Lanjutkan</button>
+            <button class="btn btn-outline" onclick="closeModal()">Batal</button>
+        </div>
+    </div>
+
+    <script>
+        // ===== KONFIGURASI =====
+        const SUPABASE_URL = 'https://ufxmcjlyfounpqasqftw.supabase.co';
+        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InVmeG1jamx5Zm91bnBxYXNxZnR3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3ODU3Mjc3OTcsImV4cCI6MjEwMTMwMzc5N30.jTW0UlLOAkd6umY_wWRQscl32xT6DMmGhAwFcm81_zI';
+        
+        const sb = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
+        
+        // ===== KEYS =====
+        const KEYS = {
+            role: 'drn_role',
+            userId: 'drn_user_id',
+            project: 'drn_project',
+            rolePersist: 'drn_role_persist',
+            userIdPersist: 'drn_user_id_persist',
+            projectPersist: 'drn_project_persist',
+            current: 'drn_current_project'
+        };
+        
+        // ===== STATE =====
+        let backupHistory = JSON.parse(localStorage.getItem('backup_history_' + getCurrentUserId()) || '[]');
+        let pendingAction = null;
+        let currentProjectId = localStorage.getItem(KEYS.current) || null;
+        
+        // ===== UTILITAS =====
+        function getCurrentRole() {
+            return sessionStorage.getItem(KEYS.role) || localStorage.getItem(KEYS.rolePersist) || null;
+        }
+        
+        function getCurrentUserId() {
+            return sessionStorage.getItem(KEYS.userId) || localStorage.getItem(KEYS.userIdPersist) || null;
+        }
+        
+        function getCurrentProjectId() {
+            return sessionStorage.getItem(KEYS.project) || localStorage.getItem(KEYS.projectPersist) || currentProjectId;
+        }
+        
+        // ===== INIT =====
+        document.addEventListener('DOMContentLoaded', async () => {
+            // Cek login
+            const role = getCurrentRole();
+            const userId = getCurrentUserId();
+            
+            if (!role || !userId) {
+                window.location.href = './pembayaran.html';
+                return;
+            }
+            
+            // Tampilkan info user
+            document.getElementById('userRole').textContent = role;
+            document.getElementById('userId').textContent = userId;
+            
+            await loadUserData();
+            loadStats();
+            loadBackupHistory();
+            checkAutoBackup();
+        });
+        
+        // ===== LOAD DATA USER =====
+        async function loadUserData() {
+            try {
+                const role = getCurrentRole();
+                const userId = getCurrentUserId();
+                const projectId = getCurrentProjectId();
+                
+                if (role === 'staff' && projectId) {
+                    const { data: project } = await sb.from('projects').select('*').eq('id', projectId).single();
+                    if (project) {
+                        document.getElementById('userProject').textContent = project.nama;
+                    }
+                } else if (role === 'management') {
+                    const { data: projects } = await sb.from('projects').select('*').eq('management_id', userId);
+                    if (projects && projects.length > 0) {
+                        document.getElementById('userProject').textContent = projects.length + ' proyek';
+                    }
+                }
+            } catch (error) {
+                console.error('Error:', error);
+            }
+        }
+        
+        // ===== LOAD STATISTIK =====
+        async function loadStats() {
+            try {
+                const role = getCurrentRole();
+                const userId = getCurrentUserId();
+                const projectId = getCurrentProjectId();
+                
+                let projectIds = [];
+                
+                // Tentukan proyek yang bisa diakses
+                if (role === 'management') {
+                    const { data: projects } = await sb.from('projects').select('id').eq('management_id', userId);
+                    projectIds = (projects || []).map(p => p.id);
+                } else if (role === 'staff' && projectId) {
+                    projectIds = [projectId];
+                }
+                
+                // Hitung data per tabel
+                if (projectIds.length > 0) {
+                    const tables = ['progress_log', 'material_log', 'material_alloc', 'timesheet_log', 'cashflow_log', 'rab_items'];
+                    const counts = {};
+                    
+                    for (const table of tables) {
+                        const { count, error } = await sb.from(table)
+                            .select('*', { count: 'exact', head: true })
+                            .in('project_id', projectIds);
+                        
+                        if (!error) {
+                            counts[table] = count;
+                        }
+                    }
+                    
+                    // Update UI
+                    document.getElementById('statProgress').textContent = counts.progress_log || 0;
+                    document.getElementById('statMaterial').textContent = counts.material_log || 0;
+                    document.getElementById('statTimesheet').textContent = counts.timesheet_log || 0;
+                    document.getElementById('statCashflow').textContent = counts.cashflow_log || 0;
+                    document.getElementById('statRab').textContent = counts.rab_items || 0;
+                    document.getElementById('statProjects').textContent = projectIds.length;
+                }
+                
+                // Last backup
+                const lastBackup = localStorage.getItem('last_backup_time_' + getCurrentUserId());
+                document.getElementById('statLastBackup').textContent = lastBackup ? formatDate(lastBackup) : 'Belum ada';
+                
+            } catch (error) {
+                console.error('Gagal load stats:', error);
+            }
+        }
+        
+        // ===== BACKUP KE EXCEL =====
+        async function backupToExcel() {
+            showProgress(10);
+            
+            try {
+                const role = getCurrentRole();
+                const userId = getCurrentUserId();
+                const projectId = getCurrentProjectId();
+                
+                let projectIds = [];
+                
+                // Tentukan proyek yang bisa diakses
+                if (role === 'management') {
+                    const { data: projects } = await sb.from('projects').select('id').eq('management_id', userId);
+                    projectIds = (projects || []).map(p => p.id);
+                } else if (role === 'staff' && projectId) {
+                    projectIds = [projectId];
+                }
+                
+                if (projectIds.length === 0) {
+                    showStatus('error', '❌ Tidak ada proyek yang bisa di-backup!');
+                    return;
+                }
+                
+                const wb = XLSX.utils.book_new();
+                
+                // Backup projects
+                const { data: projectsData } = await sb.from('projects').select('*').in('id', projectIds);
+                if (projectsData) {
+                    XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(projectsData), 'Projects');
+                }
+                
+                // Backup data terkait proyek
+                const relatedTables = ['progress_log', 'material_log', 'material_alloc', 'timesheet_log', 'cashflow_log', 'rab_items'];
+                
+                for (const table of relatedTables) {
+                    const { data } = await sb.from(table).select('*').in('project_id', projectIds);
+                    if (data) {
+                        XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(data), table.substring(0, 31));
+                    }
+                }
+                
+                // Simpan file
+                const fileName = `BACKUP_${role}_${userId}_${new Date().toISOString().split('T')[0]}.xlsx`;
+                XLSX.writeFile(wb, fileName);
+                
+                showProgress(100);
+                saveBackupHistory('Excel', fileName, 'Berhasil');
+                showStatus('success', `✅ Backup ke Excel berhasil! File: ${fileName}`);
+                
+            } catch (error) {
+                showStatus('error', `❌ Gagal backup: ${error.message}`);
+                saveBackupHistory('Excel', 'Gagal', 'Error');
+            }
+            
+            setTimeout(() => hideProgress(), 2000);
+        }
+        
+        // ===== BACKUP KE JSON =====
+        async function backupToJSON() {
+            showProgress(10);
+            
+            try {
+                const role = getCurrentRole();
+                const userId = getCurrentUserId();
+                const projectId = getCurrentProjectId();
+                
+                let projectIds = [];
+                
+                // Tentukan proyek yang bisa diakses
+                if (role === 'management') {
+                    const { data: projects } = await sb.from('projects').select('id').eq('management_id', userId);
+                    projectIds = (projects || []).map(p => p.id);
+                } else if (role === 'staff' && projectId) {
+                    projectIds = [projectId];
+                }
+                
+                if (projectIds.length === 0) {
+                    showStatus('error', '❌ Tidak ada proyek yang bisa di-backup!');
+                    return;
+                }
+                
+                const backupData = {
+                    _metadata: {
+                        app: 'SIMPeL',
+                        role: role,
+                        userId: userId,
+                        created_at: new Date().toISOString()
+                    }
+                };
+                
+                // Backup projects
+                const { data: projectsData } = await sb.from('projects').select('*').in('id', projectIds);
+                backupData.projects = projectsData || [];
+                
+                // Backup data terkait proyek
+                const relatedTables = ['progress_log', 'material_log', 'material_alloc', 'timesheet_log', 'cashflow_log', 'rab_items'];
+                
+                for (const table of relatedTables) {
+                    const { data } = await sb.from(table).select('*').in('project_id', projectIds);
+                    backupData[table] = data || [];
+                }
+                
+                const jsonString = JSON.stringify(backupData, null, 2);
+                const blob = new Blob([jsonString], { type: 'application/json' });
+                
+                // Download file
+                const fileName = `BACKUP_${role}_${userId}_${new Date().toISOString().split('T')[0]}.json`;
+                saveAs(blob, fileName);
+                
+                showProgress(100);
+                saveBackupHistory('JSON', fileName, 'Berhasil');
+                showStatus('success', `✅ Backup ke JSON berhasil! File: ${fileName}`);
+                
+            } catch (error) {
+                showStatus('error', `❌ Gagal backup: ${error.message}`);
+                saveBackupHistory('JSON', 'Gagal', 'Error');
+            }
+            
+            setTimeout(() => hideProgress(), 2000);
+        }
+        
+        // ===== BACKUP KE LOCAL STORAGE =====
+        async function backupToLocalStorage() {
+            showProgress(10);
+            
+            try {
+                const role = getCurrentRole();
+                const userId = getCurrentUserId();
+                const projectId = getCurrentProjectId();
+                
+                let projectIds = [];
+                
+                // Tentukan proyek yang bisa diakses
+                if (role === 'management') {
+                    const { data: projects } = await sb.from('projects').select('id').eq('management_id', userId);
+                    projectIds = (projects || []).map(p => p.id);
+                } else if (role === 'staff' && projectId) {
+                    projectIds = [projectId];
+                }
+                
+                if (projectIds.length === 0) {
+                    showStatus('error', '❌ Tidak ada proyek yang bisa di-backup!');
+                    return;
+                }
+                
+                const backupData = {
+                    _metadata: {
+                        app: 'SIMPeL',
+                        role: role,
+                        userId: userId,
+                        created_at: new Date().toISOString()
+                    }
+                };
+                
+                // Backup projects
+                const { data: projectsData } = await sb.from('projects').select('*').in('id', projectIds);
+                backupData.projects = projectsData || [];
+                
+                // Backup data terkait proyek
+                const relatedTables = ['progress_log', 'material_log', 'material_alloc', 'timesheet_log', 'cashflow_log', 'rab_items'];
+                
+                for (const table of relatedTables) {
+                    const { data } = await sb.from(table).select('*').in('project_id', projectIds);
+                    backupData[table] = data || [];
+                }
+                
+                // Simpan ke localStorage dengan prefix user ID
+                localStorage.setItem(`simpel_backup_${userId}`, JSON.stringify(backupData));
+                localStorage.setItem(`last_backup_time_${userId}`, new Date().toISOString());
+                
+                showProgress(100);
+                saveBackupHistory('Browser', 'LocalStorage', 'Berhasil');
+                showStatus('success', '✅ Backup ke browser berhasil!');
+                
+                // Update UI
+                document.getElementById('statLastBackup').textContent = formatDate(new Date().toISOString());
+                
+            } catch (error) {
+                showStatus('error', `❌ Gagal backup: ${error.message}`);
+                saveBackupHistory('Browser', 'Gagal', 'Error');
+            }
+            
+            setTimeout(() => hideProgress(), 2000);
+        }
+        
+        // ===== SETTING BACKUP OTOMATIS =====
+        function saveAutoBackupSettings(e) {
+            e.preventDefault();
+            
+            const frequency = document.getElementById('backupFrequency').value;
+            localStorage.setItem(`auto_backup_frequency_${getCurrentUserId()}`, frequency);
+            
+            // Update status
+            const statusEl = document.getElementById('autoBackupStatus');
+            if (frequency === 'never') {
+                statusEl.className = 'auto-backup-status auto-backup-off';
+                statusEl.innerHTML = '<span class="dot dot-red"></span> Backup Otomatis: NONAKTIF';
+            } else {
+                statusEl.className = 'auto-backup-status auto-backup-on';
+                statusEl.innerHTML = '<span class="dot dot-green"></span> Backup Otomatis: AKTIF (' + frequency + ')';
+            }
+            
+            showStatus('info', `✅ Pengaturan backup otomatis disimpan: ${frequency}`);
+            return false;
+        }
+        
+        // ===== CHECK AUTO BACKUP =====
+        function checkAutoBackup() {
+            const userId = getCurrentUserId();
+            const frequency = localStorage.getItem(`auto_backup_frequency_${userId}`) || 'never';
+            
+            if (frequency !== 'never') {
+                const lastBackup = localStorage.getItem(`last_backup_time_${userId}`);
+                const now = new Date();
+                
+                let shouldBackup = false;
+                
+                if (!lastBackup) {
+                    shouldBackup = true;
+                } else {
+                    const lastBackupDate = new Date(lastBackup);
+                    
+                    switch (frequency) {
+                        case 'daily':
+                            shouldBackup = (now - lastBackupDate) > 24 * 60 * 60 * 1000;
+                            break;
+                        case 'weekly':
+                            shouldBackup = (now - lastBackupDate) > 7 * 24 * 60 * 60 * 1000;
+                            break;
+                        case 'monthly':
+                            shouldBackup = (now - lastBackupDate) > 30 * 24 * 60 * 60 * 1000;
+                            break;
+                    }
+                }
+                
+                if (shouldBackup) {
+                    console.log('Auto backup dijalankan...');
+                    backupToLocalStorage();
+                }
+            }
+        }
+        
+        // ===== RESTORE DARI FILE =====
+        async function restoreFromFile() {
+            const fileInput = document.getElementById('restoreFile');
+            const file = fileInput.files[0];
+            
+            if (!file) {
+                showStatus('error', '❌ Pilih file backup terlebih dahulu!');
+                return;
+            }
+            
+            // Konfirmasi
+            showConfirm('Restore data akan MENIMPA data Anda di Supabase. Lanjutkan?', async () => {
+                try {
+                    showProgress(10);
+                    
+                    let backupData;
+                    
+                    if (file.name.endsWith('.json')) {
+                        backupData = JSON.parse(await file.text());
+                    } else if (file.name.endsWith('.xlsx')) {
+                        const data = await file.arrayBuffer();
+                        const workbook = XLSX.read(data, { type: 'array' });
+                        
+                        backupData = {};
+                        const sheetNames = workbook.SheetNames;
+                        for (const sheetName of sheetNames) {
+                            backupData[sheetName] = XLSX.utils.sheet_to_json(workbook.Sheets[sheetName]);
+                        }
+                    }
+                    
+                    // Validasi ownership
+                    const role = getCurrentRole();
+                    const userId = getCurrentUserId();
+                    const projectIds = backupData.projects ? backupData.projects.map(p => p.id) : [];
+                    
+                    if (projectIds.length === 0) {
+                        showStatus('error', '❌ Tidak ada proyek di backup!');
+                        return;
+                    }
+                    
+                    // Restore data
+                    const relatedTables = ['progress_log', 'material_log', 'material_alloc', 'timesheet_log', 'cashflow_log', 'rab_items'];
+                    
+                    for (let i = 0; i < relatedTables.length; i++) {
+                        const table = relatedTables[i];
+                        const tableData = backupData[table] || [];
+                        
+                        // Hapus data lama milik user
+                        await sb.from(table).delete().in('project_id', projectIds);
+                        
+                        // Insert data baru
+                        if (tableData.length > 0) {
+                            await sb.from(table).insert(tableData);
+                        }
+                        
+                        showProgress(10 + ((i + 1) / relatedTables.length) * 80);
+                    }
+                    
+                    showProgress(100);
+                    saveBackupHistory('Restore', file.name, 'Berhasil');
+                    showStatus('success', '✅ Data berhasil di-restore!');
+                    
+                    setTimeout(() => {
+                        window.location.href = './index.html';
+                    }, 2000);
+                    
+                } catch (error) {
+                    showStatus('error', `❌ Gagal restore: ${error.message}`);
+                }
+            });
+        }
+        
+        // ===== RESTORE DARI LOCAL STORAGE =====
+        async function restoreFromLocalStorage() {
+            const userId = getCurrentUserId();
+            const backupData = localStorage.getItem(`simpel_backup_${userId}`);
+            
+            if (!backupData) {
+                showStatus('error', '❌ Tidak ada backup di browser!');
+                return;
+            }
+            
+            showConfirm('Restore data dari browser akan MENIMPA data Anda di Supabase. Lanjutkan?', async () => {
+                try {
+                    showProgress(10);
+                    
+                    const parsedData = JSON.parse(backupData);
+                    const projectIds = parsedData.projects ? parsedData.projects.map(p => p.id) : [];
+                    
+                    if (projectIds.length === 0) {
+                        showStatus('error', '❌ Tidak ada proyek di backup!');
+                        return;
+                    }
+                    
+                    const relatedTables = ['progress_log', 'material_log', 'material_alloc', 'timesheet_log', 'cashflow_log', 'rab_items'];
+                    
+                    for (let i = 0; i < relatedTables.length; i++) {
+                        const table = relatedTables[i];
+                        const tableData = parsedData[table] || [];
+                        
+                        // Hapus data lama milik user
+                        await sb.from(table).delete().in('project_id', projectIds);
+                        
+                        // Insert data baru
+                        if (tableData.length > 0) {
+                            await sb.from(table).insert(tableData);
+                        }
+                        
+                        showProgress(10 + ((i + 1) / relatedTables.length) * 80);
+                    }
+                    
+                    showProgress(100);
+                    saveBackupHistory('Restore', 'LocalStorage', 'Berhasil');
+                    showStatus('success', '✅ Data berhasil di-restore dari browser!');
+                    
+                    setTimeout(() => {
+                        window.location.href = './index.html';
+                    }, 2000);
+                    
+                } catch (error) {
+                    showStatus('error', `❌ Gagal restore: ${error.message}`);
+                }
+            });
+        }
+        
+        // ===== BACKUP HISTORY =====
+        function saveBackupHistory(type, fileName, status) {
+            const entry = {
+                id: Date.now(),
+                type,
+                fileName,
+                status,
+                date: new Date().toISOString()
+            };
+            
+            backupHistory.unshift(entry);
+            backupHistory = backupHistory.slice(0, 20); // Simpan 20 terakhir
+            
+            localStorage.setItem(`backup_history_${getCurrentUserId()}`, JSON.stringify(backupHistory));
+            loadBackupHistory();
+        }
+        
+        function loadBackupHistory() {
+            const list = document.getElementById('backupList');
+            list.innerHTML = '';
+            
+            if (backupHistory.length === 0) {
+                list.innerHTML = '<p style="color:#5B6675; text-align:center;">Belum ada riwayat backup</p>';
+                return;
+            }
+            
+            backupHistory.forEach(item => {
+                const div = document.createElement('div');
+                div.className = 'backup-item';
+                div.innerHTML = `
+                    <div class="info">
+                        <div class="name">${item.type} - ${item.fileName}</div>
+                        <div class="date">${formatDate(item.date)}</div>
+                        <div class="size">Status: ${item.status}</div>
+                    </div>
+                    <div class="actions">
+                        <button class="btn btn-sm btn-outline" onclick="downloadBackup(${item.id})">Download</button>
+                    </div>
+                `;
+                list.appendChild(div);
+            });
+        }
+        
+        // ===== UTILITAS =====
+        function formatDate(dateString) {
+            const date = new Date(dateString);
+            return date.toLocaleDateString('id-ID', {
+                day: 'numeric',
+                month: 'long',
+                year: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+        
+        function showProgress(percent) {
+            const bar = document.getElementById('progressBar');
+            const fill = document.getElementById('progressFill');
+            
+            bar.classList.remove('hidden');
+            fill.style.width = percent + '%';
+            fill.textContent = Math.round(percent) + '%';
+        }
+        
+        function hideProgress() {
+            const bar = document.getElementById('progressBar');
+            bar.classList.add('hidden');
+            
+            setTimeout(() => {
+                const fill = document.getElementById('progressFill');
+                fill.style.width = '0%';
+                fill.textContent = '0%';
+            }, 500);
+        }
+        
+        function showStatus(type, message) {
+            const box = document.getElementById('statusBox');
+            box.className = 'status-box status-' + type;
+            box.textContent = message;
+            box.style.display = 'block';
+            
+            setTimeout(() => {
+                box.style.display = 'none';
+            }, 5000);
+        }
+        
+        function showConfirm(text, action) {
+            pendingAction = action;
+            document.getElementById('confirmText').textContent = text;
+            document.getElementById('confirmModal').style.display = 'flex';
+        }
+        
+        function confirmAction() {
+            if (pendingAction) {
+                pendingAction();
+                pendingAction = null;
+            }
+            closeModal();
+        }
+        
+        function closeModal() {
+            document.getElementById('confirmModal').style.display = 'none';
+        }
+        
+        function downloadBackup(id) {
+            const item = backupHistory.find(b => b.id === id);
+            if (item && item.fileName !== 'Gagal') {
+                const userId = getCurrentUserId();
+                const backupData = localStorage.getItem(`simpel_backup_${userId}`);
+                if (backupData) {
+                    const blob = new Blob([backupData], { type: 'application/json' });
+                    saveAs(blob, `BACKUP_${userId}_${new Date().toISOString().split('T')[0]}.json`);
+                }
+            }
+        }
+    </script>
+</body>
+  </html>
