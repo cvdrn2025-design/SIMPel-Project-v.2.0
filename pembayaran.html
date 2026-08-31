@@ -121,18 +121,21 @@
             margin-top: 20px; 
         }
         
-        /* ===== TOMBOL MASUK KE APLIKASI - KONTRAST & BESAR ===== */
-        a.btn-link { 
+        /* ===== TOMBOL MASUK KE APLIKASI - DIPERBAIKI UNTUK SEIMBANG ===== */
+        .btn-link { 
             width: 100%; 
-            padding: 18px; 
+            padding: 16px 24px; 
             background: linear-gradient(135deg, #2F7D5A, #256A4C); 
             color: white; 
             border: 2px solid #1E5B3E;
             border-radius: 12px; 
-            font-size: 18px; 
+            font-size: 16px; 
             font-weight: 800; 
             text-decoration: none; 
-            display: block; 
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
             text-align: center;
             margin-top: 15px;
             box-shadow: 0 4px 12px rgba(47, 125, 90, 0.4);
@@ -140,17 +143,30 @@
             text-transform: uppercase;
             transition: all 0.3s;
             cursor: pointer;
+            line-height: 1.4;
+            box-sizing: border-box;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        a.btn-link:hover {
+        .btn-link:hover {
             background: linear-gradient(135deg, #256A4C, #1E5B3E);
             transform: translateY(-2px);
             box-shadow: 0 6px 16px rgba(47, 125, 90, 0.5);
         }
 
-        a.btn-link:active {
+        .btn-link:active {
             transform: translateY(0);
             box-shadow: 0 2px 8px rgba(47, 125, 90, 0.3);
+        }
+
+        .btn-link .icon {
+            font-size: 20px;
+            flex-shrink: 0;
+        }
+
+        .btn-link .text {
+            flex: 1;
+            text-align: center;
         }
         
         button.orange { 
@@ -186,6 +202,31 @@
             font-weight: bold;
             color: #2F7D5A;
             font-family: monospace;
+        }
+
+        /* ===== TOMBOL KEMBALI - DI SEIMBANGKAN ===== */
+        .btn-back {
+            width: 100%;
+            padding: 14px;
+            background: transparent;
+            color: #5B6675;
+            border: 1.5px solid #C9D3DC;
+            border-radius: 12px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            margin-top: 10px;
+            transition: all 0.3s;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+        }
+
+        .btn-back:hover {
+            background: #F6F7F5;
+            border-color: #5B6675;
+            color: #10263E;
         }
     </style>
 </head>
@@ -255,13 +296,16 @@
         <!-- LINK APLIKASI -->
         <div id="linkAplikasiBox" style="display:none;">
             <a class="btn-link" onclick="masukKeAplikasi()">
-                🔗 MASUK KE APLIKASI SIMPeL
+                <span class="icon">🔗</span>
+                <span class="text">Masuk ke Aplikasi SIMPeL</span>
             </a>
         </div>
         
         <button id="btnKirimWA" onclick="kirimKeWhatsApp()">Kirim Bukti ke WhatsApp Admin</button>
         
-        <button class="orange" onclick="kembaliPilihPaket()">Kembali Pilih Paket</button>
+        <button class="btn-back" onclick="kembaliPilihPaket()">
+            <span>← Kembali Pilih Paket</span>
+        </button>
     </div>
 
     <!-- LIBRARY FIREBASE & SUPABASE -->
@@ -569,4 +613,4 @@
         };
     </script>
 </body>
-    </html>
+</html>
